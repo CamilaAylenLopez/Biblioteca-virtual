@@ -27,17 +27,17 @@ app.get('/libros', async (req, res) => {
 
 
 app.post('/nuevoRegistro', async (req, res) => {
-    const { nombre, apellido, nombreUsuario, email, telefono, fecha_nacimiento, password } = req.body;
+    const { nombre, apellido, nombreUsuario, email, fecha_nacimiento, password, descripcion } = req.body;
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         const query = `
         INSERT INTO usuario
-        (nombre, apellido, nombreUsuario, email, telefono, fecha_nacimiento, password)
+        (nombre, apellido, nombreUsuario, email, fecha_nacimiento, password, descripcion)
         VALUES (?,?,?,?,?,?,?)`;
 
         const [result] = await pool.query(query, [
-            nombre, apellido, nombreUsuario, email, telefono, fecha_nacimiento, hashedPassword
+            nombre, apellido, nombreUsuario, email, fecha_nacimiento, hashedPassword, descripcion
         ]);
 
         res.status(201).json({
@@ -45,9 +45,9 @@ app.post('/nuevoRegistro', async (req, res) => {
         })
     } catch (error) {
         console.error(error);
-        //si ya existia el mail o nombre de usuario o el telefono
+        //si ya existia el mail o nombre de usuario
         if (error.code == 'ER_DUP_ENTRY'){
-            return res.status(409).json({error: 'El email o nombre de usuario o telefono ya están registrados'});
+            return res.status(409).json({error: 'El email o nombre de usuario ya están registrados'});
         }
         res.status(500).json({error: 'Error al registrar el usuario'});
     }
@@ -73,7 +73,7 @@ app.post('/login', async (req, res) => {
                     apellido: usuario.apellido,
                     nombreUsuario: usuario.nombreUsuario,
                     email: usuario.email,
-                    telefono: usuario.telefono
+                    descripcion: usuario.descripcion
                 }
                 });
             } else{
