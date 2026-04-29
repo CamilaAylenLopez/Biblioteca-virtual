@@ -1,52 +1,45 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { loginUsuario } from '../../api.js';
+
 
 export default function Login({ navigation }) {
     const [nombreUsuario, setnombreUsuario] = useState('');
     const [password, setpassword] = useState('');
-
+    const [error, setError] = useState(false);
 
     const logIn = async () => {
-        if(!nombreUsuario || !password){
-            Alert.alert("Error", "Completa todos los campos");
-            return;
-        }
+      setError(false);
 
-        try {
-            const response = await fetch('http://localhost:3000/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    nombreUsuario: nombreUsuario,
-                    password: password
-                }),
-            });
+      if(!nombreUsuario || !password){
+        Alert.alert("Error", "Completa todos los campos");
+        return;
+      }
 
-            const resultado = await response.json();
+      const { ok, data } = await loginUsuario(nombreUsuario, password);
 
-            if(response.ok){
-                console.log("Bienvenido: ", resultado.usuario.nombreUsuario)
-                navigation.navigate('Home');
-            }
-            else{
-                alert(resultado.mensaje || "Datos incorrectos")
-            }
-        } catch(error){
-            console.error("Error de conexión: ", error);
-            alert("No se pudo conectar con el servidor");
-        }
+      if(ok){
+        console.log("Bienvenido: ", data.usuario.nombreUsuario);
+        navigation.navigate('Tab');
+      } else {
+        setError(true);
+        Alert.alert("Error", data.mensaje || "Datos incorrectos");
+      }   
     };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Bienvenido a la biblioteca virtual</Text>
+      
       <TextInput style={styles.input} value={nombreUsuario} onChangeText={nombreUsuario => setnombreUsuario(nombreUsuario)} placeholder="Usuario" />
       <TextInput style={styles.input} value={password} onChangeText={password => setpassword(password)} placeholder="Contraseña" secureTextEntry />
+      
+      {!error ? <Text style={styles.error}>Los datos son incorrectos</Text> : null}
+
       <TouchableOpacity style={styles.button} onPress={logIn}>
         <Text style={{color: 'white'}}>Iniciar sesion</Text>
       </TouchableOpacity>
+      
       <TouchableOpacity onPress={() => navigation.navigate('CrearRegistro')}>
         <Text style={{color: 'blue', marginTop: 20}}>¿Todavía no tienes una cuenta? Crear usuario.</Text>
       </TouchableOpacity>
@@ -95,5 +88,11 @@ const styles = StyleSheet.create({
   link: {
     color: '#007AFF',
     marginTop: 20
+  },
+  error:{
+    color: '#f00',
+    padding: 10,
+    fontSize: 18,
+    justifyContent: 'center',
   }
 });

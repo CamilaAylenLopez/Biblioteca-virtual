@@ -1,10 +1,96 @@
-import React from 'react';
-import { View, Text } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { getLibros } from '../../api.js';
 
 export default function CrearRegistro() {
+  const [libros, setLibros] = useState([]);
+
+  useEffect(( )=> {
+    const cargarLibros = async () => {
+      const data = await getLibros();
+      setLibros(data);
+    };
+    cargarLibros();
+  }, []);
+
+  const renderSeccionGenero = (genero) => {
+    const librosFiltrados = libros.filter(l => l.genero === genero);
+
+    return(
+      <View style={styles.contenedorGenero}>
+        <Text style={styles.tituloGenero}>{genero}</Text>
+        <FlatList
+          horizontal
+          data={librosFiltrados}
+          keyExtractor={(item) => item.id.toString()}
+          showsHorizontalScrollIndicator={false}
+          renderItem={({item}) => (
+            <View style={styles.card}>
+              <TouchableOpacity onPress={() => navigation.navigate('InfoLibro')}>
+                  <Image
+                  source={{uri: item.imagen_url || 'https://static.vecteezy.com/system/resources/previews/022/059/000/non_2x/no-image-available-icon-vector.jpg'}}
+                  style={styles.portada}
+                  />
+                  <Text style={styles.tituloLibro} numberOfLines={2}>{item.titulo}</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        />
+      </View>
+    );
+  };
+
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>HOME</Text>
-    </View>
+    <ScrollView style={styles.container}>
+      <Text style={styles.header}>Mi Biblioteca</Text>
+      {renderSeccionGenero('Fantasía')}
+      {renderSeccionGenero('Terror')}
+      {renderSeccionGenero('Romance')}
+      {renderSeccionGenero('Misterio')}
+      {renderSeccionGenero('Parodia')}
+      {renderSeccionGenero('Ficción')}
+      {renderSeccionGenero('Contranovela')}
+      {renderSeccionGenero('Policial')}
+    </ScrollView>
   );
-}
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#121212',
+    paddingTop: 50,
+  },
+  header: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: 'white',
+    marginLeft: 15,
+    marginBottom: 20,
+  },
+  contenedorGenero: {
+    marginBottom: 25,
+  },
+  tituloGenero: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#E5E5E5',
+    marginLeft: 15,
+    marginBottom: 10,
+  },
+  card: {
+    width: 120,
+    marginLeft: 15,
+  },
+  portada: {
+    width: 120,
+    height: 180,
+    borderRadius: 8,
+    backgroundColor: '#333',
+  },
+  tituloLibro: {
+    color: 'white',
+    fontSize: 14,
+    marginTop: 5,
+  },
+});
