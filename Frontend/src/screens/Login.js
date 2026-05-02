@@ -44,7 +44,7 @@ export default function Login({ navigation }) {
           <Text style={styles.buttonText}>Iniciar sesion</Text>
         </TouchableOpacity>
         
-        <TouchableOpacity onPress={() => navigation.navigate('CrearRegistro')}>
+        <TouchableOpacity onPress={() => navigation.navigate('CrearUsuario')}>
           <Text style={styles.link}>¿Todavía no tienes una cuenta? Crear usuario.</Text>
         </TouchableOpacity>
       </View>

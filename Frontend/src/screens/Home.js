@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { getLibros } from '../../api.js';
 
-export default function CrearRegistro({ navigation }) {
+export default function Home({ navigation }) {
   const [libros, setLibros] = useState([]);
 
   useEffect(( )=> {

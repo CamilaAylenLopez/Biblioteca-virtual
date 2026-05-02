@@ -1,7 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Login from '../screens/Login';
-import CrearRegistro from '../screens/CrearRegistro';
+import CrearUsuario from '../screens/CrearUsuario';
 import Home from '../screens/Home';
 import InfoLibro from '../screens/InfoLibro';
 import TabNavigator from '../../TabNavigator';
@@ -17,7 +17,7 @@ export default function MainStack() {
   return (
     <Stack.Navigator initialRouteName="Login">
       <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
-      <Stack.Screen name="CrearRegistro" component={CrearRegistro} options={{ headerShown: false }}/>
+      <Stack.Screen name="CrearUsuario" component={CrearUsuario} options={{ headerShown: false }}/>
       
       <Stack.Screen name="Tab" component={TabNavigator} options={{ headerShown: false }}/>
 
