@@ -53,7 +53,7 @@ export const loginUsuario = async (nombreUsuario, password) => {
 
 export const registrarUsuario = async (datos) => {
     try {
-        const response = await fetch(`${API_URL}/nuevoRegistro`, {
+        const response = await fetch(`${API_URL}/nuevoUsuario`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datos),
@@ -61,6 +61,6 @@ export const registrarUsuario = async (datos) => {
         return { ok: response.ok, data: await response.json() };
     } catch (error) {
         console.error("Error en registro:", error);
-        return { ok: false, data: { mensaje: "Error de red" } };
+        return { ok: false, data: { error: "Error de red" } };
     }
 };

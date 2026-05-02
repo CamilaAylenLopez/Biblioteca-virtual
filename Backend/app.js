@@ -85,10 +85,22 @@ app.get('/personajes/idPersonaje/:id', async (req, res) => {
     }
 });
 
-app.post('/nuevoRegistro', async (req, res) => {
+app.post('/nuevoUsuario', async (req, res) => {
     const { nombre, apellido, nombreUsuario, email, fecha_nacimiento, password, descripcion } = req.body;
 
     try {
+        const [yaExiste] = await pool.query('SELECT * FROM usuario WHERE nombreUsuario = ? OR email = ?', [nombreUsuario, email]);
+
+        if (yaExiste.length > 0){
+            const mensaje = yaExiste[0].email === email
+                ? "El email ya esta registrado"
+                : "El nombre de usuario ya esta registrado"
+            return res.status(400).json({
+                ok: false,
+                error: mensaje
+            });
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
         const query = `
         INSERT INTO usuario
@@ -104,10 +116,6 @@ app.post('/nuevoRegistro', async (req, res) => {
         })
     } catch (error) {
         console.error(error);
-        //si ya existia el mail o nombre de usuario
-        if (error.code == 'ER_DUP_ENTRY'){
-            return res.status(409).json({error: 'El email o nombre de usuario ya están registrados'});
-        }
         res.status(500).json({error: 'Error al registrar el usuario'});
     }
 });

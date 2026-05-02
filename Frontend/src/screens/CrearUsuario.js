@@ -6,20 +6,60 @@ export default function CrearUsuario({ navigation }) {
     const [form, setForm] = useState({
         nombre: '', apellido: '', nombreUsuario: '', email: '', password: ''
     });
+    const [error, setError] = useState(false);
+    const [mensaje, setMensaje] = useState('');
+
+    const validarContra = (password) => {
+        const regex = /^(?=.*[A-Z])(?=.*[!@#$%^&*.,_-]).{8,}$/;
+        return regex.test(password);
+    }
+    const validarEmail = (email) => {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    }
 
     const handleRegistro = async () => {
+        setError(false);
         if (!form.nombreUsuario || !form.password || !form.email) {
-            Alert.alert("Error", "Faltan campos obligatorios");
+            Alert.alert("Error", "Faltan completar campos");
             return;
         }
 
-        const { ok, data } = await registrarUsuario(form);
+        if (!validarEmail(form.email)) {
+            setError(true);
+            setMensaje("El email no es valido");
+            return;
+        }
 
-        if (ok) {
-            Alert.alert("¡Éxito!", "Usuario creado correctamente");
-            navigation.navigate('Login');
-        } else {
-            Alert.alert("Error", data.mensaje);
+        if (!validarContra(form.password)) {
+            setError(true);
+            setMensaje(
+                "La contraseña debe tener:\n" +
+                "- Al menos 8 caracteres\n" +
+                "- Una letra mayuscula\n" +
+                "- Un caracter esecial (ej: !, @, #, $)"
+            );
+            return;
+        }
+
+        if (form.password !== form.conformarPassword) {
+            setError(true);
+            setMensaje("Las constraseñas no coinciden");
+            return;
+        }
+
+        try {
+            const respuesta = await registrarUsuario(form);
+            console.log("Respuesta completa del servidor:", respuesta);
+            if (respuesta.ok) {
+                Alert.alert("¡Éxito!", respuesta.data.mensaje);
+                navigation.navigate('Tab');
+            } else {
+                setError(true);
+                setMensaje(respuesta.data.error);
+            }
+        } catch (error) {
+            console.error(error);
         }
     };
 
@@ -29,11 +69,14 @@ export default function CrearUsuario({ navigation }) {
 
                 <Text style={styles.titulo}>Bienvenido a tu nueva biblioteca virtual</Text>
                 <Text style={styles.subtitulo}>Craer usuario</Text>
-        
-                <TextInput style={styles.input} placeholder="Nombre" onChangeText={(txt) => setForm({...form, nombre: txt})} />
-                <TextInput style={styles.input} placeholder="Nombre de Usuario" onChangeText={(txt) => setForm({...form, nombreUsuario: txt})} />
-                <TextInput style={styles.input} placeholder="Email" onChangeText={(txt) => setForm({...form, email: txt})} />
-                <TextInput style={styles.input} placeholder="Contraseña" secureTextEntry onChangeText={(txt) => setForm({...form, password: txt})} />
+
+                <TextInput style={styles.input} placeholder="Nombre" onChangeText={(txt) => setForm({ ...form, nombre: txt })} />
+                <TextInput style={styles.input} placeholder="Nombre de Usuario" onChangeText={(txt) => setForm({ ...form, nombreUsuario: txt })} />
+                <TextInput style={styles.input} placeholder="Email" onChangeText={(txt) => setForm({ ...form, email: txt })} />
+                <TextInput style={styles.input} placeholder="Contraseña" secureTextEntry onChangeText={(txt) => setForm({ ...form, password: txt })} />
+                <TextInput style={styles.input} placeholder="Confirmar contraseña" secureTextEntry onChangeText={(txt) => setForm({ ...form, conformarPassword: txt })} />
+                
+                {error ? <Text style={styles.error}>{mensaje}</Text> : null}
                 
                 <TouchableOpacity onPress={handleRegistro} style={styles.button}>
                     <Text style={styles.buttonText}>Registrarse</Text>
@@ -48,74 +91,74 @@ export default function CrearUsuario({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    padding: 20, 
-    backgroundColor: '#8E7960',
-    fontFamily: 'roboto',
-  },
-  subContainer:{
-    backgroundColor: '#DBD3CF',
-    margin: 10,
-    paddingTop: 70,
-    paddingHorizontal: 30,
-    width: 350,
-    height: 800,
-    borderRadius: 50,
-  },
-  titulo: {
-    fontSize: 35,
-    fontWeight: 'bold',
-    marginBottom: 40,
-    textAlign: 'center',
-  },
-  subtitulo: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 40,
-    textAlign: 'center',
-  },
-  textoContrasena:{
-    paddingTop: 0,
-    marginTop: 0,
-    fontSize: 13,
-    marginBottom: 20,
-  },
-  input: {
-    width: '100%',
-    height: 50,
-    backgroundColor: '#7D6461',
-    borderRadius: 50,
-    paddingHorizontal: 15,
-    marginBottom: 15,
-    color: 'white',
-  },
-  button: {
-    width: '50%',
-    height: 50,
-    backgroundColor: '#7D6461',
-    justifyContent: 'center',
-    alignSelf: 'center',
-    borderRadius: 50,
-    marginTop: 10,
-    textAlign: 'center'
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 14,
-    alignSelf: 'center',
-    margin: 5,
-  },
-  link: {
-    color: '#6868AC',
-    marginTop: 50
-  },
-  error:{
-    color: '#f00',
-    padding: 10,
-    fontSize: 18,
-    justifyContent: 'center',
-  }
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+        backgroundColor: '#8E7960',
+        fontFamily: 'roboto',
+    },
+    subContainer: {
+        backgroundColor: '#DBD3CF',
+        margin: 10,
+        paddingTop: 70,
+        paddingHorizontal: 30,
+        width: 350,
+        height: 800,
+        borderRadius: 50,
+    },
+    titulo: {
+        fontSize: 35,
+        fontWeight: 'bold',
+        marginBottom: 40,
+        textAlign: 'center',
+    },
+    subtitulo: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 40,
+        textAlign: 'center',
+    },
+    textoContrasena: {
+        paddingTop: 0,
+        marginTop: 0,
+        fontSize: 13,
+        marginBottom: 20,
+    },
+    input: {
+        width: '100%',
+        height: 50,
+        backgroundColor: '#7D6461',
+        borderRadius: 50,
+        paddingHorizontal: 15,
+        marginBottom: 15,
+        color: 'white',
+    },
+    button: {
+        width: '50%',
+        height: 50,
+        backgroundColor: '#7D6461',
+        justifyContent: 'center',
+        alignSelf: 'center',
+        borderRadius: 50,
+        marginTop: 10,
+        textAlign: 'center'
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 14,
+        alignSelf: 'center',
+        margin: 5,
+    },
+    link: {
+        color: '#6868AC',
+        marginTop: 50
+    },
+    error: {
+        color: '#f00',
+        padding: 10,
+        fontSize: 18,
+        justifyContent: 'center',
+    }
 });
