@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { getLibros } from '../../api.js';
 
-export default function CrearRegistro() {
+export default function CrearRegistro({ navigation }) {
   const [libros, setLibros] = useState([]);
 
   useEffect(( )=> {
@@ -26,7 +26,7 @@ export default function CrearRegistro() {
           showsHorizontalScrollIndicator={false}
           renderItem={({item}) => (
             <View style={styles.card}>
-              <TouchableOpacity onPress={() => navigation.navigate('InfoLibro')}>
+              <TouchableOpacity onPress={() => navigation.navigate('InfoLibro', {libroId: item.id })}>
                   <Image
                   source={{uri: item.imagen_url || 'https://static.vecteezy.com/system/resources/previews/022/059/000/non_2x/no-image-available-icon-vector.jpg'}}
                   style={styles.portada}

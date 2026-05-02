@@ -8,7 +8,6 @@ export default function CrearRegistro({ navigation }) {
     });
 
     const handleRegistro = async () => {
-        // Validación simple
         if (!form.nombreUsuario || !form.password || !form.email) {
             Alert.alert("Error", "Faltan campos obligatorios");
             return;
@@ -18,7 +17,7 @@ export default function CrearRegistro({ navigation }) {
 
         if (ok) {
             Alert.alert("¡Éxito!", "Usuario creado correctamente");
-            navigation.navigate('Login'); // Volvemos al login para probar
+            navigation.navigate('Login');
         } else {
             Alert.alert("Error", data.mensaje);
         }

@@ -15,16 +15,75 @@ app.get('/', (req, res) => {
 });
 
 app.get('/libros', async (req, res) => {
-    try {
+    try{
         const [libros] = await pool.query('SELECT * FROM libro');
         res.json(libros);
     }
-    catch (error) {
+    catch(error){
+        console.error(error);
+        res.status(500).json({ error: 'Error al obtener libros' });
+    }
+});
+
+app.get('/libros/:id', async (req, res) => {
+    const { id } = req.params;
+    try{
+        const [rows] = await pool.query('SELECT * FROM libro WHERE id = ?', [Number(id)]);
+        if(rows.length > 0){
+            res.json(rows[0]);
+        }else{
+            res.status(404).json({ error: 'Libro no encontrado' });
+        }
+    }catch(error){
+        console.error(error);
+        res.status(500).json({error: 'Error en la BD'});
+    }
+});
+
+app.get('/libros/genero/:genero', async (req, res) => {
+    const generoReq = req.params.genero;
+
+    try{
+        const [libros] = await pool.query('SELECT * FROM libro WHERE genero = ?', [generoReq]);
+        res.json(libros);
+    }
+    catch(error){
         console.error(error);
         res.status(500).json({ error: 'Error en la BD' });
     }
 });
 
+app.get('/personajes/idLibro/:id', async (req, res) => {
+    const idLibro = req.params.id;
+
+    try{
+        const [rows] = await pool.query(`
+            SELECT p.* FROM personaje p
+            INNER JOIN libro_personaje lp ON p.id = lp.personaje_id
+            WHERE lp.libro_id = ?`, [idLibro]);
+
+        if(rows.length > 0){
+            res.json(rows);
+        }else{
+           res.json([]);
+        }
+    }catch(error){
+        console.error(error.message);
+        res.status(500).json({error: 'Error en la BD'});
+    }
+});
+
+app.get('/personajes/idPersonaje/:id', async (req, res) => {
+    const idPersonaje = req.params.id;
+
+    try{
+        const [personajes] = await pool.query('SELECT * FROM personaje WHERE id = ?', [idPersonaje]);
+        res.json(personajes);
+    }catch(error){
+        console.error(error);
+        res.status(500).json({error: 'Error en la BD'});
+    }
+});
 
 app.post('/nuevoRegistro', async (req, res) => {
     const { nombre, apellido, nombreUsuario, email, fecha_nacimiento, password, descripcion } = req.body;
@@ -54,9 +113,10 @@ app.post('/nuevoRegistro', async (req, res) => {
 });
 
 app.post('/login', async (req, res) => {
-    const { nombreUsuario, password } = req.body;
 
     try {
+        const { nombreUsuario, password } = req.body;
+
         const [rows] = await pool.query('SELECT * FROM usuario WHERE nombreUsuario = ?', [nombreUsuario]);
 
         if (rows.length > 0){
@@ -76,21 +136,21 @@ app.post('/login', async (req, res) => {
                     descripcion: usuario.descripcion
                 }
                 });
-            } else{
+            }else{
                 res.status(401).json({error: 'Contraseña incorrecta'})
             }
             
-        } else{
+        }else{
             res.status(401).json({error: 'Usuario no encontrado'});
         }
 
-    } catch(error){
+    }catch(error){
         console.error(error);
         res.status(500).json({ error: 'Error en el servidor' });
     }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Servidor en http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Servidor en http://0.0.0.0:${PORT}`);
 });

@@ -5,6 +5,11 @@ import CrearRegistro from '../screens/CrearRegistro';
 import Home from '../screens/Home';
 import InfoLibro from '../screens/InfoLibro';
 import TabNavigator from '../../TabNavigator';
+import { HeaderTitle } from '@react-navigation/elements';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { TouchableOpacity } from 'react-native';
+import NuevoPersonaje from '../screens/NuevoPersonaje';
 
 const Stack = createNativeStackNavigator();
 
@@ -12,11 +17,43 @@ export default function MainStack() {
   return (
     <Stack.Navigator initialRouteName="Login">
       <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
-      <Stack.Screen name="CrearRegistro" component={CrearRegistro} />
+      <Stack.Screen name="CrearRegistro" component={CrearRegistro} options={{ headerShown: false }}/>
       
       <Stack.Screen name="Tab" component={TabNavigator} options={{ headerShown: false }}/>
 
-      <Stack.Screen name="InfoLibro" component={InfoLibro} options={{ headerShown: false }}/>
+      <Stack.Screen name="InfoLibro" component={InfoLibro} options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: '',
+        headerTransparent: true,
+        headerLeft: () => (
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 15 }}>
+            <FontAwesome name="arrow-left" size={28} color="white" />
+          </TouchableOpacity>
+        ),
+        headerRight: () => null,
+        headerStyle: {
+          backgroundColor: '#7D6461',
+        },
+        headerTintColor: 'white',
+        })}
+        />
+
+        <Stack.Screen name="NuevoPersonaje" component={NuevoPersonaje} options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: '',
+        headerTransparent: true,
+        headerLeft: () => (
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 15 }}>
+            <MaterialIcons name="cancel" size={28} color="white" />
+          </TouchableOpacity>
+        ),
+        headerRight: () => null,
+        headerStyle: {
+          backgroundColor: '#7D6461',
+        },
+        headerTintColor: 'white',
+        })}
+        />
 
     </Stack.Navigator>
   );
