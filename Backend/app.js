@@ -73,12 +73,48 @@ app.get('/personajes/idLibro/:id', async (req, res) => {
     }
 });
 
-app.get('/personajes/idPersonaje/:id', async (req, res) => {
-    const idPersonaje = req.params.id;
+app.get('/usuario/id/:id', async (req, res) => {
+    const id = req.params.id;
 
     try{
-        const [personajes] = await pool.query('SELECT * FROM personaje WHERE id = ?', [idPersonaje]);
-        res.json(personajes);
+        const [usuario] = await pool.query('SELECT * FROM usuario WHERE id = ?', [id]);
+        res.json(usuario);
+    }catch(error){
+        console.error(error);
+        res.status(500).json({error: 'Error en la bd'});
+    }
+});
+
+app.get('/personaje/idPersonaje/:id', async (req, res) => {
+    const id = req.params.id;
+
+    try{
+        const [personajes] = await pool.query('SELECT * FROM personaje WHERE id = ?', [id]);
+        if(personajes.length > 0){
+            res.json(personajes[0]);
+        }else{
+            res.status(404).json({ error: 'Personaje no encontrado' });
+        }
+    }catch(error){
+        console.error(error);
+        res.status(500).json({error: 'Error en la BD'});
+    }
+});
+
+app.get('/libro/comentarios/idLibro/:id', async (req, res) => {
+    const idLibro = req.params.id;
+
+    try{
+        const[comentarios] = await pool.query(`
+            SELECT c.*, u.nombreUsuario, u.foto_perfil
+            FROM comentario c
+            INNER JOIN usuario u ON c.usuario_id = u.id
+            WHERE c.libro_id = ?`, [idLibro]);
+        if(comentarios.length > 0){
+            res.json(comentarios);
+        }else{
+           res.json([]);
+        }
     }catch(error){
         console.error(error);
         res.status(500).json({error: 'Error en la BD'});
@@ -86,7 +122,7 @@ app.get('/personajes/idPersonaje/:id', async (req, res) => {
 });
 
 app.post('/nuevoUsuario', async (req, res) => {
-    const { nombre, apellido, nombreUsuario, email, fecha_nacimiento, password, descripcion } = req.body;
+    const { nombre, apellido, nombreUsuario, email, fecha_nacimiento, password, descripcion, foto_perfil } = req.body;
 
     try {
         const [yaExiste] = await pool.query('SELECT * FROM usuario WHERE nombreUsuario = ? OR email = ?', [nombreUsuario, email]);
@@ -104,11 +140,11 @@ app.post('/nuevoUsuario', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         const query = `
         INSERT INTO usuario
-        (nombre, apellido, nombreUsuario, email, fecha_nacimiento, password, descripcion)
-        VALUES (?,?,?,?,?,?,?)`;
+        (nombre, apellido, nombreUsuario, email, fecha_nacimiento, password, descripcion, foto_perfil)
+        VALUES (?,?,?,?,?,?,?,?)`;
 
         const [result] = await pool.query(query, [
-            nombre, apellido, nombreUsuario, email, fecha_nacimiento, hashedPassword, descripcion
+            nombre, apellido, nombreUsuario, email, fecha_nacimiento, hashedPassword, descripcion, foto_perfil
         ]);
 
         res.status(201).json({
@@ -133,6 +169,7 @@ app.post('/login', async (req, res) => {
             const esValida = await bcrypt.compare(password, usuario.password);
 
             if (esValida){
+                delete usuario.password;
                 res.status(200).json({
                 mensaje: 'Login exitoso',
                 usuario: {
@@ -141,7 +178,8 @@ app.post('/login', async (req, res) => {
                     apellido: usuario.apellido,
                     nombreUsuario: usuario.nombreUsuario,
                     email: usuario.email,
-                    descripcion: usuario.descripcion
+                    descripcion: usuario.descripcion,
+                    foto_perfil: usuario.foto_perfil
                 }
                 });
             }else{

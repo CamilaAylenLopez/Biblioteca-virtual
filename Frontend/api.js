@@ -1,4 +1,4 @@
-const API_URL = 'http://192.168.0.172:3000';
+const API_URL = 'http://192.168.0.177:3000';
 
 export const getLibros = async () => {
     try {
@@ -15,6 +15,24 @@ export const getLibrosByGenero = async (genero) => {
         return await res.json();
     } catch(error){
         console.error("Error al filtrar por género: ", error);
+    }
+};
+
+export const getComentariosByIdLibro = async (idLibro) => {
+    try{
+        const res = await fetch(`${API_URL}/libro/comentarios/idLibro/${idLibro}`);
+        return await res.json();
+    }catch(error){
+        console.error("Error al enocntrar comentarios: ", error);
+    }
+};
+
+export const getPersonajeById = async (idPersonaje) => {
+    try{
+        const res = await fetch(`${API_URL}/personaje/idPersonaje/${idPersonaje}`);
+        return await res.json();
+    }catch(error){
+        console.error("Error al encontrar personaje: ", error);
     }
 };
 
@@ -36,6 +54,14 @@ export const getPersonajesByIdLibro = async (id) => {
     }
 }
 
+export const getUsuarioById = async (id) => {
+    try{
+        const res = await fetch(`${API_URL}/usuario/id/${id}`);
+        return await res.json();
+    }catch(error){
+        console.error("Error en encontra el usuario");
+    }
+}
 
 export const loginUsuario = async (nombreUsuario, password) => {
     try {

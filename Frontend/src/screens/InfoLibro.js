@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { getLibrosById, getPersonajesByIdLibro } from '../../api';
+import { getLibrosById, getPersonajesByIdLibro, getComentariosByIdLibro } from '../../api';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Fontisto from '@expo/vector-icons/Fontisto';
 
@@ -9,7 +9,7 @@ export default function InfoLibro({ navigation, route }) {
     const [libro, setLibro] = useState(null);
     const [cargando, setCargando] = useState(true);
     const [personajes, setPersonajes] = useState([]);
-
+    const [comentarios, setComentarios] = useState([]);
 
     useEffect(() => {
         const cargarDatos = async () => {
@@ -19,6 +19,9 @@ export default function InfoLibro({ navigation, route }) {
 
                 const dataPersonajes = await getPersonajesByIdLibro(libroId);
                 setPersonajes(dataPersonajes);
+
+                const dataComentarios = await getComentariosByIdLibro(libroId);
+                setComentarios(dataComentarios);
             }catch(error){
                 console.error(error);
             }finally{
@@ -27,9 +30,6 @@ export default function InfoLibro({ navigation, route }) {
         };
         cargarDatos();
     }, [libroId]);
-
-
-    console.log("El ID del libro clickeado es:", libroId);
 
     const calificacionEstrellas = (rating) => {
         let estrellas = [];
@@ -45,7 +45,7 @@ export default function InfoLibro({ navigation, route }) {
                 nombreIcono = "star-o";
                 colorIcono = "#555";
             }
-            estrellas.push(<FontAwesome key={i} name={nombreIcono} size={24} color={colorIcono} />)
+            estrellas.push(<FontAwesome key={i} name={nombreIcono} size={24} color={colorIcono} style={{margin: 3,}}/>)
         }
         return estrellas;
     };
@@ -53,23 +53,22 @@ export default function InfoLibro({ navigation, route }) {
     if (cargando) return <ActivityIndicator size="large" color="white" style={{ marginTop: 50 }} />;
     if (!libro) return <Text style={{color: 'white'}}>Cargando...</Text>;
 
-    console.log(libro)
+    console.log(comentarios)
 
     return (
         <ScrollView style={styles.container}>
             <View style={{justifyContent: 'center', alignContent: 'center'}}>
                 <Image
-                    source={{ uri: libro.imagen_url || 'https://via.placeholder.com/150' }}
+                    source={{ uri: libro.imagen_url || 'https://previews.123rf.com/images/yoginta/yoginta2301/yoginta230100567/196853824-image-not-found-vector-illustration.jpg' }}
                     style={styles.imagen}
                 />
 
                 <View style={styles.estrellas}>
                     {calificacionEstrellas(libro.calificacion)}
-                    <Text style={styles.textoRating}>{libro.calificacion}</Text>
                 </View>
 
-                <View style={{flexDirection: 'row', padding: 5, alignContent: 'center'}}>
-                    <Text style={styles.titulo}>{libro.titulo}</Text>
+                <View style={{flexDirection: 'row', margin: 5, alignSelf: 'center'}}>
+                    <Text style={styles.titulo}>{libro.titulo} </Text>
                     <Fontisto name="favorite" size={24} color="white" />
                 </View>
 
@@ -78,12 +77,14 @@ export default function InfoLibro({ navigation, route }) {
                 <Text style={styles.descripcion}>{libro.sinopsis || "Sin descripción disponible."}</Text>
 
 
-                <View style={styles.personajesContainer}>
+                <View style={styles.subContainer}>
                     <Text style={styles.subtitulo}>Personajes</Text>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                         {Array.isArray(personajes) ? personajes.map((p) => (
                             <View key={p.id} style={styles.personajeCard}>
-                                <Image source={{ uri: p.imagen_url }} style={styles.fotoPersonaje} />
+                                <TouchableOpacity  onPress={() => navigation.navigate('InfoPersonaje', {personajeId: p.id })}>
+                                    <Image source={{ uri: p.imagen_url }} style={styles.fotoPersonaje} />
+                                </TouchableOpacity>
                                 <Text style={styles.nombrePersonaje}>{p.nombre}</Text>
                             </View>
                         )) : <Text style={{color: 'white'}}>No hay personajes para este libro</Text>}
@@ -94,9 +95,30 @@ export default function InfoLibro({ navigation, route }) {
                     </ScrollView>
                 </View>
 
-
-                <Text>Comentarios</Text>
-
+                <View style={styles.subContainer}>
+                    <Text style={styles.subtitulo}>Comentarios</Text>
+                    {Array.isArray(comentarios) ? comentarios.map((c) => (
+                        <View style={styles.comentariosContainer} key={c.id}>
+                            <View style={styles.horizontal}>
+                                <Image 
+                                    source={{ uri: c.foto_perfil || 'https://previews.123rf.com/images/yoginta/yoginta2301/yoginta230100567/196853824-image-not-found-vector-illustration.jpg' }}
+                                    style={styles.fotoUsuario}
+                                />
+                                <View style={styles.vertical}>
+                                    <Text style={{color: 'white'}}>{c.nombreUsuario}</Text>
+                                    <View style={styles.estrellasD}>
+                                        {calificacionEstrellas(c.estrellas)}
+                                    </View>
+                                </View>
+                            </View>
+                            <Text style={{color: 'white'}}>{c.texto}</Text>
+                        </View>
+                    )) : <Text style={{color: 'white'}}>¡Se el primero en hacer un comentario!</Text>}
+                    <View style={styles.comentariosContainer}>
+                        <Text>Agregar comenatrio...</Text>
+                    </View>
+                </View>
+                
             </View>
 
         </ScrollView>
@@ -109,6 +131,21 @@ const styles = StyleSheet.create({
         paddingTop: 50,
         backgroundColor: 'black',
     },
+    comentariosContainer:{
+        backgroundColor: '#7D6461',
+        marginBottom: 20,
+        padding: 20,
+        borderRadius: 20,
+    },
+    horizontal:{
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    vertical:{
+        flexDirection: 'column',
+        justifyContent: 'center',
+    },
     imagen: {
         width: '60%',
         height: 400,
@@ -116,6 +153,13 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         margin: 20,
         marginTop: 40,
+    },
+    fotoUsuario:{
+        width: 60,
+        height: 60,
+        borderRadius: 100,
+        marginRight: 10,
+        backgroundColor: '#333',
     },
     titulo:{
         textAlign: 'center',
@@ -139,7 +183,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         margin: 10,
     },
-    personajesContainer:{
+    estrellasD:{
+        flexDirection: 'row',
+        margin: 10,
+    },
+    subContainer:{
         margin: 20,
         paddingLeft: 10,
     },

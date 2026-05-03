@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { loginUsuario } from '../../api.js';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login({ navigation }) {
     const [nombreUsuario, setnombreUsuario] = useState('');
@@ -19,11 +19,13 @@ export default function Login({ navigation }) {
       const { ok, data } = await loginUsuario(nombreUsuario, password);
 
       if(ok){
+        await AsyncStorage.setItem('@usuario_sesion', JSON.stringify(data.usuario));
+
         console.log("Bienvenido: ", data.usuario.nombreUsuario);
-        navigation.navigate('Tab');
+        navigation.replace('Tab');
       } else {
         setError(true);
-        Alert.alert("Error", data.mensaje || "Datos incorrectos");
+        Alert.alert("Error", data.error || "Datos incorrectos");
       }   
     };
 
@@ -55,8 +57,6 @@ export default function Login({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
     padding: 20, 
     backgroundColor: '#8E7960',
     fontFamily: 'roboto',
