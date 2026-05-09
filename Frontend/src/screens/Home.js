@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { getLibros } from '../../api.js';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function Home({ navigation }) {
+  const isFocused = useIsFocused();
   const [libros, setLibros] = useState([]);
 
   useEffect(( )=> {
-    const cargarLibros = async () => {
-      const data = await getLibros();
-      setLibros(data);
-    };
-    cargarLibros();
-  }, []);
+    if (isFocused) {
+      const cargarLibros = async () => {
+        const data = await getLibros();
+        setLibros(data);
+      };
+      cargarLibros();
+    }
+  }, [isFocused]);
 
   const renderSeccionGenero = (genero) => {
     const librosFiltrados = libros.filter(l => l.genero === genero);
@@ -58,7 +62,7 @@ export default function Home({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: '#000000',
     paddingTop: 50,
   },
   header: {
@@ -74,7 +78,7 @@ const styles = StyleSheet.create({
   tituloGenero: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#E5E5E5',
+    color: 'white',
     marginLeft: 15,
     marginBottom: 10,
   },

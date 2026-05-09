@@ -1,23 +1,62 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Camera, CameraType } from 'expo-camera';
+import { getBiblioteca } from '../../api.js';
+import Entypo from '@expo/vector-icons/Entypo';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function Perfil({ navigation }) {
+    const isFocused = useIsFocused();
     const [usuario, setUsuario] = useState(null);
+    const [biblioteca, setBiblioteca] = useState([]);
 
     useEffect(() => {
         const obtenerDatos = async () => {
             try {
-                const datos = await AsyncStorage.getItem('@usuario_sesion');
-                if(datos != null){
-                    setUsuario(JSON.parse(datos));
+                const sesion = await AsyncStorage.getItem('@usuario_sesion');
+                if(sesion != null){
+                  const usuarioParseado = JSON.parse(sesion);
+                  setUsuario(usuarioParseado);
+                  const data = await getBiblioteca(usuarioParseado.id);
+                  setBiblioteca(data);
                 }
             }catch(error){
                 console.error(error);
             }
         };
         obtenerDatos();
-    }, []);
+    }, [isFocused]);
+
+    const renderBiblioteca = (nombre) => {
+      const bibliotecaFiltrada = biblioteca.filter(b => b.nombre === nombre);
+
+      if (bibliotecaFiltrada.length === 0) return null;
+
+      return(
+            <View style={styles.contenedorGenero}>
+              <Text style={styles.nombreBiblioteca}>{nombre}</Text>
+              <FlatList
+                horizontal
+                data={bibliotecaFiltrada}
+                keyExtractor={(item, index) => item.libro_id.toString() || index.toString()}
+                showsHorizontalScrollIndicator={false}
+                renderItem={({item}) => (
+                  <View style={styles.card}>
+                    <TouchableOpacity onPress={() => navigation.navigate('InfoLibro', {libroId: item.libro_id })}>
+                        <Image
+                        source={{uri: item.imagen_url || 'https://static.vecteezy.com/system/resources/previews/022/059/000/non_2x/no-image-available-icon-vector.jpg'}}
+                        style={styles.portada}
+                        />
+                        <Text style={styles.tituloLibro} numberOfLines={2}>{item.titulo}</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              />
+            </View>
+          );
+    };
+
 
     if(!usuario) return <Text>Cargando perfil...</Text>;
 
@@ -26,18 +65,40 @@ export default function Perfil({ navigation }) {
         navigation.replace('Login');
     };
 
+    const nombresBibliotecas = [...new Set(biblioteca.map(b => b.nombre))];
+
     return (
         <ScrollView style={styles.container}>
-            <View style={{flexDirection: 'row',}}>
+            <View style={styles.horizontal}>
                 <Image 
                     source={{uri: usuario.foto_perfil  || 'https://via.placeholder.com/150' }}
                     style={styles.foto}
                 />
-                <Text style={styles.nombre}>{usuario.nombreUsuario}</Text>
-                <Text style={styles.biografia}>{usuario.descripcion || "Sin biografía"}</Text>
+                <View style={styles.vertical}>
+                  <View style={styles.horizontal}>
+                    <Text style={styles.nombre}>@{usuario.nombreUsuario}</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate('EditarPerfil', {id: usuario.id})}>
+                      <Entypo name="pencil" size={24} color="white" />
+                    </TouchableOpacity>
+                  </View>
+                  <Text style={styles.nombre}>{usuario.nombre} {usuario.apellido}</Text>
+                </View>
             </View>
 
-            <Text style={styles.subtitulo}>Biblioteca</Text>
+            <Text style={styles.biografia}>{usuario.descripcion || "Sin biografía"}</Text>
+
+
+            <Text style={styles.subtitulo}>Bibliotecas</Text>
+
+            {nombresBibliotecas.length > 0 ? (
+              nombresBibliotecas.map((nombre) => (
+                <View key={nombre}>
+                  {renderBiblioteca(nombre)}
+                </View>
+              ))
+            ) : (
+              <Text>No has guardado ningun libro aun.</Text>
+            )}
             
 
             <TouchableOpacity onPress={cerrarSesion} style={styles.button}>
@@ -56,20 +117,24 @@ const styles = StyleSheet.create({
   nombre: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 40,
+    marginBottom: 5,
     textAlign: 'center',
-    color: 'white'
+    color: 'white',
+    marginLeft: 20,
+    marginRight: 10,
   },
   subtitulo:{
-    color: 'white'
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white',
+    marginLeft: 15,
+    marginBottom: 10,
   },
   biografia:{
     fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 40,
-    textAlign: 'center',
+    marginBottom: 20,
     color: 'white',
-    display: '',
+    padding: 20,    
   },
   button: {
     width: '50%',
@@ -91,5 +156,38 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 100,
-  }
+  },
+  horizontal:{
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+  vertical:{
+      flexDirection: 'column',
+      justifyContent: 'center',
+  },
+  contenedorGenero: {
+    marginBottom: 25,
+  },
+  nombreBiblioteca: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+    marginLeft: 15,
+    marginBottom: 10,
+  },
+  card: {
+    width: 120,
+    marginLeft: 15,
+  },
+  portada: {
+    width: 120,
+    height: 180,
+    borderRadius: 8,
+  },
+  tituloLibro: {
+    color: 'white',
+    fontSize: 14,
+    marginTop: 5,
+  },
 });

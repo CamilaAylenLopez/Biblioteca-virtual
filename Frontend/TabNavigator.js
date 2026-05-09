@@ -53,7 +53,7 @@ export default function TabNavigator(){
                 name="Perfil"
                 component={Perfil}
                 options={{
-                    tabBarIcon: ({color, size}) => (<FontAwesome name="user" color={color} size={24}/>)
+                    tabBarIcon: ({color, size}) => (<FontAwesome name="user" color={color} size={24}/>),
                 }}
             />
         </Tab.Navigator>

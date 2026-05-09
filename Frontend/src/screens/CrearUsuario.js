@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, Alert, StyleSheet } from 'react-native';
 import { registrarUsuario } from '../../api';
+import Entypo from '@expo/vector-icons/Entypo';
 
 export default function CrearUsuario({ navigation }) {
     const [form, setForm] = useState({
@@ -8,6 +9,8 @@ export default function CrearUsuario({ navigation }) {
     });
     const [error, setError] = useState(false);
     const [mensaje, setMensaje] = useState('');
+    const [mostrarPassword, setmostrarPassword] = useState(false);
+    const [mostrarPasswordD, setmostrarPasswordD] = useState(false);
 
     const validarContra = (password) => {
         const regex = /^(?=.*[A-Z])(?=.*[!@#$%^&*.,_-]).{8,}$/;
@@ -50,7 +53,6 @@ export default function CrearUsuario({ navigation }) {
 
         try {
             const respuesta = await registrarUsuario(form);
-            console.log("Respuesta completa del servidor:", respuesta);
             if (respuesta.ok) {
                 Alert.alert("¡Éxito!", respuesta.data.mensaje);
                 navigation.navigate('Tab');
@@ -73,11 +75,24 @@ export default function CrearUsuario({ navigation }) {
                 <TextInput style={styles.input} placeholder="Nombre" onChangeText={(txt) => setForm({ ...form, nombre: txt })} />
                 <TextInput style={styles.input} placeholder="Nombre de Usuario" onChangeText={(txt) => setForm({ ...form, nombreUsuario: txt })} />
                 <TextInput style={styles.input} placeholder="Email" onChangeText={(txt) => setForm({ ...form, email: txt })} />
-                <TextInput style={styles.input} placeholder="Contraseña" secureTextEntry onChangeText={(txt) => setForm({ ...form, password: txt })} />
-                <TextInput style={styles.input} placeholder="Confirmar contraseña" secureTextEntry onChangeText={(txt) => setForm({ ...form, conformarPassword: txt })} />
-                
+
+                <View style={styles.inputD}>
+                    <TextInput style={styles.textoInput} onChangeText={(txt) => setForm({ ...form, password: txt })} placeholder="Contraseña" secureTextEntry={!mostrarPassword} />
+                    <TouchableOpacity style={styles.icon} onPress={() => setmostrarPassword(!mostrarPassword)} >
+                        <Entypo name={mostrarPassword ? 'eye-with-line' : 'eye'} size={24} color="white" />
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.inputD}>
+                    <TextInput style={styles.textoInput} onChangeText={(txt) => setForm({ ...form, conformarPassword: txt })} placeholder="Confirmar contraseña" secureTextEntry={!mostrarPasswordD} />
+                    <TouchableOpacity style={styles.icon} onPress={() => setmostrarPasswordD(!mostrarPasswordD)} >
+                        <Entypo name={mostrarPasswordD ? 'eye-with-line' : 'eye'} size={24} color="white" />
+                    </TouchableOpacity>
+                </View>
+
+
                 {error ? <Text style={styles.error}>{mensaje}</Text> : null}
-                
+
                 <TouchableOpacity onPress={handleRegistro} style={styles.button}>
                     <Text style={styles.buttonText}>Registrarse</Text>
                 </TouchableOpacity>
@@ -134,6 +149,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         marginBottom: 15,
         color: 'white',
+        outlineStyle: 'none',
     },
     button: {
         width: '50%',
@@ -160,5 +176,25 @@ const styles = StyleSheet.create({
         padding: 10,
         fontSize: 18,
         justifyContent: 'center',
-    }
+    },
+    inputD: {
+        flexDirection: 'row',
+        width: '100%',
+        height: 50,
+        backgroundColor: '#7D6461',
+        borderRadius: 50,
+        paddingHorizontal: 15,
+        marginBottom: 15,
+        color: 'white',
+        outlineStyle: 'none',
+    },
+    textoInput: {
+        color: 'white',
+        flex: 1,
+        outlineStyle: 'none',
+    },
+    icon: {
+    padding: 5,
+    paddingTop: 12,
+  },
 });

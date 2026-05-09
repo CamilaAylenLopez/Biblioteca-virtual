@@ -43,7 +43,7 @@ export const getLibrosById = async (id) => {
     }catch(error){
         console.error("Error al obtener libro por id: ", error);
     }
-}
+};
 
 export const getPersonajesByIdLibro = async (id) => {
     try{
@@ -52,7 +52,7 @@ export const getPersonajesByIdLibro = async (id) => {
     }catch(error){
         console.error("Error al obtener ids de los personajes asociados a determinado libro");
     }
-}
+};
 
 export const getUsuarioById = async (id) => {
     try{
@@ -61,7 +61,16 @@ export const getUsuarioById = async (id) => {
     }catch(error){
         console.error("Error en encontra el usuario");
     }
-}
+};
+
+export const getBiblioteca = async (id) => {
+    try{
+        const res = await fetch(`${API_URL}/biblioteca/idUsuario/${id}`);
+        return await res.json();
+    }catch(error){
+        console.error("Error en encontrar las bibliotecas");
+    }
+};
 
 export const loginUsuario = async (nombreUsuario, password) => {
     try {
@@ -80,6 +89,34 @@ export const loginUsuario = async (nombreUsuario, password) => {
 export const registrarUsuario = async (datos) => {
     try {
         const response = await fetch(`${API_URL}/nuevoUsuario`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos),
+        });
+        return { ok: response.ok, data: await response.json() };
+    } catch (error) {
+        console.error("Error en registro:", error);
+        return { ok: false, data: { error: "Error de red" } };
+    }
+};
+
+export const nuevoLibro = async (datos) => {
+    try {
+        const response = await fetch(`${API_URL}/newLibro`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos),
+        });
+        return { ok: response.ok, data: await response.json() };
+    } catch (error) {
+        console.error("Error en registro:", error);
+        return { ok: false, data: { error: "Error de red" } };
+    }
+};
+
+export const NuevoPersonaje = async (datos) => {
+    try {
+        const response = await fetch(`${API_URL}/newPersonaje`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datos),

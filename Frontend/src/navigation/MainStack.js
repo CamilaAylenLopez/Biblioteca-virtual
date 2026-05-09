@@ -13,6 +13,8 @@ import NuevoPersonaje from '../screens/NuevoPersonaje';
 import InfoPersonaje from '../screens/InfoPersonaje';
 import EditarInfoLibro from '../screens/EditarInfoLibro';
 import EditarInfoPersonaje from '../screens/EditarInfoPersonaje';
+import Perfil from '../screens/Perfil';
+import EditarPerfil from '../screens/EditarPerfil';
 
 const Stack = createNativeStackNavigator();
 
@@ -87,7 +89,7 @@ export default function MainStack() {
         })}
         />
 
-        <Stack.Screen name="InfoPersonaje" component={InfoPersonaje} options={({ navigation, route }) => ({
+      <Stack.Screen name="InfoPersonaje" component={InfoPersonaje} options={({ navigation, route }) => ({
         headerShown: true,
         headerTitle: '',
         headerTransparent: true,
@@ -108,7 +110,7 @@ export default function MainStack() {
         })}
         />
 
-        <Stack.Screen name="NuevoPersonaje" component={NuevoPersonaje} options={({ navigation }) => ({
+      <Stack.Screen name="NuevoPersonaje" component={NuevoPersonaje} options={({ navigation }) => ({
         headerShown: true,
         headerTitle: '',
         headerTransparent: true,
@@ -124,7 +126,27 @@ export default function MainStack() {
         headerTintColor: 'white',
         })}
         />
-
+        <Stack.Screen name="EditarPerfil" component={EditarPerfil} options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: '',
+        headerTransparent: true,
+        headerLeft: () => (
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 15 }}>
+            <MaterialIcons name="cancel" size={28} color="white" />
+          </TouchableOpacity>
+        ),
+        headerRight: () => (
+          <TouchableOpacity onPress={() => navigation.navigate('EditarInfoPersonaje', { personajeId: route.params.personajeId })} style={{ marginRight: 15 }}>
+            <Text>Hecho</Text>
+          </TouchableOpacity>
+        ),
+        headerStyle: {
+          backgroundColor: '#7D6461',
+        },
+        headerTintColor: 'white',
+        })}
+        />
+      
     </Stack.Navigator>
   );
 }

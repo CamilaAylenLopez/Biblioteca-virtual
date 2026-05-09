@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { loginUsuario } from '../../api.js';
+import Entypo from '@expo/vector-icons/Entypo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login({ navigation }) {
     const [nombreUsuario, setnombreUsuario] = useState('');
     const [password, setpassword] = useState('');
+    const [mostrarPassword, setmostrarPassword] = useState(false);
     const [error, setError] = useState(false);
 
     const logIn = async () => {
@@ -36,7 +38,12 @@ export default function Login({ navigation }) {
         <Text style={styles.subtitulo}>Inicio sesión</Text>
         
         <TextInput style={styles.input} value={nombreUsuario} onChangeText={nombreUsuario => setnombreUsuario(nombreUsuario)} placeholder="Usuario..." />
-        <TextInput style={styles.input} value={password} onChangeText={password => setpassword(password)} placeholder="Contraseña..." secureTextEntry />
+        <View style={styles.inputD}>
+          <TextInput style={styles.textoInput} value={password} onChangeText={password => setpassword(password)} placeholder="Contraseña..." secureTextEntry={!mostrarPassword} />
+            <TouchableOpacity style={styles.icon} onPress={() => setmostrarPassword(!mostrarPassword)} >
+              <Entypo name={mostrarPassword ? 'eye-with-line' : 'eye'} size={24} color="white" />
+            </TouchableOpacity>
+        </View>
 
         <Text style={styles.textoContrasena}>¿Has olvidado tu contraseña?</Text>
         
@@ -70,6 +77,16 @@ const styles = StyleSheet.create({
     height: 800,
     borderRadius: 50,
   },
+  inputD:{
+    flexDirection: 'row',
+    width: '100%',
+    height: 50,
+    backgroundColor: '#7D6461',
+    borderRadius: 50,
+    paddingHorizontal: 15,
+    marginBottom: 15,
+    color: 'white',
+  },
   titulo: {
     fontSize: 35,
     fontWeight: 'bold',
@@ -96,6 +113,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     marginBottom: 15,
     color: 'white',
+    outlineStyle: 'none',
+  },
+  textoInput:{
+    color: 'white',
+    flex: 1,
+    outlineStyle: 'none',
   },
   button: {
     width: '50%',
@@ -122,5 +145,9 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 18,
     justifyContent: 'center',
-  }
+  },
+  icon: {
+    padding: 5,
+    paddingTop: 12,
+  },
 });

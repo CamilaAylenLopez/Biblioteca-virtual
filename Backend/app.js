@@ -8,18 +8,19 @@ import bcrypt from 'bcrypt'
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' })); 
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 app.get('/', (req, res) => {
     res.send('Seridor funcionando');
 });
 
 app.get('/libros', async (req, res) => {
-    try{
+    try {
         const [libros] = await pool.query('SELECT * FROM libro');
         res.json(libros);
     }
-    catch(error){
+    catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Error al obtener libros' });
     }
@@ -27,27 +28,27 @@ app.get('/libros', async (req, res) => {
 
 app.get('/libros/:id', async (req, res) => {
     const { id } = req.params;
-    try{
+    try {
         const [rows] = await pool.query('SELECT * FROM libro WHERE id = ?', [Number(id)]);
-        if(rows.length > 0){
+        if (rows.length > 0) {
             res.json(rows[0]);
-        }else{
+        } else {
             res.status(404).json({ error: 'Libro no encontrado' });
         }
-    }catch(error){
+    } catch (error) {
         console.error(error);
-        res.status(500).json({error: 'Error en la BD'});
+        res.status(500).json({ error: 'Error en la BD' });
     }
 });
 
 app.get('/libros/genero/:genero', async (req, res) => {
     const generoReq = req.params.genero;
 
-    try{
+    try {
         const [libros] = await pool.query('SELECT * FROM libro WHERE genero = ?', [generoReq]);
         res.json(libros);
     }
-    catch(error){
+    catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Error en la BD' });
     }
@@ -56,68 +57,85 @@ app.get('/libros/genero/:genero', async (req, res) => {
 app.get('/personajes/idLibro/:id', async (req, res) => {
     const idLibro = req.params.id;
 
-    try{
+    try {
         const [rows] = await pool.query(`
             SELECT p.* FROM personaje p
             INNER JOIN libro_personaje lp ON p.id = lp.personaje_id
             WHERE lp.libro_id = ?`, [idLibro]);
 
-        if(rows.length > 0){
+        if (rows.length > 0) {
             res.json(rows);
-        }else{
-           res.json([]);
+        } else {
+            res.json([]);
         }
-    }catch(error){
+    } catch (error) {
         console.error(error.message);
-        res.status(500).json({error: 'Error en la BD'});
+        res.status(500).json({ error: 'Error en la BD' });
     }
 });
 
 app.get('/usuario/id/:id', async (req, res) => {
     const id = req.params.id;
 
-    try{
+    try {
         const [usuario] = await pool.query('SELECT * FROM usuario WHERE id = ?', [id]);
         res.json(usuario);
-    }catch(error){
+    } catch (error) {
         console.error(error);
-        res.status(500).json({error: 'Error en la bd'});
+        res.status(500).json({ error: 'Error en la bd' });
     }
 });
 
 app.get('/personaje/idPersonaje/:id', async (req, res) => {
     const id = req.params.id;
 
-    try{
+    try {
         const [personajes] = await pool.query('SELECT * FROM personaje WHERE id = ?', [id]);
-        if(personajes.length > 0){
+        if (personajes.length > 0) {
             res.json(personajes[0]);
-        }else{
+        } else {
             res.status(404).json({ error: 'Personaje no encontrado' });
         }
-    }catch(error){
+    } catch (error) {
         console.error(error);
-        res.status(500).json({error: 'Error en la BD'});
+        res.status(500).json({ error: 'Error en la BD' });
     }
 });
 
 app.get('/libro/comentarios/idLibro/:id', async (req, res) => {
     const idLibro = req.params.id;
 
-    try{
-        const[comentarios] = await pool.query(`
+    try {
+        const [comentarios] = await pool.query(`
             SELECT c.*, u.nombreUsuario, u.foto_perfil
             FROM comentario c
             INNER JOIN usuario u ON c.usuario_id = u.id
             WHERE c.libro_id = ?`, [idLibro]);
-        if(comentarios.length > 0){
+        if (comentarios.length > 0) {
             res.json(comentarios);
-        }else{
-           res.json([]);
+        } else {
+            res.json([]);
         }
-    }catch(error){
+    } catch (error) {
         console.error(error);
-        res.status(500).json({error: 'Error en la BD'});
+        res.status(500).json({ error: 'Error en la BD' });
+    }
+});
+
+app.get('/biblioteca/idUsuario/:id', async (req, res) => {
+    const idUsuario = req.params.id;
+
+    try {
+        const [biblioteca] = await pool.query(`
+            SELECT b.id, b.nombre, b.usuario_id, bl.biblioteca_id, bl.libro_id, l.titulo, l.imagen_url
+            FROM biblioteca_libro bl
+            LEFT JOIN biblioteca b ON b.id = bl.biblioteca_id
+            INNER JOIN libro l on l.id = bl.libro_id
+            WHERE b.usuario_id = ?`, [idUsuario]);
+        res.json(biblioteca)
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error en la BD' });
     }
 });
 
@@ -127,7 +145,7 @@ app.post('/nuevoUsuario', async (req, res) => {
     try {
         const [yaExiste] = await pool.query('SELECT * FROM usuario WHERE nombreUsuario = ? OR email = ?', [nombreUsuario, email]);
 
-        if (yaExiste.length > 0){
+        if (yaExiste.length > 0) {
             const mensaje = yaExiste[0].email === email
                 ? "El email ya esta registrado"
                 : "El nombre de usuario ya esta registrado"
@@ -152,7 +170,57 @@ app.post('/nuevoUsuario', async (req, res) => {
         })
     } catch (error) {
         console.error(error);
-        res.status(500).json({error: 'Error al registrar el usuario'});
+        res.status(500).json({ error: 'Error al registrar el usuario' });
+    }
+});
+
+app.post('/newLibro', async (req, res) => {
+    const { titulo, autor, sinopsis, imagen_url, calificacion, lanzamiento, genero } = req.body;
+
+    try {
+        const query = `
+            INSERT INTO libro
+            (titulo, autor, sinopsis, imagen_url, calificacion, lanzamiento, genero)
+            VALUES (?,?,?,?,?,?,?)`;
+        const [result] = await pool.query(query, [
+            titulo, autor, sinopsis, imagen_url, calificacion, lanzamiento, genero
+        ]);
+        res.status(201).json({
+            mensaje: 'Libro creado con exito',
+        })
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al registrar el libro' });
+    }
+});
+
+
+//REVISAAAAAAAAAAAAAAAAAAR
+app.post('/newPersonaje', async (req, res) => {
+    const { idLibro, nombre, imagen_url, descripcion } = req.body;
+
+    try {
+        const query = `
+            INSERT INTO personaje
+            (nombre, imagen_url, descripcion)
+            VALUES (?,?,?)`;
+        const [result] = await pool.query(query, [
+            nombre, imagen_url, descripcion
+        ]);
+        const queryD = await pool.query(`SELECT id FROM personaje ORDER BY id DESC LIMIT 1`);
+        const queryT = `
+            INSERT INTO libro_personaje
+            (libro_id, personaje_id)
+            VALUES (?,?)`;
+        const [resultD] = await pool.query(query, [
+            idLibro, queryD
+        ]);
+        res.status(201).json({
+            mensaje: 'Personaje creado con exito',
+        })
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al registrar el personaje' });
     }
 });
 
@@ -163,34 +231,34 @@ app.post('/login', async (req, res) => {
 
         const [rows] = await pool.query('SELECT * FROM usuario WHERE nombreUsuario = ?', [nombreUsuario]);
 
-        if (rows.length > 0){
+        if (rows.length > 0) {
             const usuario = rows[0];
 
             const esValida = await bcrypt.compare(password, usuario.password);
 
-            if (esValida){
+            if (esValida) {
                 delete usuario.password;
                 res.status(200).json({
-                mensaje: 'Login exitoso',
-                usuario: {
-                    id: usuario.id,
-                    nombre: usuario.nombre,
-                    apellido: usuario.apellido,
-                    nombreUsuario: usuario.nombreUsuario,
-                    email: usuario.email,
-                    descripcion: usuario.descripcion,
-                    foto_perfil: usuario.foto_perfil
-                }
+                    mensaje: 'Login exitoso',
+                    usuario: {
+                        id: usuario.id,
+                        nombre: usuario.nombre,
+                        apellido: usuario.apellido,
+                        nombreUsuario: usuario.nombreUsuario,
+                        email: usuario.email,
+                        descripcion: usuario.descripcion,
+                        foto_perfil: usuario.foto_perfil
+                    }
                 });
-            }else{
-                res.status(401).json({error: 'Contraseña incorrecta'})
+            } else {
+                res.status(401).json({ error: 'Contraseña incorrecta' })
             }
-            
-        }else{
-            res.status(401).json({error: 'Usuario no encontrado'});
+
+        } else {
+            res.status(401).json({ error: 'Usuario no encontrado' });
         }
 
-    }catch(error){
+    } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Error en el servidor' });
     }
