@@ -15,11 +15,12 @@ export default function NuevoLibro({ navigation }) {
     });
     const [error, setError] = useState(false);
     const [image, setImage] = useState('https://static.vecteezy.com/system/resources/thumbnails/056/202/171/small/add-image-or-photo-icon-vector.jpg');
-    const [country, setCountry] = React.useState();
 
     useEffect(() => {
-        setForm({ titulo: '', autor: '', sinopsis: '', imagen_url: '', calificacion: '', lanzamiento: '', genero: '' });
-        setImage('https://static.vecteezy.com/system/resources/thumbnails/056/202/171/small/add-image-or-photo-icon-vector.jpg');
+        if(isFocused){
+            setForm({ titulo: '', autor: '', sinopsis: '', imagen_url: '', calificacion: '', lanzamiento: '', genero: '' });
+            setImage('https://static.vecteezy.com/system/resources/thumbnails/056/202/171/small/add-image-or-photo-icon-vector.jpg');
+        }
     }, [isFocused]);
 
     const selectImagen = async () => {
@@ -64,6 +65,7 @@ export default function NuevoLibro({ navigation }) {
                 navigation.navigate('Home');
             } else {
                 setError(true);
+                Alert.alert("Error", "No se pudo guardar el libro");
             }
         } catch (error) {
             console.error(error);
@@ -76,14 +78,14 @@ export default function NuevoLibro({ navigation }) {
                 <Image source={{ uri: image }} style={styles.imagen} />
             </TouchableOpacity>
 
-            <TextInput style={styles.input} value={form.titulo} placeholder="Titulo" onChangeText={(txt) => setForm({ ...form, titulo: txt })} />
-            <TextInput style={styles.input} value={form.autor} placeholder="Autor" onChangeText={(txt) => setForm({ ...form, autor: txt })} />
+            <TextInput style={styles.input} value={form.titulo} placeholder="Titulo*" onChangeText={(txt) => setForm({ ...form, titulo: txt })} />
+            <TextInput style={styles.input} value={form.autor} placeholder="Autor*" onChangeText={(txt) => setForm({ ...form, autor: txt })} />
             <TextInput style={styles.input} value={form.sinopsis} placeholder="Sinopsis" onChangeText={(txt) => setForm({ ...form, sinopsis: txt })} />
             <TextInput style={styles.input} value={form.lanzamiento} placeholder="Lanzamiento" onChangeText={(txt) => setForm({ ...form, lanzamiento: txt })} />
             <DropdownSelect
                 style={styles.drop}
                 label=" "
-                placeholder="Elegir genero"
+                placeholder="Elegir genero*"
                 options={[
                     {
                         title: 'Generos...',

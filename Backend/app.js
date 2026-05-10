@@ -166,6 +166,7 @@ app.post('/nuevoUsuario', async (req, res) => {
         ]);
 
         res.status(201).json({
+            ok: true,
             mensaje: 'Usuario creado con exito',
         })
     } catch (error) {
@@ -186,6 +187,7 @@ app.post('/newLibro', async (req, res) => {
             titulo, autor, sinopsis, imagen_url, calificacion, lanzamiento, genero
         ]);
         res.status(201).json({
+            ok: true,
             mensaje: 'Libro creado con exito',
         })
     } catch (error) {
@@ -195,28 +197,29 @@ app.post('/newLibro', async (req, res) => {
 });
 
 
-//REVISAAAAAAAAAAAAAAAAAAR
 app.post('/newPersonaje', async (req, res) => {
     const { idLibro, nombre, imagen_url, descripcion } = req.body;
 
     try {
-        const query = `
+        const queryPersonaje = `
             INSERT INTO personaje
             (nombre, imagen_url, descripcion)
             VALUES (?,?,?)`;
-        const [result] = await pool.query(query, [
-            nombre, imagen_url, descripcion
-        ]);
-        const queryD = await pool.query(`SELECT id FROM personaje ORDER BY id DESC LIMIT 1`);
-        const queryT = `
+        const [result] = await pool.query(queryPersonaje, [nombre, imagen_url, descripcion]);
+        
+        const personajeId = result.insertId;
+        
+        const queryRelacion = `
             INSERT INTO libro_personaje
             (libro_id, personaje_id)
             VALUES (?,?)`;
-        const [resultD] = await pool.query(query, [
-            idLibro, queryD
+        const [resultD] = await pool.query(queryRelacion, [
+            idLibro, personajeId
         ]);
         res.status(201).json({
+            ok: true,
             mensaje: 'Personaje creado con exito',
+            idPersonaje: personajeId
         })
     } catch (error) {
         console.error(error);

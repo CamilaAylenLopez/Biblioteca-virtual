@@ -1,4 +1,4 @@
-const API_URL = 'http://192.168.0.177:3000';
+const API_URL = 'http://192.168.0.196:3000';
 
 export const getLibros = async () => {
     try {
@@ -114,7 +114,7 @@ export const nuevoLibro = async (datos) => {
     }
 };
 
-export const NuevoPersonaje = async (datos) => {
+export const nuevoPersonaje = async (datos) => {
     try {
         const response = await fetch(`${API_URL}/newPersonaje`, {
             method: 'POST',

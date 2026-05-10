@@ -3,33 +3,37 @@ import { View, Text, FlatList, Image, StyleSheet, ScrollView, ActivityIndicator,
 import { getLibrosById, getPersonajesByIdLibro, getComentariosByIdLibro } from '../../api';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Fontisto from '@expo/vector-icons/Fontisto';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function InfoLibro({ navigation, route }) {
     const { libroId } = route.params;
+    const isFocused = useIsFocused();
     const [libro, setLibro] = useState(null);
     const [cargando, setCargando] = useState(true);
     const [personajes, setPersonajes] = useState([]);
     const [comentarios, setComentarios] = useState([]);
 
     useEffect(() => {
-        const cargarDatos = async () => {
-            try{
-                const dataLibro = await getLibrosById(libroId);
-                setLibro(dataLibro);
+        if(isFocused){
+            const cargarDatos = async () => {
+                try{
+                    const dataLibro = await getLibrosById(libroId);
+                    setLibro(dataLibro);
 
-                const dataPersonajes = await getPersonajesByIdLibro(libroId);
-                setPersonajes(dataPersonajes);
+                    const dataPersonajes = await getPersonajesByIdLibro(libroId);
+                    setPersonajes(dataPersonajes);
 
-                const dataComentarios = await getComentariosByIdLibro(libroId);
-                setComentarios(dataComentarios);
-            }catch(error){
-                console.error(error);
-            }finally{
-                setCargando(false);
-            }
-        };
-        cargarDatos();
-    }, [libroId]);
+                    const dataComentarios = await getComentariosByIdLibro(libroId);
+                    setComentarios(dataComentarios);
+                }catch(error){
+                    console.error(error);
+                }finally{
+                    setCargando(false);
+                }
+            };
+            cargarDatos();
+        }
+    }, [libroId, isFocused]);
 
     const calificacionEstrellas = (rating) => {
         let estrellas = [];

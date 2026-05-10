@@ -1,22 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { nuevoLibro } from '../../api';
+import { nuevoPersonaje } from '../../api';
 import { TextInput } from 'react-native-web';
 import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from 'expo-image-picker';
+import { useIsFocused } from '@react-navigation/native';
 
-export default function NuevoPersonaje({ navigation }) {
+export default function NuevoPersonaje({ navigation, route }) {
+    const isFocused = useIsFocused();
+    const { libroId } = route.params;
     const [form, setForm] = useState({
-        titulo: '', autor: '', sinopsis: '', imagen_url: '', calificacion: '', lanzamiento: '', genero: ''
+        nombre: '', imagen_url: '', descripcion: ''
     });
     const [error, setError] = useState(false);
     const [image, setImage] = useState('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_9_Be_6mJ68U7QIl53UBCB1NCfLQuPWkviw&s');
 
+    useEffect(() => {
+        if(isFocused){
+            setForm({ nombre: '', imagen_url: '', descripcion: '' });
+            setImage('https://static.vecteezy.com/system/resources/thumbnails/056/202/171/small/add-image-or-photo-icon-vector.jpg');
+        }
+    }, [isFocused]);
+
     const selectImagen = async () => {
         try {
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-            
+
             if (status !== 'granted') {
                 Alert.alert("Permiso no concedido");
                 return;
@@ -26,32 +36,42 @@ export default function NuevoPersonaje({ navigation }) {
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
                 aspect: [2, 3],
-                quality: 1,
+                quality: 0.2,
+                base64: true,
             });
 
             if (!result.canceled) {
-                const path = result.assets[0].uri;
-                setImage(path);
+                const base64Image = `data:image/jpeg;base64,${result.assets[0].base64}`;
+                setImage(base64Image);
+                setForm({ ...form, imagen_url: base64Image });
             }
-        }catch(error){
+        } catch (error) {
             console.error("Error al seleccioanr imagen: ", error);
         }
     };
 
-    const agregarLibro = async () => {
+    const agregarPersonaje = async () => {
         setError(false);
-        if (!form.titulo || !form.autor || !form.genero) {
-            Alert.alert("Error", "Completa todos los campos");
+        if (!form.nombre) {
+            Alert.alert("Error", "El nombre es un campo obligatorio");
             return;
         }
 
         try {
-            const respuesta = await nuevoLibro({ ...form, imagen_url: image });
+            console.log("Tamaño del Base64:", image.length);
+            const data = {
+                idLibro: libroId,
+                nombre: form.nombre,
+                descripcion: form.descripcion,
+                imagen_url: image
+            }
+            const respuesta = await nuevoPersonaje(data);
             if (respuesta.ok) {
-                Alert.alert("¡Éxito!", "Libro agregado correctamente");
-                navigation.navigate('Home');
+                Alert.alert("¡Éxito!", "Personaje agregado correctamente");
+                navigation.goBack();
             } else {
                 setError(true);
+                Alert.alert("Error", "No se pudo guardar el personaje");
             }
         } catch (error) {
             console.error(error);
@@ -64,18 +84,15 @@ export default function NuevoPersonaje({ navigation }) {
                 <Image source={{ uri: image }} style={styles.imagen} />
             </TouchableOpacity>
 
-            <TextInput style={styles.input} placeholder="Titulo" onChangeText={(txt) => setForm({ ...form, titulo: txt })} />
-            <TextInput style={styles.input} placeholder="Autor" onChangeText={(txt) => setForm({ ...form, autor: txt })} />
-            <TextInput style={styles.input} placeholder="Sinopsis" onChangeText={(txt) => setForm({ ...form, sinopsis: txt })} />
-            <TextInput style={styles.input} placeholder="LanLanzamiento" onChangeText={(txt) => setForm({ ...form, lanzamiento: txt })} />
-            <TextInput style={styles.input} placeholder="Genero" onChangeText={(txt) => setForm({ ...form, genero: txt })} />
+            <TextInput style={styles.input} value={form.nombre} placeholder="Nombre*" onChangeText={(txt) => setForm({ ...form, nombre: txt })} />
+            <TextInput style={styles.input} value={form.descripcion} placeholder="Descripcion" onChangeText={(txt) => setForm({ ...form, descripcion: txt })} />
 
-            <TouchableOpacity style={styles.button} onPress={agregarLibro}>
+            <TouchableOpacity style={styles.button} onPress={agregarPersonaje}>
                 <Text style={styles.buttonText}>Hecho</Text>
             </TouchableOpacity>
         </View>
     )
-}
+};
 const styles = StyleSheet.create({
     container: {
         flex: 1,
