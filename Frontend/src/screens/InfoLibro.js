@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { getLibrosById, getPersonajesByIdLibro, getComentariosByIdLibro } from '../../api';
+import { View, Text, FlatList, Image, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { getLibrosById, getPersonajesByIdLibro, getComentariosByIdLibro, nuevoComentario } from '../../api';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import { useIsFocused } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function InfoLibro({ navigation, route }) {
     const { libroId } = route.params;
@@ -12,6 +13,12 @@ export default function InfoLibro({ navigation, route }) {
     const [cargando, setCargando] = useState(true);
     const [personajes, setPersonajes] = useState([]);
     const [comentarios, setComentarios] = useState([]);
+    const [newComentario, setNewComentario] = useState('');
+    const [error, setError] = useState(false);
+    const [usuario, setUsuario] = useState({
+        nombre: '', foto: '', id: ''
+    });
+    const [estrellas, setEstrellas] = useState(0);
 
     useEffect(() => {
         if(isFocused){
@@ -25,6 +32,17 @@ export default function InfoLibro({ navigation, route }) {
 
                     const dataComentarios = await getComentariosByIdLibro(libroId);
                     setComentarios(dataComentarios);
+
+                    const sesion = await AsyncStorage.getItem('@usuario_sesion');
+                    if(sesion){
+                        const usuarioParseado = JSON.parse(sesion);
+                        setUsuario({
+                            nombre: usuarioParseado.nombreUsuario,
+                            foto: usuarioParseado.foto_perfil,
+                            id: usuarioParseado.id
+                        });
+                    };
+
                 }catch(error){
                     console.error(error);
                 }finally{
@@ -52,6 +70,57 @@ export default function InfoLibro({ navigation, route }) {
             estrellas.push(<FontAwesome key={i} name={nombreIcono} size={24} color={colorIcono} style={{margin: 3,}}/>)
         }
         return estrellas;
+    };
+
+    const renderEstrellas = () => {
+        return (
+            <View style={{flexDirection: 'row', marginVertical: 10}}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                    <TouchableOpacity key={star} onPress={() => setEstrellas(star)}>
+                        <FontAwesome key={star} name={star <= estrellas ? "star" : "star-o"} size={24} color={star <= estrellas ? "#FFD700" : "#555" } style={{margin: 3,}}/>
+                    </TouchableOpacity>
+                ))}
+            </View>
+        )
+    }
+
+    const sendComentario = async () =>{
+        setError(false);
+        if (!newComentario || newComentario.trim() === "") {
+            Alert.alert("Error", "Completa todos los campos");
+            return;
+        }
+        try{
+
+            const data = {
+                texto: newComentario,
+                estrellas: estrellas,
+                usuario_id: usuario.id,
+                libro_id: libroId
+            }
+            
+            const respuesta = await nuevoComentario(data);
+            if (respuesta.ok) {
+                Alert.alert("¡Éxito!", "Comenatrio agregado correctamente");
+                setNewComentario("");
+                setEstrellas(0);
+                try{
+                    const dataComentarios = await getComentariosByIdLibro(libroId);
+                    setComentarios(dataComentarios);
+                }catch(error){
+                    Alert.alert("Error", "Error al cargar comentarios")
+                };
+                const dataLibroActualizado = await getLibrosById(libroId);
+                setLibro(dataLibroActualizado);
+                
+            } else {
+                setError(true);
+                Alert.alert("Error", "No se pudo subir el comenario");
+            }
+        }catch(error){
+            console.error(error);
+            Alert.alert("Error", "No se ha podido subir el comenatrio");
+        }
     };
 
     if (cargando) return <ActivityIndicator size="large" color="white" style={{ marginTop: 50 }} />;
@@ -119,7 +188,22 @@ export default function InfoLibro({ navigation, route }) {
                         </View>
                     )) : <Text style={{color: 'white'}}>¡Se el primero en hacer un comentario!</Text>}
                     <View style={styles.comentariosContainer}>
-                        <Text>Agregar comenatrio...</Text>
+                        <View style={styles.horizontal}>
+                            <Image 
+                                source={{ uri: usuario.foto || 'https://previews.123rf.com/images/yoginta/yoginta2301/yoginta230100567/196853824-image-not-found-vector-illustration.jpg' }}
+                                style={styles.fotoUsuario}
+                            />
+                            <Text style={{color: 'white'}}>{usuario.nombre}</Text>
+                        </View>
+                        {renderEstrellas()}
+                        
+                        <View style={styles.horizontal}>
+                            <TextInput style={styles.inputComenatrio} value={newComentario} placeholder="Agregar comentario..." onChangeText={(txt) => setNewComentario(txt)} />
+                            <TouchableOpacity onPress={sendComentario}>
+                                <FontAwesome name="send" size={24} color="white" />
+                            </TouchableOpacity>
+                        </View>
+                        
                     </View>
                 </View>
                 
@@ -140,6 +224,14 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         padding: 20,
         borderRadius: 20,
+    },
+    comentariosContainerD:{
+        backgroundColor: '#7D6461',
+        marginBottom: 20,
+        padding: 20,
+        borderRadius: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     horizontal:{
         flexDirection: 'row',
@@ -213,6 +305,25 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 12,
         marginTop: 5,
+    },
+    input: {
+        width: '100%',
+        height: 50,
+        backgroundColor: '#7D6461',
+        borderRadius: 50,
+        paddingHorizontal: 15,
+        marginTop: 25,
+        color: 'white',
+        outlineStyle: 'none',
+    },
+    inputComenatrio: {
+        width: '100%',
+        height: 50,
+        backgroundColor: '#7D6461',
+        borderRadius: 50,
+        paddingHorizontal: 15,
+        color: 'white',
+        outlineStyle: 'none',
     },
 });
 

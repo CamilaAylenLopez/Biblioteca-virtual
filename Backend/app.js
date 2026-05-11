@@ -175,6 +175,37 @@ app.post('/nuevoUsuario', async (req, res) => {
     }
 });
 
+app.post('/newComentario', async (req, res) => {
+    const { texto, estrellas, usuario_id, libro_id } = req.body;
+
+    try{
+        const query = `
+            INSERT INTO comentario
+            (texto, estrellas, usuario_id, libro_id)
+            VALUES (?,?,?,?)
+        `;
+        const [result] = await pool.query(query,[
+            texto, estrellas, usuario_id, libro_id
+        ]);
+        const queryCalificacionLibro = `
+            UPDATE libro
+            SET calificacion = (
+                SELECT AVG(estrellas)
+                FROM comentario
+                WHERE libro_id = ?
+            )
+            WHERE id = ?`;
+        const [resultD] = await pool.query(queryCalificacionLibro, [libro_id, libro_id]);
+        res.status(201).json({
+            ok: true,
+            mensaje: 'Cometario publicado con exito',
+        });
+    }catch(error){
+        console.error(error);
+        res.status(500).json({ error: 'Error al publicar el comentario' });
+    }
+});
+
 app.post('/newLibro', async (req, res) => {
     const { titulo, autor, sinopsis, imagen_url, calificacion, lanzamiento, genero } = req.body;
 

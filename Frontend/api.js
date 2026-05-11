@@ -127,3 +127,17 @@ export const nuevoPersonaje = async (datos) => {
         return { ok: false, data: { error: "Error de red" } };
     }
 };
+
+export const nuevoComentario = async (datos) => {
+    try {
+        const response = await fetch(`${API_URL}/newComentario`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos),
+        });
+        return { ok: response.ok, data: await response.json() };
+    } catch (error) {
+        console.error("Error en registro:", error);
+        return { ok: false, data: { error: "Error de red" } };
+    }
+};
