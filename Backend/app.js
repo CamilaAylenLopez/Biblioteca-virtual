@@ -139,6 +139,21 @@ app.get('/biblioteca/idUsuario/:id', async (req, res) => {
     }
 });
 
+app.get('/buscar/:texto', async (req, res) =>{
+    const texto = req.params.texto;
+    const busqueda = `%${texto}%`;
+
+    try{
+        const [libros] = await pool.query('SELECT id, titulo as nombre, "libro" as tipo, imagen_url FROM libro WHERE titulo LIKE ? OR autor LIKE ?', [busqueda, busqueda]);
+        const [personajes] = await pool.query('SELECT id, nombre, "personaje" as tipo, imagen_url FROM personaje WHERE nombre LIKE ?', [busqueda]);
+
+        const result = [...libros, ...personajes];
+        res.json(result);
+    }catch(error){
+        res.status(500).json({ error: "Error en la búsqueda"});
+    }
+});
+
 app.post('/nuevoUsuario', async (req, res) => {
     const { nombre, apellido, nombreUsuario, email, fecha_nacimiento, password, descripcion, foto_perfil } = req.body;
 
@@ -227,6 +242,57 @@ app.post('/newLibro', async (req, res) => {
     }
 });
 
+app.put('/updateLibro/:id', async (req, res) => {
+    const id = req.params.id;
+    const { titulo, autor, sinopsis, imagen_url, calificacion, lanzamiento, genero } = req.body;
+
+    try {
+        const query = `
+            UPDATE libro
+            SET titulo = ?,  autor = ?, sinopsis = ?, imagen_url = ?, calificacion = ?, lanzamiento = ?, genero = ?
+            WHERE id = ?`;
+        const [result] = await pool.query(query, [
+            titulo, autor, sinopsis, imagen_url, calificacion, lanzamiento, genero, id
+        ]);
+
+        if(result.affectedRows === 0){
+            return res.status(404).json({ok: false, mensaje: "No se encontro el libro"});
+        }
+        res.status(201).json({
+            ok: true,
+            mensaje: 'Libro actualizado correctamente',
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al actualizar el libro' });
+    }
+});
+
+app.put('/updatePersonaje/:id', async (req, res) => {
+    const id = req.params.id;
+    const { nombre, imagen_url, descripcion } = req.body;
+
+    try {
+        const query = `
+            UPDATE personaje
+            SET nombre = ?, imagen_url = ?, descripcion = ?
+            WHERE id = ?`;
+        const [result] = await pool.query(query, [
+            nombre, imagen_url, descripcion, id
+        ]);
+
+        if(result.affectedRows === 0){
+            return res.status(404).json({ok: false, mensaje: "No se encontro el personaje"});
+        }
+        res.status(201).json({
+            ok: true,
+            mensaje: 'Personaje actualizado correctamente',
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al actualizar personaje' });
+    }
+});
 
 app.post('/newPersonaje', async (req, res) => {
     const { idLibro, nombre, imagen_url, descripcion } = req.body;

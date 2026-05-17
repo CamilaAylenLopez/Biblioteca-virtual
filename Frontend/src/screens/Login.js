@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import { loginUsuario } from '../../api.js';
 import Entypo from '@expo/vector-icons/Entypo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -32,14 +32,14 @@ export default function Login({ navigation }) {
     };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.subContainer}>
         <Text style={styles.titulo}>Bienvenido de nuevo a tu biblioteca virtual</Text>
         <Text style={styles.subtitulo}>Inicio sesión</Text>
         
         <TextInput style={styles.input} value={nombreUsuario} onChangeText={nombreUsuario => setnombreUsuario(nombreUsuario)} placeholder="Usuario..." />
         <View style={styles.inputD}>
-          <TextInput style={styles.textoInput} value={password} onChangeText={password => setpassword(password)} placeholder="Contraseña..." secureTextEntry={!mostrarPassword} />
+          <TextInput style={styles.contrasenaInput} value={password} onChangeText={password => setpassword(password)} placeholder="Contraseña..." secureTextEntry={!mostrarPassword} />
             <TouchableOpacity style={styles.icon} onPress={() => setmostrarPassword(!mostrarPassword)} >
               <Entypo name={mostrarPassword ? 'eye-with-line' : 'eye'} size={24} color="white" />
             </TouchableOpacity>
@@ -57,7 +57,7 @@ export default function Login({ navigation }) {
           <Text style={styles.link}>¿Todavía no tienes una cuenta? Crear usuario.</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -66,7 +66,6 @@ const styles = StyleSheet.create({
     flex: 1, 
     padding: 20, 
     backgroundColor: '#8E7960',
-    fontFamily: 'roboto',
   },
   subContainer:{
     backgroundColor: '#DBD3CF',
@@ -114,11 +113,13 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     color: 'white',
     outlineStyle: 'none',
+    fontSize: 16,
   },
-  textoInput:{
+  contrasenaInput:{
     color: 'white',
     flex: 1,
     outlineStyle: 'none',
+    fontSize: 16
   },
   button: {
     width: '50%',
@@ -138,10 +139,12 @@ const styles = StyleSheet.create({
   },
   link: {
     color: '#6868AC',
-    marginTop: 50
+    marginTop: 50,
+    display: 'flex',
+    alignSelf: 'center',
   },
   error:{
-    color: '#f00',
+    color: '#b91e1e',
     padding: 10,
     fontSize: 18,
     justifyContent: 'center',

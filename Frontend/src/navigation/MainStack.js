@@ -35,11 +35,7 @@ export default function MainStack() {
             <FontAwesome name="arrow-left" size={28} color="white" />
           </TouchableOpacity>
         ),
-        headerRight: () => (
-          <TouchableOpacity onPress={() => navigation.navigate('EditarInfoLibro', { libroId: route.params.libroId })} style={{ marginRight: 15 }}>
-            <Text>Hecho</Text>
-          </TouchableOpacity>
-        ),
+        headerRight: null,
         headerStyle: {
           backgroundColor: '#7D6461',
         },
@@ -56,11 +52,7 @@ export default function MainStack() {
             <FontAwesome name="arrow-left" size={28} color="white" />
           </TouchableOpacity>
         ),
-        headerRight: () => (
-          <TouchableOpacity onPress={() => navigation.navigate('EditarInfoPersonaje', { personajeId: route.params.personajeId })} style={{ marginRight: 15 }}>
-            <Text>Hecho</Text>
-          </TouchableOpacity>
-        ),
+        headerRight: null,
         headerStyle: {
           backgroundColor: '#7D6461',
         },
@@ -135,11 +127,7 @@ export default function MainStack() {
             <MaterialIcons name="cancel" size={28} color="white" />
           </TouchableOpacity>
         ),
-        headerRight: () => (
-          <TouchableOpacity onPress={() => navigation.navigate('EditarInfoPersonaje', { personajeId: route.params.personajeId })} style={{ marginRight: 15 }}>
-            <Text>Hecho</Text>
-          </TouchableOpacity>
-        ),
+        headerRight: null,
         headerStyle: {
           backgroundColor: '#7D6461',
         },

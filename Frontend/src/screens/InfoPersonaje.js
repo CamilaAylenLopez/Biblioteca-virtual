@@ -3,25 +3,29 @@ import { View, Text, FlatList, Image, StyleSheet, ScrollView, ActivityIndicator,
 import { getPersonajeById } from '../../api';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Fontisto from '@expo/vector-icons/Fontisto';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function InfoPersonaje({ navigation, route }) {
     const { personajeId } = route.params;
     const [cargando, setCargando] = useState(true);
     const [personaje, setPersonaje] = useState([]);
+    const isFocused = useIsFocused();
 
     useEffect(() => {
-        const cargarDatos = async () => {
-            try{
-                const dataPersonaje = await getPersonajeById(personajeId);
-                setPersonaje(dataPersonaje);
-            }catch(error){
-                console.error(error);
-            }finally{
-                setCargando(false);
-            }
-        };
-        cargarDatos();
-    }, [personajeId]);
+        if(isFocused){
+            const cargarDatos = async () => {
+                try{
+                    const dataPersonaje = await getPersonajeById(personajeId);
+                    setPersonaje(dataPersonaje);
+                }catch(error){
+                    console.error(error);
+                }finally{
+                    setCargando(false);
+                }
+            };
+            cargarDatos();
+        }
+    }, [personajeId, isFocused]);
 
     if (cargando) return <ActivityIndicator size="large" color="white" style={{ marginTop: 50 }} />;
     if (!personaje) return <Text style={{color: 'white'}}>Cargando...</Text>;
@@ -51,7 +55,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingTop: 50,
-        backgroundColor: 'black',
+        backgroundColor: '#121212',
     },
     comentariosContainer:{
         backgroundColor: '#7D6461',

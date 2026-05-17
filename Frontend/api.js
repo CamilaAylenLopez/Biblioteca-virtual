@@ -1,4 +1,4 @@
-const API_URL = 'http://192.168.0.196:3000';
+const API_URL = 'http://192.168.0.212:3000';
 
 export const getLibros = async () => {
     try {
@@ -72,11 +72,48 @@ export const getBiblioteca = async (id) => {
     }
 };
 
+export const resultadoBusqueda = async (texto) => {
+    try {
+        const res = await fetch(`${API_URL}/buscar/${texto}`);
+        return await res.json();
+    } catch (error){
+        console.error("Error al obtener resultado: ", error);
+    }
+};
+
+export const actualizarLibro = async (id, datos) => {
+    try {
+        const res = await fetch(`${API_URL}/updateLibro/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos),
+        });
+        return await res.json();
+    } catch (error) {
+        console.error("Error en actualizarLibro:", error);
+        return { ok: false };
+    }
+};
+
+export const actualizarPersonaje = async (id, datos) => {
+    try {
+        const res = await fetch(`${API_URL}/updatePersonaje/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos),
+        });
+        return await res.json();
+    } catch (error) {
+        console.error("Error en actualizarPersonaje:", error);
+        return { ok: false };
+    }
+};
+
 export const loginUsuario = async (nombreUsuario, password) => {
     try {
         const response = await fetch(`${API_URL}/login`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json',},
             body: JSON.stringify({ nombreUsuario, password }),
         });
         return { ok: response.ok, data: await response.json() };

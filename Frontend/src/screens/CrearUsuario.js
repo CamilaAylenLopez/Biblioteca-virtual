@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text, Alert, StyleSheet } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, Alert, StyleSheet, ScrollView } from 'react-native';
 import { registrarUsuario } from '../../api';
 import Entypo from '@expo/vector-icons/Entypo';
 
@@ -66,25 +66,25 @@ export default function CrearUsuario({ navigation }) {
     };
 
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             <View style={styles.subContainer}>
 
                 <Text style={styles.titulo}>Bienvenido a tu nueva biblioteca virtual</Text>
                 <Text style={styles.subtitulo}>Craer usuario</Text>
 
-                <TextInput style={styles.input} placeholder="Nombre" onChangeText={(txt) => setForm({ ...form, nombre: txt })} />
-                <TextInput style={styles.input} placeholder="Nombre de Usuario" onChangeText={(txt) => setForm({ ...form, nombreUsuario: txt })} />
-                <TextInput style={styles.input} placeholder="Email" onChangeText={(txt) => setForm({ ...form, email: txt })} />
+                <TextInput style={styles.input} placeholder="Nombre..." onChangeText={(txt) => setForm({ ...form, nombre: txt })} />
+                <TextInput style={styles.input} placeholder="Nombre de Usuario..." onChangeText={(txt) => setForm({ ...form, nombreUsuario: txt })} />
+                <TextInput style={styles.input} placeholder="Email..." onChangeText={(txt) => setForm({ ...form, email: txt })} />
 
                 <View style={styles.inputD}>
-                    <TextInput style={styles.textoInput} onChangeText={(txt) => setForm({ ...form, password: txt })} placeholder="Contraseña" secureTextEntry={!mostrarPassword} />
+                    <TextInput style={styles.textoInput} onChangeText={(txt) => setForm({ ...form, password: txt })} placeholder="Contraseña..." secureTextEntry={!mostrarPassword} />
                     <TouchableOpacity style={styles.icon} onPress={() => setmostrarPassword(!mostrarPassword)} >
                         <Entypo name={mostrarPassword ? 'eye-with-line' : 'eye'} size={24} color="white" />
                     </TouchableOpacity>
                 </View>
 
                 <View style={styles.inputD}>
-                    <TextInput style={styles.textoInput} onChangeText={(txt) => setForm({ ...form, conformarPassword: txt })} placeholder="Confirmar contraseña" secureTextEntry={!mostrarPasswordD} />
+                    <TextInput style={styles.textoInput} onChangeText={(txt) => setForm({ ...form, conformarPassword: txt })} placeholder="Confirmar contraseña..." secureTextEntry={!mostrarPasswordD} />
                     <TouchableOpacity style={styles.icon} onPress={() => setmostrarPasswordD(!mostrarPasswordD)} >
                         <Entypo name={mostrarPasswordD ? 'eye-with-line' : 'eye'} size={24} color="white" />
                     </TouchableOpacity>
@@ -101,15 +101,13 @@ export default function CrearUsuario({ navigation }) {
                     <Text style={styles.link}>¿Ya tienes una cuenta creada? Iniciar sesión.</Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
         padding: 20,
         backgroundColor: '#8E7960',
         fontFamily: 'roboto',
@@ -150,6 +148,7 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         color: 'white',
         outlineStyle: 'none',
+        fontSize: 16,
     },
     button: {
         width: '50%',
@@ -166,13 +165,14 @@ const styles = StyleSheet.create({
         fontSize: 14,
         alignSelf: 'center',
         margin: 5,
+        fontSize: 16,
     },
     link: {
         color: '#6868AC',
         marginTop: 50
     },
     error: {
-        color: '#f00',
+        color: '#b91e1e',
         padding: 10,
         fontSize: 18,
         justifyContent: 'center',
@@ -192,6 +192,7 @@ const styles = StyleSheet.create({
         color: 'white',
         flex: 1,
         outlineStyle: 'none',
+        fontSize: 16,
     },
     icon: {
     padding: 5,

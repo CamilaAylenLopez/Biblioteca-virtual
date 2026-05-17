@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingTop: 50,
-        backgroundColor: 'black',
+        backgroundColor: '#121212',
     },
     comentariosContainer:{
         backgroundColor: '#7D6461',

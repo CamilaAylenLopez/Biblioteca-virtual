@@ -46,7 +46,7 @@ export default function Home({ navigation }) {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.header}>Mi Biblioteca</Text>
+      <Text style={styles.header}>Mi Biblioteca Virtual</Text>
       {renderSeccionGenero('Fantasía')}
       {renderSeccionGenero('Terror')}
       {renderSeccionGenero('Romance')}
@@ -62,7 +62,7 @@ export default function Home({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: '#121212',
     paddingTop: 50,
   },
   header: {
@@ -76,15 +76,21 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
   tituloGenero: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
     color: 'white',
     marginLeft: 15,
     marginBottom: 10,
   },
   card: {
-    width: 120,
-    marginLeft: 15,
+    width: 150,
+    borderRadius: 15,
+    marginLeft: 20,
+    padding: 8,
+    paddingTop: 12,
+    backgroundColor: '#7D6461',
+    display: 'flex',
+    alignItems: 'center'
   },
   portada: {
     width: 120,
@@ -94,7 +100,10 @@ const styles = StyleSheet.create({
   },
   tituloLibro: {
     color: 'white',
-    fontSize: 14,
+    fontSize: 18,
     marginTop: 5,
+    justifyContent: 'center',
+    width: 120,
+    fontWeight: '500',
   },
 });

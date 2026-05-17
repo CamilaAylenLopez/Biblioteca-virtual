@@ -111,8 +111,9 @@ export default function Perfil({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20, 
-    backgroundColor: '#000000',
+    padding: 20,
+    paddingTop: 50,
+    backgroundColor: '#121212',
   },
   nombre: {
     fontSize: 24,
@@ -124,11 +125,12 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   subtitulo:{
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: 'bold',
     color: 'white',
     marginLeft: 15,
     marginBottom: 10,
+    marginTop: 20,
   },
   biografia:{
     fontSize: 24,

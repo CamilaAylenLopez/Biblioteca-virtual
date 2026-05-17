@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, ScrollView, TouchableOpacity, Alert, TextInput } from 'react-native';
 import { nuevoPersonaje } from '../../api';
-import { TextInput } from 'react-native-web';
 import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from 'expo-image-picker';
@@ -100,6 +99,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 20,
         fontFamily: 'roboto',
+        backgroundColor: '#121212'
     },
     imagenConteiner: {
         margin: 20,
