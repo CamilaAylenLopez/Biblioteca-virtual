@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, Alert, StyleSheet, ScrollView } from 'react-native';
 import { registrarUsuario } from '../../api';
 import Entypo from '@expo/vector-icons/Entypo';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function CrearUsuario({ navigation }) {
     const [form, setForm] = useState({
@@ -13,7 +14,7 @@ export default function CrearUsuario({ navigation }) {
     const [mostrarPasswordD, setmostrarPasswordD] = useState(false);
 
     const validarContra = (password) => {
-        const regex = /^(?=.*[A-Z])(?=.*[!@#$%^&*.,_-]).{8,}$/;
+        const regex = /^(?=.*[A-Z])(?=.*[!?/()@#$%^&*.,_-]).{8,}$/;
         return regex.test(password);
     }
     const validarEmail = (email) => {
@@ -54,6 +55,12 @@ export default function CrearUsuario({ navigation }) {
         try {
             const respuesta = await registrarUsuario(form);
             if (respuesta.ok) {
+                if(respuesta.data.usuario){
+                    await AsyncStorage.setItem(
+                        '@usuario_sesion',
+                        JSON.stringify(respuesta.data.usuario)
+                    );
+                }
                 Alert.alert("¡Éxito!", respuesta.data.mensaje);
                 navigation.navigate('Tab');
             } else {
@@ -66,8 +73,8 @@ export default function CrearUsuario({ navigation }) {
     };
 
     return (
-        <ScrollView style={styles.container}>
-            <View style={styles.subContainer}>
+        <View style={styles.container}>
+            <ScrollView style={styles.subContainer}>
 
                 <Text style={styles.titulo}>Bienvenido a tu nueva biblioteca virtual</Text>
                 <Text style={styles.subtitulo}>Craer usuario</Text>
@@ -100,8 +107,8 @@ export default function CrearUsuario({ navigation }) {
                 <TouchableOpacity onPress={() => navigation.navigate('Login')}>
                     <Text style={styles.link}>¿Ya tienes una cuenta creada? Iniciar sesión.</Text>
                 </TouchableOpacity>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </View>
     );
 }
 
@@ -117,7 +124,7 @@ const styles = StyleSheet.create({
         margin: 10,
         paddingTop: 70,
         paddingHorizontal: 30,
-        width: 350,
+        width: 340,
         height: 800,
         borderRadius: 50,
     },
@@ -195,7 +202,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     icon: {
-    padding: 5,
-    paddingTop: 12,
-  },
+        padding: 5,
+        paddingTop: 12,
+    },
 });

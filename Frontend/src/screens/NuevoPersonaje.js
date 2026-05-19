@@ -16,7 +16,7 @@ export default function NuevoPersonaje({ navigation, route }) {
     const [image, setImage] = useState('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_9_Be_6mJ68U7QIl53UBCB1NCfLQuPWkviw&s');
 
     useEffect(() => {
-        if(isFocused){
+        if (isFocused) {
             setForm({ nombre: '', imagen_url: '', descripcion: '' });
             setImage('https://static.vecteezy.com/system/resources/thumbnails/056/202/171/small/add-image-or-photo-icon-vector.jpg');
         }
@@ -78,28 +78,35 @@ export default function NuevoPersonaje({ navigation, route }) {
     };
 
     return (
-        <View style={styles.container}>
-            <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>
-                <Image source={{ uri: image }} style={styles.imagen} />
-            </TouchableOpacity>
+        <ScrollView style={styles.container}>
+            <View style={styles.subContainer}>
+                <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>
+                    <Image source={{ uri: image }} style={styles.imagen} />
+                </TouchableOpacity>
 
-            <TextInput style={styles.input} value={form.nombre} placeholder="Nombre*" onChangeText={(txt) => setForm({ ...form, nombre: txt })} />
-            <TextInput style={styles.input} value={form.descripcion} placeholder="Descripcion" onChangeText={(txt) => setForm({ ...form, descripcion: txt })} />
+                <TextInput style={styles.input} value={form.nombre} placeholder="Nombre*" onChangeText={(txt) => setForm({ ...form, nombre: txt })} />
+                <TextInput style={styles.input} value={form.descripcion} placeholder="Descripcion" onChangeText={(txt) => setForm({ ...form, descripcion: txt })} />
 
-            <TouchableOpacity style={styles.button} onPress={agregarPersonaje}>
-                <Text style={styles.buttonText}>Hecho</Text>
-            </TouchableOpacity>
-        </View>
+                <TouchableOpacity style={styles.button} onPress={agregarPersonaje}>
+                    <Text style={styles.buttonText}>Hecho</Text>
+                </TouchableOpacity>
+            </View>
+        </ScrollView>
     )
 };
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        padding: 20,
+        paddingTop: 80,
+        fontFamily: 'roboto',
+        marginTop: 50,
+        backgroundColor: '#121212',
+    },
+    subContainer: {
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 20,
         fontFamily: 'roboto',
-        backgroundColor: '#121212'
     },
     imagenConteiner: {
         margin: 20,

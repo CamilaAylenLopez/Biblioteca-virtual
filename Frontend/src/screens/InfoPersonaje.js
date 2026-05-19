@@ -12,14 +12,14 @@ export default function InfoPersonaje({ navigation, route }) {
     const isFocused = useIsFocused();
 
     useEffect(() => {
-        if(isFocused){
+        if (isFocused) {
             const cargarDatos = async () => {
-                try{
+                try {
                     const dataPersonaje = await getPersonajeById(personajeId);
                     setPersonaje(dataPersonaje);
-                }catch(error){
+                } catch (error) {
                     console.error(error);
-                }finally{
+                } finally {
                     setCargando(false);
                 }
             };
@@ -28,13 +28,13 @@ export default function InfoPersonaje({ navigation, route }) {
     }, [personajeId, isFocused]);
 
     if (cargando) return <ActivityIndicator size="large" color="white" style={{ marginTop: 50 }} />;
-    if (!personaje) return <Text style={{color: 'white'}}>Cargando...</Text>;
+    if (!personaje) return <Text style={{ color: 'white' }}>Cargando...</Text>;
 
     console.log("Datos personaje ", personaje)
 
     return (
         <ScrollView style={styles.container}>
-            <View style={{justifyContent: 'center', alignContent: 'center'}}>
+            <View style={{ justifyContent: 'center', alignContent: 'center' }}>
                 <Image
                     source={{ uri: personaje.imagen_url || 'https://previews.123rf.com/images/yoginta/yoginta2301/yoginta230100567/196853824-image-not-found-vector-illustration.jpg' }}
                     style={styles.imagen}
@@ -44,7 +44,7 @@ export default function InfoPersonaje({ navigation, route }) {
                 <Text style={styles.titulo}>{personaje.nombre} </Text>
 
                 <Text style={styles.descripcion}>{personaje.descripcion || "Sin descripción disponible."}</Text>
-                
+
             </View>
 
         </ScrollView>
@@ -54,21 +54,29 @@ export default function InfoPersonaje({ navigation, route }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 50,
+        padding: 20,
+        paddingTop: 80,
+        fontFamily: 'roboto',
+        marginTop: 50,
         backgroundColor: '#121212',
     },
-    comentariosContainer:{
+    subContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontFamily: 'roboto',
+    },
+    comentariosContainer: {
         backgroundColor: '#7D6461',
         marginBottom: 20,
         padding: 20,
         borderRadius: 20,
     },
-    horizontal:{
+    horizontal: {
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 10,
     },
-    vertical:{
+    vertical: {
         flexDirection: 'column',
         justifyContent: 'center',
     },
@@ -80,44 +88,44 @@ const styles = StyleSheet.create({
         margin: 20,
         marginTop: 40,
     },
-    fotoUsuario:{
+    fotoUsuario: {
         width: 60,
         height: 60,
         borderRadius: 100,
         marginRight: 10,
         backgroundColor: '#333',
     },
-    titulo:{
+    titulo: {
         textAlign: 'center',
         fontWeight: 'bold',
         fontSize: 20,
         color: 'white',
         padding: 5,
     },
-    subtexto:{
+    subtexto: {
         textAlign: 'center',
         color: '#cdcaca',
         fontSize: 16,
     },
-    descripcion:{
+    descripcion: {
         color: 'white',
         margin: 20,
     },
-    estrellas:{
+    estrellas: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         margin: 10,
     },
-    estrellasD:{
+    estrellasD: {
         flexDirection: 'row',
         margin: 10,
     },
-    subContainer:{
+    subContainer: {
         margin: 20,
         paddingLeft: 10,
     },
-    subtitulo:{
+    subtitulo: {
         color: 'white',
         fontSize: 20,
         fontWeight: 'bold',
@@ -125,13 +133,13 @@ const styles = StyleSheet.create({
     },
     personajeCard: {
         alignItems: 'center',
-        marginRight:15,
+        marginRight: 15,
     },
-    fotoPersonaje:{
+    fotoPersonaje: {
         width: 100,
         height: 150,
     },
-    nombrePersonaje:{
+    nombrePersonaje: {
         color: 'white',
         fontSize: 12,
         marginTop: 5,

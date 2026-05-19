@@ -7,7 +7,7 @@ export default function Home({ navigation }) {
   const isFocused = useIsFocused();
   const [libros, setLibros] = useState([]);
 
-  useEffect(( )=> {
+  useEffect(() => {
     if (isFocused) {
       const cargarLibros = async () => {
         const data = await getLibros();
@@ -20,7 +20,7 @@ export default function Home({ navigation }) {
   const renderSeccionGenero = (genero) => {
     const librosFiltrados = libros.filter(l => l.genero === genero);
 
-    return(
+    return (
       <View style={styles.contenedorGenero}>
         <Text style={styles.tituloGenero}>{genero}</Text>
         <FlatList
@@ -28,14 +28,14 @@ export default function Home({ navigation }) {
           data={librosFiltrados}
           keyExtractor={(item) => item.id.toString()}
           showsHorizontalScrollIndicator={false}
-          renderItem={({item}) => (
+          renderItem={({ item }) => (
             <View style={styles.card}>
-              <TouchableOpacity onPress={() => navigation.navigate('InfoLibro', {libroId: item.id })}>
-                  <Image
-                  source={{uri: item.imagen_url || 'https://static.vecteezy.com/system/resources/previews/022/059/000/non_2x/no-image-available-icon-vector.jpg'}}
+              <TouchableOpacity onPress={() => navigation.navigate('InfoLibro', { libroId: item.id })}>
+                <Image
+                  source={{ uri: item.imagen_url || 'https://static.vecteezy.com/system/resources/previews/022/059/000/non_2x/no-image-available-icon-vector.jpg' }}
                   style={styles.portada}
-                  />
-                  <Text style={styles.tituloLibro} numberOfLines={2}>{item.titulo}</Text>
+                />
+                <Text style={styles.tituloLibro} numberOfLines={2}>{item.titulo}</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#121212',
-    paddingTop: 50,
+    paddingTop: 70,
   },
   header: {
     fontSize: 28,
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     padding: 8,
     paddingTop: 12,
-    backgroundColor: '#7D6461',
+    backgroundColor: '#282828',
     display: 'flex',
     alignItems: 'center'
   },
@@ -96,7 +96,8 @@ const styles = StyleSheet.create({
     width: 120,
     height: 180,
     borderRadius: 8,
-    backgroundColor: '#333',
+    backgroundColor: '#333333',
+    alignSelf: 'center'
   },
   tituloLibro: {
     color: 'white',

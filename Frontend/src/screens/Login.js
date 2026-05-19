@@ -1,82 +1,82 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, SafeAreaView } from 'react-native';
 import { loginUsuario } from '../../api.js';
 import Entypo from '@expo/vector-icons/Entypo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login({ navigation }) {
-    const [nombreUsuario, setnombreUsuario] = useState('');
-    const [password, setpassword] = useState('');
-    const [mostrarPassword, setmostrarPassword] = useState(false);
-    const [error, setError] = useState(false);
+  const [nombreUsuario, setnombreUsuario] = useState('');
+  const [password, setpassword] = useState('');
+  const [mostrarPassword, setmostrarPassword] = useState(false);
+  const [error, setError] = useState(false);
 
-    const logIn = async () => {
-      setError(false);
+  const logIn = async () => {
+    setError(false);
 
-      if(!nombreUsuario || !password){
-        Alert.alert("Error", "Completa todos los campos");
-        return;
-      }
+    if (!nombreUsuario || !password) {
+      Alert.alert("Error", "Completa todos los campos");
+      return;
+    }
 
-      const { ok, data } = await loginUsuario(nombreUsuario, password);
+    const { ok, data } = await loginUsuario(nombreUsuario, password);
 
-      if(ok){
-        await AsyncStorage.setItem('@usuario_sesion', JSON.stringify(data.usuario));
+    if (ok) {
+      await AsyncStorage.setItem('@usuario_sesion', JSON.stringify(data.usuario));
 
-        console.log("Bienvenido: ", data.usuario.nombreUsuario);
-        navigation.replace('Tab');
-      } else {
-        setError(true);
-        Alert.alert("Error", data.error || "Datos incorrectos");
-      }   
-    };
+      console.log("Bienvenido: ", data.usuario.nombreUsuario);
+      navigation.replace('Tab');
+    } else {
+      setError(true);
+      Alert.alert("Error", data.error || "Datos incorrectos");
+    }
+  };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.subContainer}>
+    <View style={styles.container}>
+      <ScrollView style={styles.subContainer}>
         <Text style={styles.titulo}>Bienvenido de nuevo a tu biblioteca virtual</Text>
         <Text style={styles.subtitulo}>Inicio sesión</Text>
-        
-        <TextInput style={styles.input} value={nombreUsuario} onChangeText={nombreUsuario => setnombreUsuario(nombreUsuario)} placeholder="Usuario..." />
+
+        <TextInput style={styles.input} value={nombreUsuario} onChangeText={nombreUsuario => setnombreUsuario(nombreUsuario)} placeholder="Usuario..." autoCapitalize="none" autoCorrect={false} />
         <View style={styles.inputD}>
-          <TextInput style={styles.contrasenaInput} value={password} onChangeText={password => setpassword(password)} placeholder="Contraseña..." secureTextEntry={!mostrarPassword} />
-            <TouchableOpacity style={styles.icon} onPress={() => setmostrarPassword(!mostrarPassword)} >
-              <Entypo name={mostrarPassword ? 'eye-with-line' : 'eye'} size={24} color="white" />
-            </TouchableOpacity>
+          <TextInput style={styles.contrasenaInput} value={password} onChangeText={password => setpassword(password)} placeholder="Contraseña..." secureTextEntry={!mostrarPassword} autoCapitalize="none" autoCorrect={false} />
+          <TouchableOpacity style={styles.icon} onPress={() => setmostrarPassword(!mostrarPassword)} >
+            <Entypo name={mostrarPassword ? 'eye-with-line' : 'eye'} size={24} color="white" />
+          </TouchableOpacity>
         </View>
 
         <Text style={styles.textoContrasena}>¿Has olvidado tu contraseña?</Text>
-        
+
         {error ? <Text style={styles.error}>Los datos son incorrectos</Text> : null}
 
         <TouchableOpacity style={styles.button} onPress={logIn}>
           <Text style={styles.buttonText}>Iniciar sesion</Text>
         </TouchableOpacity>
-        
+
         <TouchableOpacity onPress={() => navigation.navigate('CrearUsuario')}>
           <Text style={styles.link}>¿Todavía no tienes una cuenta? Crear usuario.</Text>
         </TouchableOpacity>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, 
-    padding: 20, 
+    flex: 1,
+    padding: 20,
     backgroundColor: '#8E7960',
   },
-  subContainer:{
+  subContainer: {
     backgroundColor: '#DBD3CF',
-    margin: 10,
+    margin: 15,
     paddingTop: 70,
     paddingHorizontal: 30,
-    width: 350,
+    width: 340,
     height: 800,
     borderRadius: 50,
   },
-  inputD:{
+  inputD: {
     flexDirection: 'row',
     width: '100%',
     height: 50,
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     textAlign: 'center',
   },
-  textoContrasena:{
+  textoContrasena: {
     paddingTop: 0,
     marginTop: 0,
     fontSize: 13,
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     outlineStyle: 'none',
     fontSize: 16,
   },
-  contrasenaInput:{
+  contrasenaInput: {
     color: 'white',
     flex: 1,
     outlineStyle: 'none',
@@ -132,10 +132,10 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   buttonText: {
-    color: 'white',
     fontSize: 14,
     alignSelf: 'center',
     margin: 5,
+    color: 'white',
   },
   link: {
     color: '#6868AC',
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignSelf: 'center',
   },
-  error:{
+  error: {
     color: '#b91e1e',
     padding: 10,
     fontSize: 18,

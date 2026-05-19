@@ -139,6 +139,45 @@ app.get('/biblioteca/idUsuario/:id', async (req, res) => {
     }
 });
 
+app.get('/bibliotecas/:id', async (req, res) =>{
+    const idUsuario = req.params.id;
+    try{
+        const [rows] = await pool.query('SELECT id, nombre FROM biblioteca WHERE usuario_id = ?', [idUsuario]);
+        res.json(rows);
+    }catch(error){
+        console.error(error);
+        res.status(500).json({ error: 'Error al obtener bibliotecas '});
+    }
+});
+
+app.post('/bibliotecas/crear', async (req, res) => {
+    const { idUsuario, nombre } = req.body;
+    try{
+        const [result] = await pool.query('INSERT INTO biblioteca (nombre, usuario_id) VALUES (?,?)', [nombre, idUsuario]);
+        res.status(201).json({
+            ok: true,
+            id_biblioteca: result.insertId, nombre
+        })
+    }catch(error){
+        console.error(error);
+        res.status(500).json({error: 'Error al crear biblioteca'});
+    }
+});
+
+app.post('/bibliotecas/agregarLibro', async (req, res) => {
+    const { biblioteca_id, libro_id } = req.body;
+    try{
+        const [result] = await pool.query('INSERT INTO biblioteca_libro (biblioteca_id, libro_id) VALUES (?,?)', [biblioteca_id, libro_id]);
+        res.status(201).json({
+            ok: true,
+            mensaje: 'Libro guardao en biblioteca',
+        })
+    }catch(error){
+        console.error(error);
+        res.status(500).json({error: 'Error al guardar libro en biblioteca'});
+    }
+});
+
 app.get('/buscar/:texto', async (req, res) =>{
     const texto = req.params.texto;
     const busqueda = `%${texto}%`;
@@ -183,7 +222,12 @@ app.post('/nuevoUsuario', async (req, res) => {
         res.status(201).json({
             ok: true,
             mensaje: 'Usuario creado con exito',
-        })
+            usuario: {
+                id: result.insertId,
+                nombreUsuario: nombreUsuario,
+                foto_perfil: null
+            }
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Error al registrar el usuario' });
@@ -325,7 +369,7 @@ app.post('/newPersonaje', async (req, res) => {
 });
 
 app.post('/login', async (req, res) => {
-
+console.log("Datos recibidos en el backend:", req.body);
     try {
         const { nombreUsuario, password } = req.body;
 

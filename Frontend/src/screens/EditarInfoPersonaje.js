@@ -81,30 +81,36 @@ export default function EditarInfoPersonaje({ navigation, route }) {
     if (!personaje) return <Text style={{ color: 'white' }}>Cargando...</Text>;
 
     return (
-        <View style={styles.container}>
-            <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>
-                <Image source={{ uri: image }} style={styles.imagen} />
-            </TouchableOpacity>
+        <ScrollView style={styles.container}>
+            <View style={styles.subContainer}>
+                <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>
+                    <Image source={{ uri: image }} style={styles.imagen} />
+                </TouchableOpacity>
 
-            <TextInput style={styles.input} value={personaje.nombre} placeholder={personaje.nombre} onChangeText={(txt) => setPersonaje({ ...personaje, nombre: txt })} />
-            <TextInput style={styles.input} value={personaje.descripcion} placeholder={personaje.descripcion} onChangeText={(txt) => setPersonaje({ ...personaje, descripcion: txt })} />
+                <TextInput style={styles.input} value={personaje.nombre} placeholder={personaje.nombre} onChangeText={(txt) => setPersonaje({ ...personaje, nombre: txt })} />
+                <TextInput style={styles.input} value={personaje.descripcion} placeholder={personaje.descripcion} onChangeText={(txt) => setPersonaje({ ...personaje, descripcion: txt })} />
 
-            <TouchableOpacity style={styles.button} onPress={actualizar}>
-                <Text style={styles.buttonText}>Hecho</Text>
-            </TouchableOpacity>
-        </View>
+                <TouchableOpacity style={styles.button} onPress={actualizar}>
+                    <Text style={styles.buttonText}>Hecho</Text>
+                </TouchableOpacity>
+            </View>
+        </ScrollView>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        padding: 20,
+        paddingTop: 80,
+        fontFamily: 'roboto',
+        marginTop: 50,
+        backgroundColor: '#121212',
+    },
+    subContainer: {
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 20,
         fontFamily: 'roboto',
-        backgroundColor: '#121212',
-        marginTop: 50,
     },
     imagenConteiner: {
         margin: 20,

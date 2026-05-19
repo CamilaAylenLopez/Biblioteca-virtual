@@ -72,6 +72,43 @@ export const getBiblioteca = async (id) => {
     }
 };
 
+export const getBibliotecas = async (id) => {
+    try{
+        const res = await fetch(`${API_URL}/bibliotecas/${id}`);
+        return await res.json();
+    }catch(error){
+        console.error("Error en encontrar las bibliotecas");
+    }
+};
+
+export const crearBiblioteca = async (datos) => {
+    try {
+        const res = await fetch(`${API_URL}/bibliotecas/crear`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos),
+        });
+        return { ok: res.ok, data: await res.json() };
+    } catch (error) {
+        console.error("Error en registro:", error);
+        return { ok: false, data: { error: "Error de red" } };
+    }
+};
+
+export const guardarLibroEnBiblioteca = async (datos) => {
+    try {
+        const res = await fetch(`${API_URL}/bibliotecas/agregarLibro`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos),
+        });
+        return { ok: res.ok, data: await res.json() };
+    } catch (error) {
+        console.error("Error en registro:", error);
+        return { ok: false, data: { error: "Error de red" } };
+    }
+};
+
 export const resultadoBusqueda = async (texto) => {
     try {
         const res = await fetch(`${API_URL}/buscar/${texto}`);
@@ -111,12 +148,12 @@ export const actualizarPersonaje = async (id, datos) => {
 
 export const loginUsuario = async (nombreUsuario, password) => {
     try {
-        const response = await fetch(`${API_URL}/login`, {
+        const res = await fetch(`${API_URL}/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json',},
             body: JSON.stringify({ nombreUsuario, password }),
         });
-        return { ok: response.ok, data: await response.json() };
+        return { ok: res.ok, data: await res.json() };
     } catch (error) {
         console.error("Error en login:", error);
         return { ok: false, data: { mensaje: "Error de conexión" } };
@@ -125,12 +162,12 @@ export const loginUsuario = async (nombreUsuario, password) => {
 
 export const registrarUsuario = async (datos) => {
     try {
-        const response = await fetch(`${API_URL}/nuevoUsuario`, {
+        const res = await fetch(`${API_URL}/nuevoUsuario`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datos),
         });
-        return { ok: response.ok, data: await response.json() };
+        return { ok: res.ok, data: await res.json() };
     } catch (error) {
         console.error("Error en registro:", error);
         return { ok: false, data: { error: "Error de red" } };
@@ -139,12 +176,12 @@ export const registrarUsuario = async (datos) => {
 
 export const nuevoLibro = async (datos) => {
     try {
-        const response = await fetch(`${API_URL}/newLibro`, {
+        const res = await fetch(`${API_URL}/newLibro`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datos),
         });
-        return { ok: response.ok, data: await response.json() };
+        return { ok: res.ok, data: await res.json() };
     } catch (error) {
         console.error("Error en registro:", error);
         return { ok: false, data: { error: "Error de red" } };
@@ -153,12 +190,12 @@ export const nuevoLibro = async (datos) => {
 
 export const nuevoPersonaje = async (datos) => {
     try {
-        const response = await fetch(`${API_URL}/newPersonaje`, {
+        const res = await fetch(`${API_URL}/newPersonaje`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datos),
         });
-        return { ok: response.ok, data: await response.json() };
+        return { ok: res.ok, data: await res.json() };
     } catch (error) {
         console.error("Error en registro:", error);
         return { ok: false, data: { error: "Error de red" } };
@@ -167,12 +204,12 @@ export const nuevoPersonaje = async (datos) => {
 
 export const nuevoComentario = async (datos) => {
     try {
-        const response = await fetch(`${API_URL}/newComentario`, {
+        const res = await fetch(`${API_URL}/newComentario`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datos),
         });
-        return { ok: response.ok, data: await response.json() };
+        return { ok: res.ok, data: await res.json() };
     } catch (error) {
         console.error("Error en registro:", error);
         return { ok: false, data: { error: "Error de red" } };

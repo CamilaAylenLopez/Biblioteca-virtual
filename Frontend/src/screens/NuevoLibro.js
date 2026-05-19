@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, ScrollView, TouchableOpacity, Alert, TextInput } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, ScrollView, TouchableOpacity, Alert, TextInput, Platform } from 'react-native';
 import { nuevoLibro } from '../../api';
 import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
@@ -19,20 +19,39 @@ export default function NuevoLibro({ navigation }) {
     const [mostrarCalendario, setMostrarCalendario] = useState(false);
 
     useEffect(() => {
-        if(isFocused){
+        if (isFocused) {
             setForm({ titulo: '', autor: '', sinopsis: '', imagen_url: '', calificacion: '', lanzamiento: '', genero: '' });
             setImage('https://static.vecteezy.com/system/resources/thumbnails/056/202/171/small/add-image-or-photo-icon-vector.jpg');
         }
     }, [isFocused]);
 
     const onChangeFecha = (event, selectedDate) => {
-        setMostrarCalendario(Platform.OS === 'ios');
+        if (event.type === 'dismissed') {
+            setMostrarCalendario(false);
+            return;
+        }
 
-        if(selectedDate){
+        if (selectedDate) {
             setFecha(selectedDate);
 
-            const fechaFormateada = selectedDate.toIOSString().split('T')[0];
-            setForm({...form, lanzamiento: fechaFormateada});
+            const anio = selectedDate.getFullYear();
+            const mes = String(selectedDate.getMonth() + 1).padStart(2, '0');
+            const dia = String(selectedDate.getDate()).padStart(2, '0');
+
+            const fechaFormateada = `${anio}-${mes}-${dia}`;
+            setForm({ ...form, lanzamiento: fechaFormateada });
+        }
+
+        if (Platform.OS === 'android') {
+            setMostrarCalendario(false);
+        }
+    };
+
+    const onChangeFechaWeb = (txt) => {
+        setForm({ ...form, lanzamiento: txt });
+        if (txt) {
+            const [year, month, day] = txt.split('-');
+            setFecha(new Date(year, month - 1, day));
         }
     };
 
@@ -66,19 +85,31 @@ export default function NuevoLibro({ navigation }) {
     const agregarLibro = async () => {
         setError(false);
         if (!form.titulo || !form.autor || !form.genero) {
-            Alert.alert("Error", "Completa todos los campos");
+            if (Platform.OS === 'web') {
+                alert("Error: Completa todos los campos obligatorios");
+            } else {
+                Alert.alert("Error", "Completa todos los campos");
+            }
             return;
         }
 
         try {
-            console.log("Tamaño del Base64:", image.length);
             const respuesta = await nuevoLibro({ ...form, imagen_url: image });
             if (respuesta.ok) {
-                Alert.alert("¡Éxito!", "Libro agregado correctamente");
+                if (Platform.OS === 'web') {
+                    alert("¡Éxito!", "Libro agregado correctamente");
+                } else {
+                    Alert.alert("¡Éxito!", "Libro agregado correctamente");
+                }
                 navigation.navigate('Home');
             } else {
                 setError(true);
-                Alert.alert("Error", "No se pudo guardar el libro");
+                if (Platform.OS === 'web') {
+                    alert("Error", "No se pudo guardar el libro");
+                } else {
+                    Alert.alert("Error", "No se pudo guardar el libro");
+
+                }
             }
         } catch (error) {
             console.error(error);
@@ -86,79 +117,111 @@ export default function NuevoLibro({ navigation }) {
     };
 
     return (
-        <View style={styles.container}>
-            <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>
-                <Image source={{ uri: image }} style={styles.imagen} />
-            </TouchableOpacity>
+        <ScrollView style={styles.container}>
+            <View style={styles.subContainer}>
+                {/*SELECCIOANR IMAGEN*/}
+                <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>
+                    <Image source={{ uri: image }} style={styles.imagen} />
+                </TouchableOpacity>
 
-            <TextInput style={styles.input} value={form.titulo} placeholder="*Titulo..." onChangeText={(txt) => setForm({ ...form, titulo: txt })} />
-            <TextInput style={styles.input} value={form.autor} placeholder="*Autor..." onChangeText={(txt) => setForm({ ...form, autor: txt })} />
-            <TextInput style={styles.input} value={form.sinopsis} placeholder="Sinopsis..." onChangeText={(txt) => setForm({ ...form, sinopsis: txt })} />
-            
-            <TouchableOpacity style={styles.inputD} onPress={() => setMostrarCalendario(true)}>
-                <Text style={styles.textoFecha}>
-                    Elegir fecha de lanzamiento...
-                </Text>
-            </TouchableOpacity>
-            {mostrarCalendario && (
-                <DateTimePicker
-                    value={fecha}
-                    mode="date"
-                    display="default"
-                    onChange={onChangeFecha}
-                    maximumDate={new Date()}
+                {/*INPUTS NORMALES*/}
+                <TextInput style={styles.input} value={form.titulo} placeholder="*Titulo..." onChangeText={(txt) => setForm({ ...form, titulo: txt })} />
+                <TextInput style={styles.input} value={form.autor} placeholder="*Autor..." onChangeText={(txt) => setForm({ ...form, autor: txt })} />
+                <TextInput style={styles.input} value={form.sinopsis} placeholder="Sinopsis..." onChangeText={(txt) => setForm({ ...form, sinopsis: txt })} />
+
+                {/*INPUT FECHA*/}
+                <View style={{ zIndex: 1, width: '100%', marginVertical: 5 }}>
+                    {Platform.OS === 'web' ? (
+                        <View style={styles.inputD}>
+                            <TextInput type="date" value={form.lanzamiento} placeholder='YYYY-MM-DD' onChange={(e) => onChangeFechaWeb(e.target.value)} max={new Date().toISOString().split('t')[0]} style={styles.inputWeb} />
+                        </View>
+                    ) : (
+                        <View>
+                            <TouchableOpacity style={styles.inputD} onPress={() => setMostrarCalendario(!mostrarCalendario)}>
+                                <Text style={styles.textoFecha}>
+                                    {form.lanzamiento ? `${form.lanzamiento}` : "Elegir fecha de lanzamiento"}
+                                </Text>
+
+                                {mostrarCalendario && (
+                                    <View style={Platform.OS === 'ios' ? styles.contenedorCalendarioIOS : null}>
+                                        <DateTimePicker
+                                            value={fecha}
+                                            mode="date"
+                                            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                                            onChange={onChangeFecha}
+                                            maximumDate={new Date()}
+                                            locale="es-ES"
+                                        />
+
+
+                                        {Platform.OS === 'ios' && (
+                                            <TouchableOpacity style={styles.btnListoIOS} onPress={() => setMostrarCalendario(false)}>
+                                                <Text style={styles.confirmarText}>Confirmar fecha</Text>
+                                            </TouchableOpacity>
+                                        )}
+                                    </View>
+                                )}
+                            </TouchableOpacity>
+                        </View>
+                    )}
+                </View>
+
+                {/*INPUT GENERO*/}
+                <DropdownSelect
+                    style={styles.drop}
+                    label=" "
+                    placeholder="*Elegir genero..."
+                    options={[
+                        {
+                            title: 'Generos...',
+                            data: [
+                                { label: 'Terror', value: 'Terror' },
+                                { label: 'Romance', value: 'Romance' },
+                                { label: 'Misterio', value: 'Misterio' },
+                                { label: 'Parodia', value: 'Parodia' },
+                                { label: 'Ficción', value: 'Ficción' },
+                                { label: 'Contranovela', value: 'Contranovela' },
+                                { label: 'Policial', value: 'Policial' },
+                                { label: 'Fantasía', value: 'Fantasía' },
+                            ],
+                        },
+                    ]}
+                    value={form.genero}
+                    selectedValue={form.genero}
+                    onValueChange={(value) => setForm({ ...form, genero: value })}
+                    isSearchable
+                    primaryColor={'#7D6461'}
+                    dropdownStyle={{
+                        backgroundColor: '#7D6461',
+                        borderColor: '#7D6461',
+                        borderRadius: 50,
+                    }}
+                    dropdownIconStyle={{ color: 'white' }}
+                    dropdownPlaceholderStyle={{ color: 'white', }}
+                    placeholderStyle={{ color: 'white', fontSize: 16 }}
+                    selectedItemStyle={{ color: 'white' }}
                 />
-            )}
 
-            <DropdownSelect
-                style={styles.drop}
-                label=" "
-                placeholder="*Elegir genero..."
-                options={[
-                    {
-                        title: 'Generos...',
-                        data: [
-                            { label: 'Terror', value: 'Terror' },
-                            { label: 'Romance', value: 'Romance' },
-                            { label: 'Misterio', value: 'Misterio' },
-                            { label: 'Parodia', value: 'Parodia' },
-                            { label: 'Ficción', value: 'Ficción' },
-                            { label: 'Contranovela', value: 'Contranovela' },
-                            { label: 'Policial', value: 'Policial' },
-                        ],
-                    },
-                ]}
-                value={form.genero}
-                selectedValue={form.genero}
-                onValueChange={(value) => setForm({ ...form, genero: value })}
-                isSearchable
-                primaryColor={'#7D6461'}
-                dropdownStyle={{
-                    backgroundColor: '#7D6461',
-                    borderColor: '#7D6461',
-                    borderRadius: 50,
-                }}
-                dropdownIconStyle={{ color: 'white' }}
-                dropdownPlaceholderStyle={{ color: 'white',  }}
-                placeholderStyle={{color:'white', fontSize: 16}}
-                selectedItemStyle={{ color: 'white' }}
-            />
-
-            <TouchableOpacity style={styles.button} onPress={agregarLibro}>
-                <Text style={styles.buttonText}>Hecho</Text>
-            </TouchableOpacity>
-        </View>
-
+                {/*BOTON DE ACEPTAR*/}
+                <TouchableOpacity style={styles.button} onPress={agregarLibro}>
+                    <Text style={styles.buttonText}>Hecho</Text>
+                </TouchableOpacity>
+            </View>
+        </ScrollView>
     )
 }
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
         padding: 20,
+        paddingTop: 60,
         fontFamily: 'roboto',
         backgroundColor: '#121212',
+    },
+    subContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontFamily: 'roboto',
     },
     imagenConteiner: {
         margin: 20,
@@ -174,7 +237,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         textAlign: 'center'
     },
-    drop:{
+    drop: {
         backgroundColor: '#7D6461',
         fontSize: 16,
     },
@@ -237,7 +300,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         marginTop: 25,
     },
-    textoFecha:{
+    textoFecha: {
         color: 'white',
         fontSize: 16,
     },
@@ -255,5 +318,33 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         width: 200,
         height: 200,
-    }, 
+    },
+    contenedorCalendarioIOS: {
+        borderRadius: 25,
+        padding: 10,
+        marginVertical: 5,
+        width: '100%',
+        backgroundColor: '#63504e',
+        paddingBottom: 20,
+    },
+    btnListoIOS: {
+        marginTop: 5,
+        backgroundColor: '#63504e',
+        borderRadius: 25,
+    },
+    confirmarText: {
+        color: 'white',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        padding: 5
+    },
+    inputWeb: {
+        background: 'transparent',
+        color: 'white',
+        border: 'none',
+        fontSize: '16px',
+        width: '100%',
+        outline: 'none',
+        cursor: 'pointer'
+    }
 });

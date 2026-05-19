@@ -11,17 +11,17 @@ export default function Buscador({ navigation }) {
 
 
     const realizarBusqueda = async (texto) => {
-        if(texto.length < 2){
+        if (texto.length < 2) {
             setResultados([]);
             return;
         }
         setCargando(true);
-        try{
+        try {
             const data = await resultadoBusqueda(texto);
             setResultados(data);
-        }catch(error){
+        } catch (error) {
             console.error(error);
-        }finally{
+        } finally {
             setCargando(false);
         }
     };
@@ -29,7 +29,7 @@ export default function Buscador({ navigation }) {
 
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
-            if(query.trim().length > 1){
+            if (query.trim().length > 1) {
                 resultadoBusqueda(encodeURIComponent(query)).then(data => {
                     console.log("Resultados recibidos:", data);
                     setResultados(data);
@@ -42,15 +42,15 @@ export default function Buscador({ navigation }) {
 
     const resultadosFiltrados = resultados.filter(item => filtro === 'todo' ? true : item.tipo === filtro);
 
-    const renderItem = ({item}) => (
+    const renderItem = ({ item }) => (
         <TouchableOpacity style={styles.itemContainer} onPress={() => {
-            if(item.tipo === 'libro'){
+            if (item.tipo === 'libro') {
                 navigation.navigate('InfoLibro', { libroId: item.id });
-            }else{
+            } else {
                 navigation.navigate('InfoPersonaje', { personaje: item.id });
             }
         }}>
-            <Image source={{uri: item.imagen_url || 'https://via.placeholder.com/150'}} style={item.tipo === 'libro' ? styles.imgLibro : styles.imgPersonaje}/>
+            <Image source={{ uri: item.imagen_url || 'https://via.placeholder.com/150' }} style={item.tipo === 'libro' ? styles.imgLibro : styles.imgPersonaje} />
             <View style={styles.info}>
                 <Text style={styles.nombre}>{item.nombre}</Text>
                 <View style={styles.containerTipoTexto}>
@@ -65,10 +65,10 @@ export default function Buscador({ navigation }) {
     return (
         <View style={styles.container}>
             <View style={styles.buscarConteiner}>
-                <FontAwesome name="search" size={18} color="white" style={{marginHorizontal: 10}} />
-                <TextInput style={styles.input} placeholder='Buscar libro o personajes...' value={query} onChangeText={setQuery}/>
+                <FontAwesome name="search" size={18} color="white" style={{ marginHorizontal: 10 }} />
+                <TextInput style={styles.input} placeholder='Buscar libro o personajes...' value={query} onChangeText={setQuery} />
             </View>
-            
+
             <View style={styles.tabBar}>
                 {['todo', 'libro', 'personaje'].map((t) => (
                     <TouchableOpacity key={t} onPress={() => setFiltro(t)} style={[styles.tab, filtro === t && styles.tabActivo]} >
@@ -78,8 +78,8 @@ export default function Buscador({ navigation }) {
             </View>
 
             {cargando ? (
-                <ActivityIndicator size="large" color="#6868AC" style={{marginTop: 20}} />
-            ): (
+                <ActivityIndicator size="large" color="#6868AC" style={{ marginTop: 20 }} />
+            ) : (
                 <FlatList data={resultadosFiltrados}
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={renderItem}
@@ -94,7 +94,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#121212',
-        paddingHorizontal: 15
+        paddingHorizontal: 15,
+        padding: 50,
     },
     buscarConteiner: {
         flexDirection: 'row',
@@ -132,13 +133,13 @@ const styles = StyleSheet.create({
     tabTextActivo: {
         color: '#6868AC'
     },
-    itemContainer: { 
-        flexDirection: 'row', 
-        alignItems: 'center', 
-        backgroundColor: '#1e1e1e', 
-        padding: 10, 
-        borderRadius: 10, 
-        marginBottom: 10 
+    itemContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#1e1e1e',
+        padding: 10,
+        borderRadius: 10,
+        marginBottom: 10
     },
     imgLibro: {
         width: 50,
