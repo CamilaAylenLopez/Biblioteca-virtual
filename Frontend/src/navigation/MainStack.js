@@ -4,7 +4,7 @@ import Login from '../screens/Login';
 import CrearUsuario from '../screens/CrearUsuario';
 import Home from '../screens/Home';
 import InfoLibro from '../screens/InfoLibro';
-import TabNavigator from '../../TabNavigator';
+import TabNavigator from './TabNavigator';
 import { HeaderTitle } from '@react-navigation/elements';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -18,13 +18,13 @@ import EditarPerfil from '../screens/EditarPerfil';
 
 const Stack = createNativeStackNavigator();
 
-export default function MainStack() {
+export default function MainStack({ setUsuarioLogueado }) {
   return (
-    <Stack.Navigator initialRouteName="Login">
-      <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
-      <Stack.Screen name="CrearUsuario" component={CrearUsuario} options={{ headerShown: false }}/>
-      
-      <Stack.Screen name="Tab" component={TabNavigator} options={{ headerShown: false }}/>
+    <Stack.Navigator initialRouteName="Tab">
+      <Stack.Screen name="Tab" options={{ headerShown: false }}>
+        {(props) => <TabNavigator {...props} setUsuarioLogueado={setUsuarioLogueado} />}
+      </Stack.Screen>
+
       
       <Stack.Screen name="EditarInfoLibro" component={EditarInfoLibro} options={({ navigation }) => ({
         headerShown: true,

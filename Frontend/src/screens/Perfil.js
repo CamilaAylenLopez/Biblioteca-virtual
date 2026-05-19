@@ -5,7 +5,7 @@ import { getBiblioteca } from '../../api.js';
 import Entypo from '@expo/vector-icons/Entypo';
 import { useIsFocused } from '@react-navigation/native';
 
-export default function Perfil({ navigation }) {
+export default function Perfil({ navigation, setUsuarioLogueado }) {
   const isFocused = useIsFocused();
   const [usuario, setUsuario] = useState(null);
   const [biblioteca, setBiblioteca] = useState([]);
@@ -61,7 +61,7 @@ export default function Perfil({ navigation }) {
 
   const cerrarSesion = async () => {
     await AsyncStorage.removeItem('@usuario_sesion');
-    navigation.replace('Login');
+    setUsuarioLogueado(false);
   };
 
   const nombresBibliotecas = [...new Set(biblioteca.map(b => b.nombre))];

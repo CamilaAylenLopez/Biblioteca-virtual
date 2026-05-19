@@ -4,7 +4,7 @@ import { loginUsuario } from '../../api.js';
 import Entypo from '@expo/vector-icons/Entypo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Login({ navigation }) {
+export default function Login({ navigation, setUsuarioLogueado }) {
   const [nombreUsuario, setnombreUsuario] = useState('');
   const [password, setpassword] = useState('');
   const [mostrarPassword, setmostrarPassword] = useState(false);
@@ -18,17 +18,22 @@ export default function Login({ navigation }) {
       return;
     }
 
-    const { ok, data } = await loginUsuario(nombreUsuario, password);
+    try {
+      const { ok, data } = await loginUsuario(nombreUsuario, password);
 
-    if (ok) {
-      await AsyncStorage.setItem('@usuario_sesion', JSON.stringify(data.usuario));
-
-      console.log("Bienvenido: ", data.usuario.nombreUsuario);
-      navigation.replace('Tab');
-    } else {
-      setError(true);
-      Alert.alert("Error", data.error || "Datos incorrectos");
+      if (ok) {
+        await AsyncStorage.setItem('@usuario_sesion', JSON.stringify(data.usuario));
+        const horaActual = Date.now().toString();
+        await AsyncStorage.setItem('@hora_login', horaActual);
+        setUsuarioLogueado(true);
+      } else {
+        setError(true);
+        Alert.alert("Error", data.error || "Datos incorrectos");
+      }
+    } catch (error) {
+      console.log(error)
     }
+
   };
 
   return (

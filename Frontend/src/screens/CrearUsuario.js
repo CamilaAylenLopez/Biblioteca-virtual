@@ -4,7 +4,7 @@ import { registrarUsuario } from '../../api';
 import Entypo from '@expo/vector-icons/Entypo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function CrearUsuario({ navigation }) {
+export default function CrearUsuario({ navigation, setUsuarioLogueado }) {
     const [form, setForm] = useState({
         nombre: '', apellido: '', nombreUsuario: '', email: '', password: ''
     });
@@ -55,14 +55,16 @@ export default function CrearUsuario({ navigation }) {
         try {
             const respuesta = await registrarUsuario(form);
             if (respuesta.ok) {
-                if(respuesta.data.usuario){
+                if (respuesta.data.usuario) {
                     await AsyncStorage.setItem(
                         '@usuario_sesion',
                         JSON.stringify(respuesta.data.usuario)
                     );
                 }
+                const horaActual = Date.now().toString();
+                await AsyncStorage.setItem('@hora_login', horaActual);
+                setUsuarioLogueado(true);
                 Alert.alert("¡Éxito!", respuesta.data.mensaje);
-                navigation.navigate('Tab');
             } else {
                 setError(true);
                 setMensaje(respuesta.data.error);

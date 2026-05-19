@@ -3,17 +3,17 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import Home from './src/screens/Home';
-import NuevoLibro from './src/screens/NuevoLibro';
-import Buscador from './src/screens/Buscador';
-import Perfil from './src/screens/Perfil';
+import Home from '../screens/Home';
+import NuevoLibro from '../screens/NuevoLibro';
+import Buscador from '../screens/Buscador';
+import Perfil from '../screens/Perfil';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 const Tab = createBottomTabNavigator();
 
-export default function TabNavigator(){
+export default function TabNavigator({ setUsuarioLogueado }){
     return (
         <Tab.Navigator 
         initialRouteName='Home' 
@@ -51,11 +51,11 @@ export default function TabNavigator(){
             />
             <Tab.Screen
                 name="Perfil"
-                component={Perfil}
                 options={{
                     tabBarIcon: ({color, size}) => (<FontAwesome name="user" color={color} size={24}/>),
-                }}
-            />
+                }}>
+                {(props) => <Perfil {...props} setUsuarioLogueado={setUsuarioLogueado} />}
+            </Tab.Screen>
         </Tab.Navigator>
     );
 }

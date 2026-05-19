@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
         border: 'none',
         fontSize: '16px',
         width: '100%',
-        outline: 'none',
+        outlineStyle: 'none',
         cursor: 'pointer'
     },
 });
