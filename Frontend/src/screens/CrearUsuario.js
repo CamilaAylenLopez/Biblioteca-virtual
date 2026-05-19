@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text, Alert, StyleSheet, ScrollView } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, Alert, StyleSheet, ScrollView, Platform } from 'react-native';
 import { registrarUsuario } from '../../api';
 import Entypo from '@expo/vector-icons/Entypo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -25,7 +25,11 @@ export default function CrearUsuario({ navigation, setUsuarioLogueado }) {
     const handleRegistro = async () => {
         setError(false);
         if (!form.nombreUsuario || !form.password || !form.email) {
-            Alert.alert("Error", "Faltan completar campos");
+            if (Platform.OS === 'web') {
+                alert("Faltan completar campos");
+            } else {
+                Alert.alert("Error", "Faltan completar campos");
+            }
             return;
         }
 
@@ -64,7 +68,12 @@ export default function CrearUsuario({ navigation, setUsuarioLogueado }) {
                 const horaActual = Date.now().toString();
                 await AsyncStorage.setItem('@hora_login', horaActual);
                 setUsuarioLogueado(true);
-                Alert.alert("¡Éxito!", respuesta.data.mensaje);
+
+                if (Platform.OS === 'web') {
+                    alert(respuesta.data.mensaje);
+                } else {
+                    Alert.alert("¡Éxito!", respuesta.data.mensaje);
+                }
             } else {
                 setError(true);
                 setMensaje(respuesta.data.error);
@@ -117,18 +126,19 @@ export default function CrearUsuario({ navigation, setUsuarioLogueado }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
         backgroundColor: '#8E7960',
-        fontFamily: 'roboto',
     },
     subContainer: {
         backgroundColor: '#DBD3CF',
-        margin: 10,
+        marginVertical: 40,
+        marginHorizontal: 30,
         paddingTop: 70,
         paddingHorizontal: 30,
-        width: 340,
+        minHeight: 340,
+        Width: 600,
         height: 800,
         borderRadius: 50,
+        alignSelf: 'center',
     },
     titulo: {
         fontSize: 35,
@@ -141,12 +151,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 40,
         textAlign: 'center',
-    },
-    textoContrasena: {
-        paddingTop: 0,
-        marginTop: 0,
-        fontSize: 13,
-        marginBottom: 20,
     },
     input: {
         width: '100%',
@@ -178,7 +182,8 @@ const styles = StyleSheet.create({
     },
     link: {
         color: '#6868AC',
-        marginTop: 50
+        marginTop: 30,
+        marginBottom: 20,
     },
     error: {
         color: '#b91e1e',

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, SafeAreaView, Platform } from 'react-native';
 import { loginUsuario } from '../../api.js';
 import Entypo from '@expo/vector-icons/Entypo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -14,7 +14,11 @@ export default function Login({ navigation, setUsuarioLogueado }) {
     setError(false);
 
     if (!nombreUsuario || !password) {
-      Alert.alert("Error", "Completa todos los campos");
+      if (Platform.OS === 'web') {
+        alert("Completa todos los campos");
+      } else {
+        Alert.alert("Error", "Completa todos los campos");
+      }
       return;
     }
 
@@ -28,7 +32,11 @@ export default function Login({ navigation, setUsuarioLogueado }) {
         setUsuarioLogueado(true);
       } else {
         setError(true);
-        Alert.alert("Error", data.error || "Datos incorrectos");
+        if (Platform.OS === 'web') {
+          alert("Datos incorrectos");
+        } else {
+          Alert.alert("Error", "Datos incorrectos");
+        }
       }
     } catch (error) {
       console.log(error)
@@ -69,17 +77,19 @@ export default function Login({ navigation, setUsuarioLogueado }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: '#8E7960',
   },
   subContainer: {
     backgroundColor: '#DBD3CF',
-    margin: 15,
+    marginVertical: 40,
+    marginHorizontal: 30,
     paddingTop: 70,
     paddingHorizontal: 30,
-    width: 340,
+    minHeight: 340,
+    Width: 600,
     height: 800,
     borderRadius: 50,
+    alignSelf: 'center',
   },
   inputD: {
     flexDirection: 'row',
@@ -134,13 +144,14 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderRadius: 50,
     marginTop: 10,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   buttonText: {
     fontSize: 14,
     alignSelf: 'center',
     margin: 5,
     color: 'white',
+    fontWeight: '400'
   },
   link: {
     color: '#6868AC',
@@ -149,10 +160,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   error: {
-    color: '#b91e1e',
-    padding: 10,
-    fontSize: 18,
-    justifyContent: 'center',
+    color: '#d00000',
+    fontSize: 16,
+    margin: 10,
   },
   icon: {
     padding: 5,

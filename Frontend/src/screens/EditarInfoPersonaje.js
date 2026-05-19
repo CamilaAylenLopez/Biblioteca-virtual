@@ -124,7 +124,8 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderRadius: 50,
         marginTop: 10,
-        textAlign: 'center'
+        textAlign: 'center',
+        fontWeight: '500'
     },
     drop: {
         backgroundColor: '#7D6461',

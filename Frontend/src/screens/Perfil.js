@@ -44,7 +44,7 @@ export default function Perfil({ navigation, setUsuarioLogueado }) {
             <View style={styles.card}>
               <TouchableOpacity onPress={() => navigation.navigate('InfoLibro', { libroId: item.libro_id })}>
                 <Image
-                  source={{ uri: item.imagen_url || 'https://static.vecteezy.com/system/resources/previews/022/059/000/non_2x/no-image-available-icon-vector.jpg' }}
+                  source={{ uri: item.imagen_url || 'https://static.vecteezy.com/system/resources/thumbnails/017/800/528/small/user-simple-flat-icon-illustration-vector.jpg' }}
                   style={styles.portada}
                 />
                 <Text style={styles.tituloLibro} numberOfLines={2}>{item.titulo}</Text>
@@ -70,7 +70,7 @@ export default function Perfil({ navigation, setUsuarioLogueado }) {
     <ScrollView style={styles.container}>
       <View style={styles.horizontal}>
         <Image
-          source={{ uri: usuario.foto_perfil || 'https://via.placeholder.com/150' }}
+          source={usuario.foto_perfil ? { uri: usuario.foto_perfil} : require('../img/userIcon.webp')}
           style={styles.foto}
         />
         <View style={styles.vertical}>
@@ -110,7 +110,8 @@ export default function Perfil({ navigation, setUsuarioLogueado }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    paddingVertical: 40,
+    paddingHorizontal: 15,
     paddingTop: 70,
     backgroundColor: '#121212',
   },
@@ -152,6 +153,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     alignSelf: 'center',
     margin: 5,
+    fontWeight: '400'
   },
   foto: {
     width: 100,

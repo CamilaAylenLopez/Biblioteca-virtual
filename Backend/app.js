@@ -8,7 +8,7 @@ import bcrypt from 'bcrypt'
 
 const app = express();
 app.use(cors());
-app.use(express.json({ limit: '50mb' })); 
+app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 app.get('/', (req, res) => {
@@ -139,111 +139,70 @@ app.get('/biblioteca/idUsuario/:id', async (req, res) => {
     }
 });
 
-app.get('/bibliotecas/:id', async (req, res) =>{
+app.get('/bibliotecas/:id', async (req, res) => {
     const idUsuario = req.params.id;
-    try{
+    try {
         const [rows] = await pool.query('SELECT id, nombre FROM biblioteca WHERE usuario_id = ?', [idUsuario]);
         res.json(rows);
-    }catch(error){
+    } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Error al obtener bibliotecas '});
+        res.status(500).json({ error: 'Error al obtener bibliotecas ' });
     }
 });
 
 app.post('/bibliotecas/crear', async (req, res) => {
     const { idUsuario, nombre } = req.body;
-    try{
+    try {
         const [result] = await pool.query('INSERT INTO biblioteca (nombre, usuario_id) VALUES (?,?)', [nombre, idUsuario]);
         res.status(201).json({
             ok: true,
             id_biblioteca: result.insertId, nombre
         })
-    }catch(error){
+    } catch (error) {
         console.error(error);
-        res.status(500).json({error: 'Error al crear biblioteca'});
+        res.status(500).json({ error: 'Error al crear biblioteca' });
     }
 });
 
 app.post('/bibliotecas/agregarLibro', async (req, res) => {
     const { biblioteca_id, libro_id } = req.body;
-    try{
+    try {
         const [result] = await pool.query('INSERT INTO biblioteca_libro (biblioteca_id, libro_id) VALUES (?,?)', [biblioteca_id, libro_id]);
         res.status(201).json({
             ok: true,
             mensaje: 'Libro guardao en biblioteca',
         })
-    }catch(error){
+    } catch (error) {
         console.error(error);
-        res.status(500).json({error: 'Error al guardar libro en biblioteca'});
+        res.status(500).json({ error: 'Error al guardar libro en biblioteca' });
     }
 });
 
-app.get('/buscar/:texto', async (req, res) =>{
+app.get('/buscar/:texto', async (req, res) => {
     const texto = req.params.texto;
     const busqueda = `%${texto}%`;
 
-    try{
+    try {
         const [libros] = await pool.query('SELECT id, titulo as nombre, "libro" as tipo, imagen_url FROM libro WHERE titulo LIKE ? OR autor LIKE ?', [busqueda, busqueda]);
         const [personajes] = await pool.query('SELECT id, nombre, "personaje" as tipo, imagen_url FROM personaje WHERE nombre LIKE ?', [busqueda]);
 
         const result = [...libros, ...personajes];
         res.json(result);
-    }catch(error){
-        res.status(500).json({ error: "Error en la búsqueda"});
-    }
-});
-
-app.post('/nuevoUsuario', async (req, res) => {
-    const { nombre, apellido, nombreUsuario, email, fecha_nacimiento, password, descripcion, foto_perfil } = req.body;
-
-    try {
-        const [yaExiste] = await pool.query('SELECT * FROM usuario WHERE nombreUsuario = ? OR email = ?', [nombreUsuario, email]);
-
-        if (yaExiste.length > 0) {
-            const mensaje = yaExiste[0].email === email
-                ? "El email ya esta registrado"
-                : "El nombre de usuario ya esta registrado"
-            return res.status(400).json({
-                ok: false,
-                error: mensaje
-            });
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const query = `
-        INSERT INTO usuario
-        (nombre, apellido, nombreUsuario, email, fecha_nacimiento, password, descripcion, foto_perfil)
-        VALUES (?,?,?,?,?,?,?,?)`;
-
-        const [result] = await pool.query(query, [
-            nombre, apellido, nombreUsuario, email, fecha_nacimiento, hashedPassword, descripcion, foto_perfil
-        ]);
-
-        res.status(201).json({
-            ok: true,
-            mensaje: 'Usuario creado con exito',
-            usuario: {
-                id: result.insertId,
-                nombreUsuario: nombreUsuario,
-                foto_perfil: null
-            }
-        });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Error al registrar el usuario' });
+        res.status(500).json({ error: "Error en la búsqueda" });
     }
 });
 
 app.post('/newComentario', async (req, res) => {
     const { texto, estrellas, usuario_id, libro_id } = req.body;
 
-    try{
+    try {
         const query = `
             INSERT INTO comentario
             (texto, estrellas, usuario_id, libro_id)
             VALUES (?,?,?,?)
         `;
-        const [result] = await pool.query(query,[
+        const [result] = await pool.query(query, [
             texto, estrellas, usuario_id, libro_id
         ]);
         const queryCalificacionLibro = `
@@ -259,7 +218,7 @@ app.post('/newComentario', async (req, res) => {
             ok: true,
             mensaje: 'Cometario publicado con exito',
         });
-    }catch(error){
+    } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Error al publicar el comentario' });
     }
@@ -299,8 +258,8 @@ app.put('/updateLibro/:id', async (req, res) => {
             titulo, autor, sinopsis, imagen_url, calificacion, lanzamiento, genero, id
         ]);
 
-        if(result.affectedRows === 0){
-            return res.status(404).json({ok: false, mensaje: "No se encontro el libro"});
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ ok: false, mensaje: "No se encontro el libro" });
         }
         res.status(201).json({
             ok: true,
@@ -325,8 +284,8 @@ app.put('/updatePersonaje/:id', async (req, res) => {
             nombre, imagen_url, descripcion, id
         ]);
 
-        if(result.affectedRows === 0){
-            return res.status(404).json({ok: false, mensaje: "No se encontro el personaje"});
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ ok: false, mensaje: "No se encontro el personaje" });
         }
         res.status(201).json({
             ok: true,
@@ -347,9 +306,9 @@ app.post('/newPersonaje', async (req, res) => {
             (nombre, imagen_url, descripcion)
             VALUES (?,?,?)`;
         const [result] = await pool.query(queryPersonaje, [nombre, imagen_url, descripcion]);
-        
+
         const personajeId = result.insertId;
-        
+
         const queryRelacion = `
             INSERT INTO libro_personaje
             (libro_id, personaje_id)
@@ -369,7 +328,7 @@ app.post('/newPersonaje', async (req, res) => {
 });
 
 app.post('/login', async (req, res) => {
-console.log("Datos recibidos en el backend:", req.body);
+    console.log("Datos recibidos en el backend:", req.body);
     try {
         const { nombreUsuario, password } = req.body;
 
@@ -405,6 +364,52 @@ console.log("Datos recibidos en el backend:", req.body);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Error en el servidor' });
+    }
+});
+
+app.post('/nuevoUsuario', async (req, res) => {
+    const { nombre, apellido, nombreUsuario, email, fecha_nacimiento, password, descripcion, foto_perfil } = req.body;
+
+    try {
+        const [yaExiste] = await pool.query('SELECT * FROM usuario WHERE nombreUsuario = ? OR email = ?', [nombreUsuario, email]);
+
+        if (yaExiste.length > 0) {
+            const mensaje = yaExiste[0].email === email
+                ? "El email ya esta registrado"
+                : "El nombre de usuario ya esta registrado"
+            return res.status(400).json({
+                ok: false,
+                error: mensaje
+            });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const query = `
+        INSERT INTO usuario
+        (nombre, apellido, nombreUsuario, email, fecha_nacimiento, password, descripcion, foto_perfil)
+        VALUES (?,?,?,?,?,?,?,?)`;
+
+        const [result] = await pool.query(query, [
+            nombre, apellido || null, nombreUsuario, email, fecha_nacimiento|| null, hashedPassword, descripcion|| null, foto_perfil || null
+        ]);
+
+        res.status(201).json({
+            ok: true,
+            mensaje: 'Usuario creado con exito',
+            usuario: {
+                id: result.insertId,
+                nombre: nombre,
+                apellido: "",
+                nombreUsuario: nombreUsuario,
+                email: email,
+                fecha_nacimiento: "",
+                descripcion: "",
+                foto_perfil: null
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ok: false, error: 'Error al registrar el usuario' });
     }
 });
 

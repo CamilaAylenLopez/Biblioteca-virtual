@@ -280,6 +280,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         margin: 5,
         fontSize: 16,
+        fontWeight: '500'
     },
     link: {
         color: '#6868AC',

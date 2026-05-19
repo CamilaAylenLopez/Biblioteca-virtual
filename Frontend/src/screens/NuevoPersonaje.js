@@ -171,6 +171,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         alignSelf: 'center',
         margin: 5,
+        fontWeight: '500'
     },
     link: {
         color: '#6868AC',

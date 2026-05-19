@@ -257,7 +257,7 @@ export default function InfoLibro({ navigation, route }) {
                         <View style={styles.comentariosContainer} key={c.id}>
                             <View style={styles.horizontal}>
                                 <Image
-                                    source={{ uri: c.foto_perfil || 'https://previews.123rf.com/images/yoginta/yoginta2301/yoginta230100567/196853824-image-not-found-vector-illustration.jpg' }}
+                                    source={c.foto_perfil ? { uri: c.foto_perfil} : require('../img/userIcon.webp')}
                                     style={styles.fotoUsuario}
                                 />
                                 <View style={styles.vertical}>
@@ -273,7 +273,7 @@ export default function InfoLibro({ navigation, route }) {
                     <View style={styles.comentariosContainer}>
                         <View style={styles.horizontal}>
                             <Image
-                                source={{ uri: usuario.foto || 'https://previews.123rf.com/images/yoginta/yoginta2301/yoginta230100567/196853824-image-not-found-vector-illustration.jpg' }}
+                                source={usuario.foto ? { uri: usuario.foto} : require('../img/userIcon.webp')}                            
                                 style={styles.fotoUsuario}
                             />
                             <Text style={{ color: 'white' }}>{usuario.nombre}</Text>

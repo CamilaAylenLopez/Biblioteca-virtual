@@ -247,6 +247,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         textAlign: 'center',
         marginBottom: 20,
+        fontWeight: '500'
     },
     drop: {
         backgroundColor: '#7D6461',
