@@ -14,7 +14,7 @@ export default function EditarInfoLibro({ navigation, route }) {
     const [libro, setLibro] = useState({
         titulo: '', autor: '', sinopsis: '', imagen_url: '', calificacion: '', lanzamiento: '', genero: ''
     });
-    const [image, setImage] = useState('')
+    const [image, setImage] = useState()
     const [error, setError] = useState(false);
     const [fecha, setFecha] = useState(new Date());
     const [mostrarCalendario, setMostrarCalendario] = useState(false);
@@ -42,7 +42,11 @@ export default function EditarInfoLibro({ navigation, route }) {
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
             if (status !== 'granted') {
-                Alert.alert("Permiso no concedido");
+                if (Platform.OS === 'web') {
+                    alert("Permiso no concedido");
+                } else {
+                    Alert.alert("Error", "Permiso no concedido");
+                }
                 return;
             }
 
@@ -127,7 +131,7 @@ export default function EditarInfoLibro({ navigation, route }) {
             <View style={styles.subContainer}>
                 {/*SELECCIONAR IMAGEN*/}
                 <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>
-                    <Image source={{ uri: image }} style={styles.imagen} />
+                    <Image source={image ? { uri: image } : require('../img/addimage.jpg')} style={styles.imagen} />
                 </TouchableOpacity>
 
                 {/*INPUT NORMALES*/}
@@ -329,7 +333,7 @@ const styles = StyleSheet.create({
     imagen: {
         alignSelf: 'center',
         width: 200,
-        height: 300,
+        height: 200,
     },
     contenedorCalendarioIOS: {
         borderRadius: 25,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, TextInput, Alert, Modal } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, TextInput, Alert, Modal, Platform } from 'react-native';
 import { getLibrosById, getPersonajesByIdLibro, getComentariosByIdLibro, nuevoComentario, getBibliotecas, crearBiblioteca, guardarLibroEnBiblioteca } from '../../api';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Fontisto from '@expo/vector-icons/Fontisto';
@@ -93,7 +93,7 @@ export default function InfoLibro({ navigation, route }) {
 
     const handleCrearBiblioteca = async () => {
         if (!nombreNuevaBiblioteca.trim()) {
-            Alert.alert("Error", "Escribe un nombre para la biblioteca");
+            alerta("Error", "Escribe un nombre para la biblioteca");
             return;
         }
 
@@ -102,12 +102,12 @@ export default function InfoLibro({ navigation, route }) {
             const respuesta = await crearBiblioteca(datos);
 
             if (respuesta.ok) {
-                Alert.alert("Exito", "Biblioteva creada correctamente");
+                alerta("Exito", "Biblioteca creada correctamente");
 
                 setBibliotecas([...bibliotecas, { id: respuesta.data.id_biblioteca, nombre: respuesta.data.nombre, usuario_id: usuario.id }]);
                 setNombreNuevaBiblioteca('');
             } else {
-                Alert.alert("Error", "No se pudo crear la biblioteca");
+                alerta("Error", "No se pudo crear la biblioteca");
             }
         } catch (error) {
             console.error(error);
@@ -120,21 +120,30 @@ export default function InfoLibro({ navigation, route }) {
             const respuesta = await guardarLibroEnBiblioteca(data);
 
             if (respuesta.ok) {
-                Alert.alert("Exito", "El libro se guardo correctamente"),
+                alerta("Exito", "El libro se guardo correctamente");
+
                 setModalVisible(false);
             } else {
                 //agregar funcion para que se elimine
-                Alert.alert("Aviso", "El libro ya se encuentra en esta biblioteca");
+                alerta("Error", "El libro ya se encuentra en esta biblioteca");
             }
         } catch (error) {
             console.error(error);
         }
     };
 
+    const alerta = (titulo, mensaje) =>{
+        if(Platform.OS === 'web'){
+            alert(mensaje)
+        }else{
+            Alert.alert(titulo, mensaje)
+        }
+    };
+
     const sendComentario = async () => {
         setError(false);
         if (!newComentario || newComentario.trim() === "") {
-            Alert.alert("Error", "Completa todos los campos");
+            alerta("Error","Completa todos los campos");
             return;
         }
         try {
@@ -148,25 +157,25 @@ export default function InfoLibro({ navigation, route }) {
 
             const respuesta = await nuevoComentario(data);
             if (respuesta.ok) {
-                Alert.alert("¡Éxito!", "Comenatrio agregado correctamente");
+                alerta("¡Éxito!", "Comenatrio agregado correctamente");
                 setNewComentario("");
                 setEstrellas(0);
                 try {
                     const dataComentarios = await getComentariosByIdLibro(libroId);
                     setComentarios(dataComentarios);
                 } catch (error) {
-                    Alert.alert("Error", "Error al cargar comentarios")
+                    alerta("Error", "Error al cargar comentarios")
                 };
                 const dataLibroActualizado = await getLibrosById(libroId);
                 setLibro(dataLibroActualizado);
 
             } else {
                 setError(true);
-                Alert.alert("Error", "No se pudo subir el comenario");
+                alerta("Error", "No se pudo subir el comenario");
             }
         } catch (error) {
             console.error(error);
-            Alert.alert("Error", "No se ha podido subir el comenatrio");
+            alerta("Error", "No se ha podido subir el comentario");
         }
     };
 
@@ -179,7 +188,7 @@ export default function InfoLibro({ navigation, route }) {
         <ScrollView style={styles.container}>
             <View style={{ justifyContent: 'center', alignContent: 'center' }}>
                 <Image
-                    source={{ uri: libro.imagen_url || 'https://previews.123rf.com/images/yoginta/yoginta2301/yoginta230100567/196853824-image-not-found-vector-illustration.jpg' }}
+                    source={libro.imagen_url ? { uri: libro.imagen_url } : require('../img/Imagenotfound.png')}
                     style={styles.imagen}
                 />
 
@@ -205,8 +214,8 @@ export default function InfoLibro({ navigation, route }) {
                             <FlatList
                                 data={bibliotecas}
                                 keyExtractor={(item) => item.id.toString()}
-                                style={{width: '100%', maxHeight: 180}}
-                                renderItem={({item}) => (
+                                style={{ width: '100%', maxHeight: 180 }}
+                                renderItem={({ item }) => (
                                     <TouchableOpacity style={styles.itemBiblioteca} onPress={() => handleGuardarLibro(item.id)}>
                                         <Text style={styles.textoItem}>{item.nombre}</Text>
                                     </TouchableOpacity>
@@ -218,8 +227,8 @@ export default function InfoLibro({ navigation, route }) {
                             <View style={styles.separador} />
 
                             <Text style={styles.subtituloModal}>Crear nueva biblioteca</Text>
-                            <TextInput style={styles.inputModal} value={nombreNuevaBiblioteca} placeholder='Nombre...' onChangeText={(txt) => setNombreNuevaBiblioteca(txt)}/>
-                            
+                            <TextInput style={styles.inputModal} value={nombreNuevaBiblioteca} placeholder='Nombre...' onChangeText={(txt) => setNombreNuevaBiblioteca(txt)} />
+
                             <View>
                                 <TouchableOpacity style={styles.buttonCrear} onPress={handleCrearBiblioteca}>
                                     <Text style={{ color: 'white', fontWeight: 'bold', textAlign: 'center' }}>Crear</Text>
@@ -245,7 +254,7 @@ export default function InfoLibro({ navigation, route }) {
                             </View>
                         )) : <Text style={{ color: 'white' }}>No hay personajes para este libro</Text>}
                         <TouchableOpacity onPress={() => navigation.navigate('NuevoPersonaje', { libroId: libro.id })} style={styles.personajeCard}>
-                            <Image source={'https://i.pinimg.com/736x/c3/f0/e6/c3f0e6a8f9ff1aec72f32908628a8e26.jpg'} style={styles.fotoPersonaje} />
+                            <Image source={require('../img/addusericon.jpg')} style={styles.fotoPersonaje} />
                             <Text style={styles.nombrePersonaje}>Agregar personaje</Text>
                         </TouchableOpacity>
                     </ScrollView>
@@ -257,7 +266,7 @@ export default function InfoLibro({ navigation, route }) {
                         <View style={styles.comentariosContainer} key={c.id}>
                             <View style={styles.horizontal}>
                                 <Image
-                                    source={c.foto_perfil ? { uri: c.foto_perfil} : require('../img/userIcon.webp')}
+                                    source={c.foto_perfil ? { uri: c.foto_perfil } : require('../img/userIcon.webp')}
                                     style={styles.fotoUsuario}
                                 />
                                 <View style={styles.vertical}>
@@ -273,7 +282,7 @@ export default function InfoLibro({ navigation, route }) {
                     <View style={styles.comentariosContainer}>
                         <View style={styles.horizontal}>
                             <Image
-                                source={usuario.foto ? { uri: usuario.foto} : require('../img/userIcon.webp')}                            
+                                source={usuario.foto ? { uri: usuario.foto } : require('../img/userIcon.webp')}
                                 style={styles.fotoUsuario}
                             />
                             <Text style={{ color: 'white' }}>{usuario.nombre}</Text>
@@ -463,6 +472,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 12,
         marginVertical: 10,
+        color: 'white'
     },
     containerBotonesModal: {
         flexDirection: 'row',

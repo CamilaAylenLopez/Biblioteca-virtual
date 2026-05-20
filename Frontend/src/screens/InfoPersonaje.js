@@ -36,10 +36,9 @@ export default function InfoPersonaje({ navigation, route }) {
         <ScrollView style={styles.container}>
             <View style={{ justifyContent: 'center', alignContent: 'center' }}>
                 <Image
-                    source={{ uri: personaje.imagen_url || 'https://previews.123rf.com/images/yoginta/yoginta2301/yoginta230100567/196853824-image-not-found-vector-illustration.jpg' }}
+                    source={personaje.imagen_url ? { uri: personaje.imagen_url} : require('../img/Imagenotfound.png')}
                     style={styles.imagen}
                 />
-
 
                 <Text style={styles.titulo}>{personaje.nombre} </Text>
 

@@ -10,15 +10,19 @@ export default function Login({ navigation, setUsuarioLogueado }) {
   const [mostrarPassword, setmostrarPassword] = useState(false);
   const [error, setError] = useState(false);
 
+  const alerta = (titulo, mensaje) => {
+    if (Platform.OS === 'web') {
+      alert(mensaje)
+    } else {
+      Alert.alert(titulo, mensaje)
+    }
+  };
+
   const logIn = async () => {
     setError(false);
 
     if (!nombreUsuario || !password) {
-      if (Platform.OS === 'web') {
-        alert("Completa todos los campos");
-      } else {
-        Alert.alert("Error", "Completa todos los campos");
-      }
+      alerta("Error", "Completa todos los campos");
       return;
     }
 
@@ -32,11 +36,7 @@ export default function Login({ navigation, setUsuarioLogueado }) {
         setUsuarioLogueado(true);
       } else {
         setError(true);
-        if (Platform.OS === 'web') {
-          alert("Datos incorrectos");
-        } else {
-          Alert.alert("Error", "Datos incorrectos");
-        }
+        alerta("Error", "Datos incorrectos");
       }
     } catch (error) {
       console.log(error)

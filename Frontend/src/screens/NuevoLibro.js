@@ -14,14 +14,21 @@ export default function NuevoLibro({ navigation }) {
         titulo: '', autor: '', sinopsis: '', imagen_url: '', calificacion: '', lanzamiento: '', genero: ''
     });
     const [error, setError] = useState(false);
-    const [image, setImage] = useState('https://static.vecteezy.com/system/resources/thumbnails/056/202/171/small/add-image-or-photo-icon-vector.jpg');
+    const [image, setImage] = useState();
     const [fecha, setFecha] = useState(new Date());
     const [mostrarCalendario, setMostrarCalendario] = useState(false);
+
+    const alerta = (titulo, mensaje) => {
+        if (Platform.OS === 'web') {
+            alert(mensaje)
+        } else {
+            Alert.alert(titulo, mensaje)
+        }
+    };
 
     useEffect(() => {
         if (isFocused) {
             setForm({ titulo: '', autor: '', sinopsis: '', imagen_url: '', calificacion: '', lanzamiento: '', genero: '' });
-            setImage('https://static.vecteezy.com/system/resources/thumbnails/056/202/171/small/add-image-or-photo-icon-vector.jpg');
         }
     }, [isFocused]);
 
@@ -60,7 +67,7 @@ export default function NuevoLibro({ navigation }) {
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
             if (status !== 'granted') {
-                Alert.alert("Permiso no concedido");
+                alerta("Error", "Permiso no concedido");
                 return;
             }
 
@@ -85,31 +92,18 @@ export default function NuevoLibro({ navigation }) {
     const agregarLibro = async () => {
         setError(false);
         if (!form.titulo || !form.autor || !form.genero) {
-            if (Platform.OS === 'web') {
-                alert("Error: Completa todos los campos obligatorios");
-            } else {
-                Alert.alert("Error", "Completa todos los campos");
-            }
+            alerta("Error", "Completa todos los campos");
             return;
         }
 
         try {
             const respuesta = await nuevoLibro({ ...form, imagen_url: image });
             if (respuesta.ok) {
-                if (Platform.OS === 'web') {
-                    alert("¡Éxito!", "Libro agregado correctamente");
-                } else {
-                    Alert.alert("¡Éxito!", "Libro agregado correctamente");
-                }
+                alerta("¡Éxito!", "Libro agregado correctamente");
                 navigation.navigate('Home');
             } else {
                 setError(true);
-                if (Platform.OS === 'web') {
-                    alert("Error", "No se pudo guardar el libro");
-                } else {
-                    Alert.alert("Error", "No se pudo guardar el libro");
-
-                }
+                alerta("Error", "No se pudo guardar el libro");
             }
         } catch (error) {
             console.error(error);
@@ -121,7 +115,7 @@ export default function NuevoLibro({ navigation }) {
             <View style={styles.subContainer}>
                 {/*SELECCIOANR IMAGEN*/}
                 <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>
-                    <Image source={{ uri: image }} style={styles.imagen} />
+                    <Image source={image ? { uri: image } : require('../img/addimage.jpg')} style={styles.imagen} />
                 </TouchableOpacity>
 
                 {/*INPUTS NORMALES*/}

@@ -44,7 +44,7 @@ export default function Perfil({ navigation, setUsuarioLogueado }) {
             <View style={styles.card}>
               <TouchableOpacity onPress={() => navigation.navigate('InfoLibro', { libroId: item.libro_id })}>
                 <Image
-                  source={{ uri: item.imagen_url || 'https://static.vecteezy.com/system/resources/thumbnails/017/800/528/small/user-simple-flat-icon-illustration-vector.jpg' }}
+                  source={item.imagen_url ? { uri: item.imagen_url} : require('../img/Imagenotfound.png')}
                   style={styles.portada}
                 />
                 <Text style={styles.tituloLibro} numberOfLines={2}>{item.titulo}</Text>
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   biografia: {
-    fontSize: 24,
+    fontSize: 20,
     marginBottom: 20,
     color: 'white',
     padding: 20,

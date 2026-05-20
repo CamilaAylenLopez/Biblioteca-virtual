@@ -50,7 +50,8 @@ export default function Buscador({ navigation }) {
                 navigation.navigate('InfoPersonaje', { personaje: item.id });
             }
         }}>
-            <Image source={{ uri: item.imagen_url || 'https://via.placeholder.com/150' }} style={item.tipo === 'libro' ? styles.imgLibro : styles.imgPersonaje} />
+            
+            <Image source={item.imagen_url ? { uri: item.imagen_url} : require('../img/Imagenotfound.png')} style={item.tipo === 'libro' ? styles.imgLibro : styles.imgPersonaje} />
             <View style={styles.info}>
                 <Text style={styles.nombre}>{item.nombre}</Text>
                 <View style={styles.containerTipoTexto}>

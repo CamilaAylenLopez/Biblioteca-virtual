@@ -13,12 +13,20 @@ export default function NuevoPersonaje({ navigation, route }) {
         nombre: '', imagen_url: '', descripcion: ''
     });
     const [error, setError] = useState(false);
-    const [image, setImage] = useState('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_9_Be_6mJ68U7QIl53UBCB1NCfLQuPWkviw&s');
+    const [image, setImage] = useState();
+
+    const alerta = (titulo, mensaje) => {
+        if (Platform.OS === 'web') {
+            alert(mensaje)
+        } else {
+            Alert.alert(titulo, mensaje)
+        }
+    };
 
     useEffect(() => {
         if (isFocused) {
             setForm({ nombre: '', imagen_url: '', descripcion: '' });
-            setImage('https://static.vecteezy.com/system/resources/thumbnails/056/202/171/small/add-image-or-photo-icon-vector.jpg');
+            setImage();
         }
     }, [isFocused]);
 
@@ -27,7 +35,7 @@ export default function NuevoPersonaje({ navigation, route }) {
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
             if (status !== 'granted') {
-                Alert.alert("Permiso no concedido");
+                alerta("Error", "Permiso no concedido");
                 return;
             }
 
@@ -52,7 +60,7 @@ export default function NuevoPersonaje({ navigation, route }) {
     const agregarPersonaje = async () => {
         setError(false);
         if (!form.nombre) {
-            Alert.alert("Error", "El nombre es un campo obligatorio");
+            alerta("Error", "El nombre es un campo obligatorio");
             return;
         }
 
@@ -66,11 +74,11 @@ export default function NuevoPersonaje({ navigation, route }) {
             }
             const respuesta = await nuevoPersonaje(data);
             if (respuesta.ok) {
-                Alert.alert("¡Éxito!", "Personaje agregado correctamente");
+                alerta("¡Éxito!", "Personaje agregado correctamente");
                 navigation.goBack();
             } else {
                 setError(true);
-                Alert.alert("Error", "No se pudo guardar el personaje");
+                alerta("Error", "No se pudo guardar el personaje");
             }
         } catch (error) {
             console.error(error);
@@ -81,7 +89,7 @@ export default function NuevoPersonaje({ navigation, route }) {
         <ScrollView style={styles.container}>
             <View style={styles.subContainer}>
                 <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>
-                    <Image source={{ uri: image }} style={styles.imagen} />
+                    <Image  source={image ? { uri: image } : require('../img/addimage.jpg')} style={styles.imagen} />
                 </TouchableOpacity>
 
                 <TextInput style={styles.input} value={form.nombre} placeholder="Nombre*" onChangeText={(txt) => setForm({ ...form, nombre: txt })} />
