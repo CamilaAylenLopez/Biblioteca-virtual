@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, ScrollView, TouchableOpacity, Alert, TextInput } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, ScrollView, TouchableOpacity, Alert, TextInput, Platform } from 'react-native';
 import { nuevoPersonaje } from '../../api';
 import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
@@ -65,12 +65,11 @@ export default function NuevoPersonaje({ navigation, route }) {
         }
 
         try {
-            console.log("Tamaño del Base64:", image.length);
             const data = {
                 idLibro: libroId,
                 nombre: form.nombre,
-                descripcion: form.descripcion,
-                imagen_url: image
+                descripcion: form.descripcion || null,
+                imagen_url: image || null
             }
             const respuesta = await nuevoPersonaje(data);
             if (respuesta.ok) {
@@ -82,6 +81,7 @@ export default function NuevoPersonaje({ navigation, route }) {
             }
         } catch (error) {
             console.error(error);
+            alerta("error", "no se pudo")
         }
     };
 

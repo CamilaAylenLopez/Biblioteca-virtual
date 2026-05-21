@@ -229,3 +229,16 @@ export const nuevoComentario = async (datos) => {
         return { ok: false, data: { error: "Error de red" } };
     }
 };
+
+export const eliminarPersonaje = async (id) => {
+    try {
+        const res = await fetch(`${API_URL}/eliminarPersonaje/${id}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+        });
+        return { ok: res.ok, data: await res.json() };
+    } catch (error) {
+        console.error("Error en registro:", error);
+        return { ok: false, data: { error: "Error de red" } };
+    }
+};

@@ -250,7 +250,7 @@ export default function InfoLibro({ navigation, route }) {
                                 <TouchableOpacity onPress={() => navigation.navigate('InfoPersonaje', { personajeId: p.id })}>
                                     <Image source={{ uri: p.imagen_url }} style={styles.fotoPersonaje} />
                                 </TouchableOpacity>
-                                <Text style={styles.nombrePersonaje}>{p.nombre}</Text>
+                                <Text style={styles.nombrePersonaje} numberOfLines={1} ellipsizeMode="tail">{p.nombre}</Text>
                             </View>
                         )) : <Text style={{ color: 'white' }}>No hay personajes para este libro</Text>}
                         <TouchableOpacity onPress={() => navigation.navigate('NuevoPersonaje', { libroId: libro.id })} style={styles.personajeCard}>
@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        paddingTop: 80,
+        paddingTop: 50,
         fontFamily: 'roboto',
         marginTop: 50,
         backgroundColor: '#121212',
@@ -404,6 +404,7 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 12,
         marginTop: 5,
+        maxWidth: 100,
     },
     input: {
         width: '100%',

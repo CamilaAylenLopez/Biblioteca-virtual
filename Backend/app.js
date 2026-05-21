@@ -5,6 +5,7 @@ import cors from 'cors';
 import 'dotenv/config';
 import pool from './database.js'
 import bcrypt from 'bcrypt'
+import e from 'express';
 
 const app = express();
 app.use(cors());
@@ -453,6 +454,20 @@ app.post('/nuevoUsuario', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ok: false, error: 'Error al registrar el usuario' });
+    }
+});
+
+app.delete('/eliminarPersonaje/:id', async (req, res) =>{
+    const id = req.params.id;
+    try{
+        const [result] = await pool.query('DELETE FROM personaje WHERE id = ?', [id]);
+        if(result.affectedRows === 0){
+            return res.status(404).json({ok: false, mensaje: "No se encontro personaje"});
+        }
+        res.json({ ok: true, mensaje: "Personaje eliminado" });
+    }catch(error){
+        console.error(error);
+        res.status(500).json({ok: false, mensaje: "Error al eliminar personaje"});
     }
 });
 
