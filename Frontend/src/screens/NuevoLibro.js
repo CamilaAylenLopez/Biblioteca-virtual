@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
         padding: 5
     },
     inputWeb: {
-        background: 'transparent',
+        backgroundColor: 'transparent',
         color: 'white',
         border: 'none',
         fontSize: '16px',

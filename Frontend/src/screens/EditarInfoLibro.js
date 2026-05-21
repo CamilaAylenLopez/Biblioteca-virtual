@@ -64,7 +64,7 @@ export default function EditarInfoLibro({ navigation, route }) {
                 setLibro({ ...libro, imagen_url: base64Image });
             }
         } catch (error) {
-            console.error("Error al seleccioanr imagen: ", error);
+            console.error("Error al seleccionar imagen: ", error);
         }
     };
 
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
         padding: 5
     },
     inputWeb: {
-        background: 'transparent',
+        backgroundColor: 'transparent',
         color: 'white',
         border: 'none',
         fontSize: '16px',

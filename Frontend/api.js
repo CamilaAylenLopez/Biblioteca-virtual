@@ -4,79 +4,79 @@ export const getLibros = async () => {
     try {
         const res = await fetch(`${API_URL}/libros`);
         return await res.json();
-    } catch (error){
+    } catch (error) {
         console.error("Error al obtener libros: ", error);
     }
 };
 
 export const getLibrosByGenero = async (genero) => {
-    try{
+    try {
         const res = await fetch(`${API_URL}/libros/${genero}`);
         return await res.json();
-    } catch(error){
+    } catch (error) {
         console.error("Error al filtrar por género: ", error);
     }
 };
 
 export const getComentariosByIdLibro = async (idLibro) => {
-    try{
+    try {
         const res = await fetch(`${API_URL}/libro/comentarios/idLibro/${idLibro}`);
         return await res.json();
-    }catch(error){
+    } catch (error) {
         console.error("Error al enocntrar comentarios: ", error);
     }
 };
 
 export const getPersonajeById = async (idPersonaje) => {
-    try{
+    try {
         const res = await fetch(`${API_URL}/personaje/idPersonaje/${idPersonaje}`);
         return await res.json();
-    }catch(error){
+    } catch (error) {
         console.error("Error al encontrar personaje: ", error);
     }
 };
 
 export const getLibrosById = async (id) => {
-    try{
+    try {
         const res = await fetch(`${API_URL}/libros/${id}`);
         return await res.json();
-    }catch(error){
+    } catch (error) {
         console.error("Error al obtener libro por id: ", error);
     }
 };
 
 export const getPersonajesByIdLibro = async (id) => {
-    try{
+    try {
         const res = await fetch(`${API_URL}/personajes/idLibro/${id}`);
         return await res.json();
-    }catch(error){
+    } catch (error) {
         console.error("Error al obtener ids de los personajes asociados a determinado libro");
     }
 };
 
 export const getUsuarioById = async (id) => {
-    try{
+    try {
         const res = await fetch(`${API_URL}/usuario/id/${id}`);
         return await res.json();
-    }catch(error){
+    } catch (error) {
         console.error("Error en encontra el usuario");
     }
 };
 
 export const getBiblioteca = async (id) => {
-    try{
+    try {
         const res = await fetch(`${API_URL}/biblioteca/idUsuario/${id}`);
         return await res.json();
-    }catch(error){
+    } catch (error) {
         console.error("Error en encontrar las bibliotecas");
     }
 };
 
 export const getBibliotecas = async (id) => {
-    try{
+    try {
         const res = await fetch(`${API_URL}/bibliotecas/${id}`);
         return await res.json();
-    }catch(error){
+    } catch (error) {
         console.error("Error en encontrar las bibliotecas");
     }
 };
@@ -113,7 +113,7 @@ export const resultadoBusqueda = async (texto) => {
     try {
         const res = await fetch(`${API_URL}/buscar/${texto}`);
         return await res.json();
-    } catch (error){
+    } catch (error) {
         console.error("Error al obtener resultado: ", error);
     }
 };
@@ -146,11 +146,25 @@ export const actualizarPersonaje = async (id, datos) => {
     }
 };
 
+export const actualizarPerfil = async (id, datos) => {
+    try {
+        const res = await fetch(`${API_URL}/updateUsuario/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos),
+        });
+        return { ok: res.ok, data: await res.json() };
+    } catch (error) {
+        console.error("Error en actualizarPerfil:", error);
+        return { ok: false };
+    }
+};
+
 export const loginUsuario = async (nombreUsuario, password) => {
     try {
         const res = await fetch(`${API_URL}/login`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json',},
+            headers: { 'Content-Type': 'application/json', },
             body: JSON.stringify({ nombreUsuario, password }),
         });
         return { ok: res.ok, data: await res.json() };

@@ -29,7 +29,7 @@ app.get('/libros', async (req, res) => {
 app.get('/libros/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        const [rows] = await pool.query('SELECT * FROM libro WHERE id = ?', [Number(id)]);
+        const [rows] = await pool.query('SELECT * FROM libro WHERE id = ?', [id]);
         if (rows.length > 0) {
             res.json(rows[0]);
         } else {
@@ -79,7 +79,11 @@ app.get('/usuario/id/:id', async (req, res) => {
 
     try {
         const [usuario] = await pool.query('SELECT * FROM usuario WHERE id = ?', [id]);
-        res.json(usuario);
+        if (usuario.length > 0) {
+            res.json(usuario[0]);
+        } else {
+            res.status(404).json({ error: 'Usuario no encontrado' });
+        }
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Error en la bd' });
@@ -294,6 +298,45 @@ app.put('/updatePersonaje/:id', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Error al actualizar personaje' });
+    }
+});
+
+app.put('/updateUsuario/:id', async (req, res) => {
+    const id = req.params.id;
+    const { nombre, apellido, nombreUsuario, email, fecha_nacimiento, descripcion, foto_perfil } = req.body;
+
+    try {
+        const [yaExiste] = await pool.query('SELECT * FROM usuario WHERE nombreUsuario = ? OR email = ?', [nombreUsuario, email]);
+
+        if (yaExiste.length > 0) {
+            const mensaje = yaExiste[0].email === email
+                ? "El email ya esta registrado"
+                : "El nombre de usuario ya esta registrado"
+            return res.status(400).json({
+                ok: false,
+                error: mensaje
+            });
+        };
+
+        const query = `
+            UPDATE usuario
+            SET nombre = ?, apellido = ?, nombreUsuario = ?, email = ?, fecha_nacimiento = ?, descripcion = ?, foto_perfil = ?
+            WHERE id = ?`;
+
+        const [result] = await pool.query(query, [
+            nombre, apellido, nombreUsuario, email, fecha_nacimiento, descripcion, foto_perfil, id
+        ]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ ok: false, mensaje: "No se encontro el usuario" });
+        }
+        res.status(201).json({
+            ok: true,
+            mensaje: 'Perfil actualizado correctamente',
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ ok: false, mensaje: 'Error al actualizar perfil' });
     }
 });
 
