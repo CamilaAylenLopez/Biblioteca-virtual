@@ -209,18 +209,16 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        paddingTop: 80,
-        fontFamily: 'roboto',
+        paddingTop: 50,
         marginTop: 50,
         backgroundColor: '#121212',
     },
     subContainer: {
         justifyContent: 'center',
         alignItems: 'center',
-        fontFamily: 'roboto',
     },
     imagenConteiner: {
-        margin: 20,
+        margin: 10,
         borderRadius: 50,
     },
     button: {
@@ -316,6 +314,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         width: 200,
         height: 200,
+        borderRadius: 100,
     },
     contenedorCalendarioIOS: {
         borderRadius: 25,

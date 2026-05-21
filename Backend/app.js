@@ -306,7 +306,7 @@ app.put('/updateUsuario/:id', async (req, res) => {
     const { nombre, apellido, nombreUsuario, email, fecha_nacimiento, descripcion, foto_perfil } = req.body;
 
     try {
-        const [yaExiste] = await pool.query('SELECT * FROM usuario WHERE nombreUsuario = ? OR email = ?', [nombreUsuario, email]);
+        const [yaExiste] = await pool.query('SELECT * FROM usuario WHERE (nombreUsuario = ? OR email = ?) AND id != ?', [nombreUsuario, email, id]);
 
         if (yaExiste.length > 0) {
             const mensaje = yaExiste[0].email === email
