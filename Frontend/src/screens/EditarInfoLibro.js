@@ -228,14 +228,12 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         paddingTop: 80,
-        fontFamily: 'roboto',
         marginTop: 50,
         backgroundColor: '#121212',
     },
     subContainer: {
         justifyContent: 'center',
         alignItems: 'center',
-        fontFamily: 'roboto',
     },
     imagenConteiner: {
         margin: 20,
