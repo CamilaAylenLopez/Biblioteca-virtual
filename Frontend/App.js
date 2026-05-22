@@ -8,12 +8,17 @@ import TabNavigator from './src/navigation/TabNavigator';
 import Login from './src/screens/Login';
 import CrearUsuario from './src/screens/CrearUsuario';
 import InfoLibro from './src/screens/InfoLibro';
+import { useFonts, Roboto_400Regular, Roboto_700Bold } from '@expo-google-fonts/roboto';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [cargando, setCargando] = useState(true);
   const [usuarioLogueado, setUsuarioLogueado] = useState(false);
+  const [fontsLoaded] = useFonts({
+    'Roboto-Regular': Roboto_400Regular,
+    'Roboto-Bold': Roboto_700Bold,
+  });
 
   useEffect(() => {
     const verificarSesion = async () => {
@@ -24,7 +29,7 @@ export default function App() {
         if (sesion && horaLoginStr) {
           const horaLogin = parseInt(horaLoginStr, 10);
           const horaActual = Date.now();
-          const TIEMPO_EXPIRACION = 60000; // sería un minuto
+          const TIEMPO_EXPIRACION = 60000 * 10; // sería un minuto por 10
 
           if(horaActual - horaLogin > TIEMPO_EXPIRACION){
             await AsyncStorage.removeItem('@usuario_sesion');
@@ -46,6 +51,14 @@ export default function App() {
     };
     verificarSesion();
   }, []);
+
+  if (cargando || !fontsLoaded) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#121212' }}>
+        <ActivityIndicator size="large" color="#7D6461" />
+      </View>
+    );
+  }
 
   if (cargando) {
     return (

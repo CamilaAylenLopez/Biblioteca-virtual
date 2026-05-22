@@ -100,24 +100,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     marginBottom: 15,
     color: 'white',
+    fontFamily: 'Roboto-Regular'
   },
   titulo: {
     fontSize: 35,
-    fontWeight: 'bold',
     marginBottom: 40,
     textAlign: 'center',
+    fontFamily: 'Roboto-Bold'
   },
   subtitulo: {
     fontSize: 24,
-    fontWeight: 'bold',
     marginBottom: 40,
     textAlign: 'center',
+    fontFamily: 'Roboto-Bold'
   },
   textoContrasena: {
     paddingTop: 0,
     marginTop: 0,
     fontSize: 13,
     marginBottom: 20,
+    fontFamily: 'Roboto-Regular'
   },
   input: {
     width: '100%',
@@ -129,12 +131,14 @@ const styles = StyleSheet.create({
     color: 'white',
     outlineStyle: 'none',
     fontSize: 16,
+    fontFamily: 'Roboto-Regular'
   },
   contrasenaInput: {
     color: 'white',
     flex: 1,
     outlineStyle: 'none',
-    fontSize: 16
+    fontSize: 16,
+    fontFamily: 'Roboto-Regular'
   },
   button: {
     width: '50%',
@@ -151,18 +155,21 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     margin: 5,
     color: 'white',
-    fontWeight: '400'
+    fontWeight: '400',
+    fontFamily: 'Roboto-Regular'
   },
   link: {
     color: '#6868AC',
     marginTop: 50,
     display: 'flex',
     alignSelf: 'center',
+    fontFamily: 'Roboto-Regular'
   },
   error: {
     color: '#d00000',
     fontSize: 16,
     margin: 10,
+    fontFamily: 'Roboto-Regular'
   },
   icon: {
     padding: 5,

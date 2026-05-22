@@ -142,13 +142,13 @@ const styles = StyleSheet.create({
     },
     titulo: {
         fontSize: 35,
-        fontWeight: 'bold',
+        fontFamily: 'Roboto-Bold',
         marginBottom: 40,
         textAlign: 'center',
     },
     subtitulo: {
         fontSize: 24,
-        fontWeight: 'bold',
+        fontFamily: 'Roboto-Bold',
         marginBottom: 40,
         textAlign: 'center',
     },
@@ -162,6 +162,7 @@ const styles = StyleSheet.create({
         color: 'white',
         outlineStyle: 'none',
         fontSize: 16,
+        fontFamily: 'Roboto-Regular'
     },
     button: {
         width: '50%',
@@ -179,17 +180,20 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         margin: 5,
         fontSize: 16,
+        fontFamily: 'Roboto-Regular'
     },
     link: {
         color: '#6868AC',
         marginTop: 30,
         marginBottom: 20,
+        fontFamily: 'Roboto-Regular'
     },
     error: {
         color: '#b91e1e',
         padding: 10,
         fontSize: 18,
         justifyContent: 'center',
+        fontFamily: 'Roboto-Regular'
     },
     inputD: {
         flexDirection: 'row',
@@ -201,12 +205,14 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         color: 'white',
         outlineStyle: 'none',
+        fontFamily: 'Roboto-Regular'
     },
     textoInput: {
         color: 'white',
         flex: 1,
         outlineStyle: 'none',
         fontSize: 16,
+        fontFamily: 'Roboto-Regular'
     },
     icon: {
         padding: 5,

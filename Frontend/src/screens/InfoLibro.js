@@ -320,6 +320,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         padding: 20,
         borderRadius: 20,
+        fontFamily: 'Roboto-Regular'
     },
     comentariosContainerD: {
         backgroundColor: '#7D6461',
@@ -328,6 +329,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         flexDirection: 'row',
         alignItems: 'center',
+        fontFamily: 'Roboto-Regular'
     },
     horizontal: {
         flexDirection: 'row',
@@ -352,23 +354,25 @@ const styles = StyleSheet.create({
         height: 60,
         borderRadius: 100,
         marginRight: 10,
-        backgroundColor: '#333',
+        backgroundColor: '#333333',
     },
     titulo: {
         textAlign: 'center',
-        fontWeight: 'bold',
         fontSize: 20,
         color: 'white',
         padding: 5,
+        fontFamily: 'Roboto-Bold'
     },
     subtexto: {
         textAlign: 'center',
         color: '#cdcaca',
         fontSize: 16,
+        fontFamily: 'Roboto-Regular'
     },
     descripcion: {
         color: 'white',
         margin: 20,
+        fontFamily: 'Roboto-Regular'
     },
     estrellas: {
         flexDirection: 'row',
@@ -387,8 +391,8 @@ const styles = StyleSheet.create({
     subtitulo: {
         color: 'white',
         fontSize: 20,
-        fontWeight: 'bold',
         marginBottom: 10,
+        fontFamily: 'Roboto-Bold'
     },
     personajeCard: {
         alignItems: 'center',
@@ -403,6 +407,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         marginTop: 5,
         maxWidth: 100,
+        fontFamily: 'Roboto-Regular'
     },
     input: {
         width: '100%',
@@ -413,6 +418,7 @@ const styles = StyleSheet.create({
         marginTop: 25,
         color: 'white',
         outlineStyle: 'none',
+        fontFamily: 'Roboto-Regular'
     },
     inputComenatrio: {
         width: '100%',
@@ -422,6 +428,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         color: 'white',
         outlineStyle: 'none',
+        fontFamily: 'Roboto-Regular'
     },
     modalBack: {
         flex: 1,
@@ -438,16 +445,16 @@ const styles = StyleSheet.create({
     },
     modalTitulo: {
         fontSize: 18,
-        fontWeight: 'bold',
         marginBottom: 15,
-        color: 'white'
+        color: 'white',
+        fontFamily: 'Roboto-Bold'
     },
     subtituloModal: {
         fontSize: 14,
-        fontWeight: 'bold',
         alignSelf: 'flex-start',
         marginTop: 5,
-        color: 'white'
+        color: 'white',
+        fontFamily: 'Roboto-Bold'
     },
     itemBiblioteca: {
         width: '100%',
@@ -459,6 +466,7 @@ const styles = StyleSheet.create({
     textoItem: {
         fontSize: 16,
         color: 'white',
+        fontFamily: 'Roboto-Regular'
     },
     separador: {
         width: '100%',
@@ -471,7 +479,8 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 12,
         marginVertical: 10,
-        color: 'white'
+        color: 'white',
+        fontFamily: 'Roboto-Regular'
     },
     containerBotonesModal: {
         flexDirection: 'row',
@@ -488,6 +497,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         justifyContent: 'center',
         marginBottom: 10,
+        fontFamily: 'Roboto-Regular'
     },
     buttonCerrar: {
         alignContent: 'center',
@@ -496,6 +506,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         borderWidth: 1,
         borderColor: '#7D6461',
+        fontFamily: 'Roboto-Regular'
     }
 });
 

@@ -105,13 +105,15 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         marginTop: 20,
         paddingHorizontal: 10,
-        height: 45
+        height: 45,
+        fontFamily: 'Roboto-Regular'
     },
     input: {
         flex: 1,
         color: 'white',
         outlineStyle: 'none',
         fontSize: 18,
+        fontFamily: 'Roboto-Regular'
     },
     tabBar: {
         flexDirection: 'row',
@@ -129,10 +131,12 @@ const styles = StyleSheet.create({
     tabText: {
         color: '#c6c6c6',
         fontSize: 16,
-        fontWeight: 'bold'
+        fontFamily: 'Roboto-Bold'
+
     },
     tabTextActivo: {
-        color: '#6868AC'
+        color: '#6868AC',
+        fontFamily: 'Roboto-Regular'
     },
     itemContainer: {
         flexDirection: 'row',
@@ -154,12 +158,13 @@ const styles = StyleSheet.create({
     },
     info: {
         flex: 1,
-        marginLeft: 15
+        marginLeft: 15,
+        fontFamily: 'Roboto-Regular'
     },
     nombre: {
         color: 'white',
         fontSize: 16,
-        fontWeight: 'bold'
+        fontFamily: 'Roboto-Bold',
     },
     containerTipoTexto: {
         backgroundColor: '#333333',
@@ -167,16 +172,17 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8,
         paddingVertical: 2,
         borderRadius: 5,
-        marginTop: 5
+        marginTop: 5,
     },
     tipoTexto: {
         color: '#6868AC',
         fontSize: 10,
-        fontWeight: 'bold',
+        fontFamily: 'Roboto-Bold',
     },
     vacio: {
         color: 'white',
         textAlign: 'center',
-        marginTop: 30
+        marginTop: 30,
+        fontFamily: 'Roboto-Regular'
     },
 });

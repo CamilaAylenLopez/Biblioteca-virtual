@@ -93,7 +93,7 @@ export default function Home({ navigation }) {
       />
 
       {libros.length === 0 ? (
-        <Text style={{ color: 'gray', textAlign: 'center', marginTop: 20 }}>No hay libros disponibles</Text>
+        <Text style={{ color: 'gray', textAlign: 'center', marginTop: 20, fontFamily: 'Roboto-Regular' }}>No hay libros disponibles</Text>
       ) : generoSeleccionado ? (
         renderSeccionGenero(generoSeleccionado)
       ) : (
@@ -111,20 +111,20 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 28,
-    fontWeight: 'bold',
     color: 'white',
     marginLeft: 15,
     marginBottom: 5,
+    fontFamily: 'Roboto-Bold'
   },
   contenedorGenero: {
     marginBottom: 25,
   },
   tituloGenero: {
     fontSize: 24,
-    fontWeight: 'bold',
     color: 'white',
     marginLeft: 15,
     marginBottom: 10,
+    fontFamily: 'Roboto-Bold'
   },
   card: {
     width: 150,
@@ -150,5 +150,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 120,
     fontWeight: '500',
+    fontFamily: 'Roboto-Regular'
   },
 });

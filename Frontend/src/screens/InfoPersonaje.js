@@ -86,12 +86,14 @@ const styles = StyleSheet.create({
     subContainer: {
         justifyContent: 'center',
         alignItems: 'center',
+        fontFamily: 'Roboto-Regular'
     },
     comentariosContainer: {
         backgroundColor: '#7D6461',
         marginBottom: 20,
         padding: 20,
         borderRadius: 20,
+        fontFamily: 'Roboto-Regular'
     },
     icon:{
         display: 'flex',
@@ -124,19 +126,21 @@ const styles = StyleSheet.create({
     },
     titulo: {
         textAlign: 'center',
-        fontWeight: 'bold',
         fontSize: 20,
         color: 'white',
         padding: 5,
+        fontFamily: 'Roboto-Bold'
     },
     subtexto: {
         textAlign: 'center',
         color: '#cdcaca',
         fontSize: 16,
+        fontFamily: 'Roboto-Regular'
     },
     descripcion: {
         color: 'white',
         margin: 20,
+        fontFamily: 'Roboto-Regular'
     },
     estrellas: {
         flexDirection: 'row',
@@ -155,8 +159,8 @@ const styles = StyleSheet.create({
     subtitulo: {
         color: 'white',
         fontSize: 20,
-        fontWeight: 'bold',
         marginBottom: 10,
+        fontFamily: 'Roboto-Bold'
     },
     personajeCard: {
         alignItems: 'center',
@@ -170,5 +174,6 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 12,
         marginTop: 5,
+        fontFamily: 'Roboto-Regular'
     },
 });

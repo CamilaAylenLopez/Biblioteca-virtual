@@ -133,24 +133,26 @@ const styles = StyleSheet.create({
         fontSize: 14,
         alignSelf: 'center',
         margin: 5,
+        fontFamily: 'Roboto-Regular'
     },
     titulo: {
         fontSize: 35,
-        fontWeight: 'bold',
         marginBottom: 40,
         textAlign: 'center',
+        fontFamily: 'Roboto-Bold'
     },
     subtitulo: {
         fontSize: 24,
-        fontWeight: 'bold',
         marginBottom: 40,
         textAlign: 'center',
+        fontFamily: 'Roboto-Bold'
     },
     textoContrasena: {
         paddingTop: 0,
         marginTop: 0,
         fontSize: 13,
         marginBottom: 20,
+        fontFamily: 'Roboto-Regular'
     },
     input: {
         width: '100%',
@@ -161,6 +163,7 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         color: 'white',
         outlineStyle: 'none',
+        fontFamily: 'Roboto-Regular'
     },
     button: {
         width: '50%',
@@ -170,24 +173,28 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderRadius: 50,
         marginTop: 10,
-        textAlign: 'center'
+        textAlign: 'center',
+        fontFamily: 'Roboto-Regular'
     },
     buttonText: {
         color: 'white',
         fontSize: 14,
         alignSelf: 'center',
         margin: 5,
-        fontWeight: '500'
+        fontWeight: '500',
+        fontFamily: 'Roboto-Regular'
     },
     link: {
         color: '#6868AC',
-        marginTop: 50
+        marginTop: 50,
+        fontFamily: 'Roboto-Regular'
     },
     error: {
         color: '#f00',
         padding: 10,
         fontSize: 18,
         justifyContent: 'center',
+        fontFamily: 'Roboto-Regular'
     },
     inputD: {
         flexDirection: 'row',
@@ -199,11 +206,13 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         color: 'white',
         outlineStyle: 'none',
+        fontFamily: 'Roboto-Regular'
     },
     textoInput: {
         color: 'white',
         flex: 1,
         outlineStyle: 'none',
+        fontFamily: 'Roboto-Regular'
     },
     icon: {
         padding: 5,

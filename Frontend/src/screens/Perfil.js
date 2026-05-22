@@ -117,16 +117,16 @@ const styles = StyleSheet.create({
   },
   nombre: {
     fontSize: 24,
-    fontWeight: 'bold',
     marginBottom: 5,
     textAlign: 'center',
     color: 'white',
     marginLeft: 20,
     marginRight: 10,
+    fontFamily: 'Roboto-Bold'
   },
   subtitulo: {
     fontSize: 25,
-    fontWeight: 'bold',
+    fontFamily: 'Roboto-Bold',
     color: 'white',
     marginLeft: 15,
     marginBottom: 10,
@@ -137,6 +137,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: 'white',
     padding: 20,
+    fontFamily: 'Roboto-Regular'
   },
   button: {
     width: '50%',
@@ -146,14 +147,16 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderRadius: 50,
     marginTop: 10,
-    textAlign: 'center'
+    textAlign: 'center',
+    fontFamily: 'Roboto-Regular'
   },
   buttonText: {
     color: 'white',
     fontSize: 14,
     alignSelf: 'center',
     margin: 5,
-    fontWeight: '400'
+    fontWeight: '400',
+    fontFamily: 'Roboto-Regular'
   },
   foto: {
     width: 100,
@@ -175,10 +178,10 @@ const styles = StyleSheet.create({
   },
   nombreBiblioteca: {
     fontSize: 18,
-    fontWeight: 'bold',
     color: 'white',
     marginLeft: 15,
     marginBottom: 10,
+    fontFamily: 'Roboto-Bold'
   },
   card: {
     width: 130,
@@ -188,14 +191,16 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     backgroundColor: '#282828',
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
+    fontFamily: 'Roboto-Regular'
   },
   portada: {
     width: 110,
     height: 170,
     borderRadius: 8,
     backgroundColor: '#333333',
-    alignSelf: 'center'
+    alignSelf: 'center',
+    fontFamily: 'Roboto-Regular'
   },
   tituloLibro: {
     color: 'white',
@@ -204,5 +209,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 120,
     fontWeight: '500',
+    fontFamily: 'Roboto-Regular'
   },
 });

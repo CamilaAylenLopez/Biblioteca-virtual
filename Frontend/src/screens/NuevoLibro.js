@@ -241,12 +241,13 @@ const styles = StyleSheet.create({
         fontSize: 14,
         alignSelf: 'center',
         margin: 5,
+        fontFamily: 'Roboto-Regular'
     },
     titulo: {
         fontSize: 35,
-        fontWeight: 'bold',
         marginBottom: 40,
         textAlign: 'center',
+        fontFamily: 'Roboto-Bold'
     },
     input: {
         width: '100%',
@@ -268,6 +269,7 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         marginTop: 10,
         textAlign: 'center',
+        fontFamily: 'Roboto-Regular'
     },
     buttonText: {
         color: 'white',
@@ -275,17 +277,20 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         margin: 5,
         fontSize: 16,
-        fontWeight: '500'
+        fontWeight: '500',
+        fontFamily: 'Roboto-Regular'
     },
     link: {
         color: '#6868AC',
-        marginTop: 50
+        marginTop: 50,
+        fontFamily: 'Roboto-Regular'
     },
     error: {
         color: '#b91e1e',
         padding: 10,
         fontSize: 18,
         justifyContent: 'center',
+        fontFamily: 'Roboto-Regular'
     },
     inputD: {
         width: '100%',
@@ -295,16 +300,19 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingHorizontal: 15,
         marginTop: 25,
+        fontFamily: 'Roboto-Regular'
     },
     textoFecha: {
         color: 'white',
         fontSize: 16,
+        fontFamily: 'Roboto-Regular'
     },
     textoInput: {
         color: 'white',
         flex: 1,
         outlineStyle: 'none',
-        fontSize: 16
+        fontSize: 16,
+        fontFamily: 'Roboto-Regular'
     },
     icon: {
         padding: 5,
@@ -327,12 +335,14 @@ const styles = StyleSheet.create({
         marginTop: 5,
         backgroundColor: '#63504e',
         borderRadius: 25,
+        fontFamily: 'Roboto-Regular'
     },
     confirmarText: {
         color: 'white',
         fontWeight: 'bold',
         textAlign: 'center',
-        padding: 5
+        padding: 5,
+        fontFamily: 'Roboto-Regular'
     },
     inputWeb: {
         backgroundColor: 'transparent',
@@ -341,6 +351,7 @@ const styles = StyleSheet.create({
         fontSize: '16px',
         width: '100%',
         outlineStyle: 'none',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        fontFamily: 'Roboto-Regular'
     }
 });
