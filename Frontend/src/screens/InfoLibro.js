@@ -227,11 +227,11 @@ export default function InfoLibro({ navigation, route }) {
 
                                 <View>
                                     <TouchableOpacity style={styles.buttonCrear} onPress={handleCrearBiblioteca}>
-                                        <Text style={{ color: 'white', fontWeight: 'bold', textAlign: 'center' }}>Crear</Text>
+                                        <Text style={{ color: 'white', fontWeight: 'bold', textAlign: 'center', color: 'black' }}>Crear</Text>
                                     </TouchableOpacity>
 
                                     <TouchableOpacity style={styles.buttonCerrar} onPress={() => setModalVisible(false)}>
-                                        <Text style={{ color: '#282828', fontWeight: 'bold', textAlign: 'center' }}>Cerrar</Text>
+                                        <Text style={{ color: '#bcbcbc', fontWeight: 'bold', textAlign: 'center' }}>Cerrar</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
@@ -244,7 +244,7 @@ export default function InfoLibro({ navigation, route }) {
                             {Array.isArray(personajes) ? personajes.map((p) => (
                                 <View key={p.id} style={styles.personajeCard}>
                                     <TouchableOpacity onPress={() => navigation.navigate('InfoPersonaje', { personajeId: p.id })}>
-                                        <Image source={{ uri: p.imagen_url }} style={styles.fotoPersonaje} />
+                                        <Image source={p.imagen_url ? { uri: p.imagen_url } : require('../img/userIcon.webp')} style={styles.fotoPersonaje} />
                                     </TouchableOpacity>
                                     <Text style={styles.nombrePersonaje} numberOfLines={1} ellipsizeMode="tail">{p.nombre}</Text>
                                 </View>
@@ -488,7 +488,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     buttonCrear: {
-        backgroundColor: '#282828',
+        backgroundColor: '#bcbcbc',
         alignContent: 'center',
         paddingHorizontal: 20,
         paddingVertical: 15,
@@ -503,7 +503,7 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         borderRadius: 10,
         borderWidth: 1,
-        borderColor: '#282828',
+        borderColor: '#bcbcbc',
         fontFamily: 'Roboto-Regular'
     }
 });

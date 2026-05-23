@@ -9,7 +9,6 @@ export default function Buscador({ navigation }) {
     const [filtro, setFiltro] = useState('todo');
     const [cargando, setCargando] = useState(false);
 
-
     const realizarBusqueda = async (texto) => {
         if (texto.length < 2) {
             setResultados([]);

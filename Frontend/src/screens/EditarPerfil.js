@@ -13,7 +13,6 @@ export default function EditarPerfil({ navigation, route }) {
         nombre: '', apellido: '', nombreUsuario: '', email: '', fecha_nacimiento: '', descripcion: '', foto_perfil: ''
     });
     const [image, setImage] = useState()
-    const [error, setError] = useState(false);
     const [mostrarCalendario, setMostrarCalendario] = useState(false);
     const isFocused = useIsFocused();
     const [cargando, setCargando] = useState(true);
@@ -81,7 +80,6 @@ export default function EditarPerfil({ navigation, route }) {
     };
 
     const actualizar = async () => {
-        setError(false);
 
         try {
             const respuesta = await actualizarPerfil(id, { ...nuevosDatos });
@@ -104,7 +102,6 @@ export default function EditarPerfil({ navigation, route }) {
 
                 navigation.goBack();
             } else {
-                setError(true);
                 alerta("Error", respuesta.data.error);
             }
         } catch (error) {
@@ -154,11 +151,11 @@ export default function EditarPerfil({ navigation, route }) {
                 </TouchableOpacity>
 
                 {/*INPUT NORMALES*/}
-                <TextInput style={styles.input} value={nuevosDatos.nombre} placeholder={nuevosDatos.nombre} onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, nombre: txt })} />
-                <TextInput style={styles.input} value={nuevosDatos.apellido} placeholder={nuevosDatos.apellido} onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, apellido: txt })} />
-                <TextInput style={styles.input} value={nuevosDatos.nombreUsuario} placeholder={nuevosDatos.nombreUsuario} onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, nombreUsuario: txt })} />
-                <TextInput style={styles.input} value={nuevosDatos.email} placeholder={nuevosDatos.email} onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, email: txt })} />
-                <TextInput style={styles.input} value={nuevosDatos.descripcion} placeholder={nuevosDatos.descripcion} onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, descripcion: txt })} />
+                <TextInput style={styles.input} value={nuevosDatos.nombre} placeholder={nuevosDatos.nombre || "Agregar nombre"} onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, nombre: txt })} />
+                <TextInput style={styles.input} value={nuevosDatos.apellido} placeholder={nuevosDatos.apellido || "Agregar apellido"} onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, apellido: txt })} />
+                <TextInput style={styles.input} value={nuevosDatos.nombreUsuario} placeholder={nuevosDatos.nombreUsuario || "Agregar nombre de usuario"} onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, nombreUsuario: txt })} />
+                <TextInput style={styles.input} value={nuevosDatos.email} placeholder={nuevosDatos.email || "Agregar email"} onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, email: txt })} />
+                <TextInput style={styles.input} value={nuevosDatos.descripcion} placeholder={nuevosDatos.descripcion || "Agregar descripcion"} onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, descripcion: txt })} />
 
                 {/*INPUT FECHA*/}
                 <View style={{ zIndex: 1, width: '100%', marginVertical: 5 }}>

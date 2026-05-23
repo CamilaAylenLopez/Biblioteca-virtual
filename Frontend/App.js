@@ -29,7 +29,7 @@ export default function App() {
         if (sesion && horaLoginStr) {
           const horaLogin = parseInt(horaLoginStr, 10);
           const horaActual = Date.now();
-          const TIEMPO_EXPIRACION = 60000 * 5; // sería un minuto por 10
+          const TIEMPO_EXPIRACION = 60000 * 30; // sería un minuto por 30
 
           if (horaActual - horaLogin > TIEMPO_EXPIRACION) {
             await AsyncStorage.removeItem('@usuario_sesion');
@@ -59,7 +59,7 @@ export default function App() {
         if(horaLoginStr){
           const horaLogin = parseInt(horaLoginStr, 10);
           const horaActual = Date.now();
-          const TIEMPO_EXPIRACION = 60000 * 5;
+          const TIEMPO_EXPIRACION = 60000 * 30;
 
           if(horaActual - horaLogin > TIEMPO_EXPIRACION){
             clearInterval(intervalo);

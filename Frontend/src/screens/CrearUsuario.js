@@ -11,55 +11,46 @@ export default function CrearUsuario({ navigation, setUsuarioLogueado }) {
     const [mostrarPassword, setmostrarPassword] = useState(false);
     const [mostrarPasswordD, setmostrarPasswordD] = useState(false);
 
+    const alerta = (titulo, mensaje) => {
+        if (Platform.OS === 'web') {
+            alert(mensaje)
+        } else {
+            Alert.alert(titulo, mensaje)
+        }
+    };
+
     const validarContra = (password) => {
         const regex = /^(?=.*[A-Z])(?=.*[!?/()@#$%^&*.,_-¿¡=<>]).{8,}$/;
         return regex.test(password);
-    }
+    };
+
     const validarEmail = (email) => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return regex.test(email);
-    }
+    };
 
     const handleRegistro = async () => {
         if (!form.nombreUsuario || !form.password || !form.email) {
-            if (Platform.OS === 'web') {
-                alert("Faltan completar campos");
-            } else {
-                Alert.alert("¡Error!", "Faltan completar campos");
-            }
+            alerta("¡Error!", "Faltan completar campos");
             return;
         }
 
         if (!validarEmail(form.email)) {
-            if (Platform.OS === 'web') {
-                alert("El email no es valido");
-            } else {
-                Alert.alert("¡Error!", "El email no es valido");
-            }
+            alerta("¡Error!", "El email no es valido");
             return;
         }
 
         if (!validarContra(form.password)) {
-            if (Platform.OS === 'web') {
-                alert("La contraseña debe tener:\n" +
-                    "- Al menos 8 caracteres\n" +
-                    "- Una letra mayuscula\n" +
-                    "- Un caracter esecial (ej: !, @, #, $)");
-            } else {
-                Alert.alert("Error!", "La contraseña debe tener:\n" +
-                    "- Al menos 8 caracteres\n" +
-                    "- Una letra mayuscula\n" +
-                    "- Un caracter esecial (ej: !, @, #, $)");
-            }
+            alerta("Error!", "La contraseña debe tener:\n" +
+                "- Al menos 8 caracteres\n" +
+                "- Una letra mayuscula\n" +
+                "- Un caracter esecial (ej: !, @, #, $)");
+
             return;
         }
 
         if (form.password !== form.conformarPassword) {
-            if (Platform.OS === 'web') {
-                alert("Las constraseñas no coinciden");
-            } else {
-                Alert.alert("¡Error!", "Las constraseñas no coinciden");
-            }
+            alerta("¡Error!", "Las constraseñas no coinciden")
             return;
         }
 
@@ -75,19 +66,12 @@ export default function CrearUsuario({ navigation, setUsuarioLogueado }) {
                 const horaActual = Date.now().toString();
                 await AsyncStorage.setItem('@hora_login', horaActual);
 
-                if (Platform.OS === 'web') {
-                    alert(respuesta.data.mensaje);
-                } else {
-                    Alert.alert("¡Éxito!", respuesta.data.mensaje);
-                }
+                alerta("¡Éxito!", "Usuario creado con éxito.")
+
                 setUsuarioLogueado(true);
 
             } else {
-                if (Platform.OS === 'web') {
-                    alert(respuesta.data.error);
-                } else {
-                    Alert.alert("¡Error!", respuesta.data.error);
-                }
+                alerta("¡Error!", respuesta.data.error);
             }
         } catch (error) {
             console.error(error);
@@ -96,25 +80,25 @@ export default function CrearUsuario({ navigation, setUsuarioLogueado }) {
 
     return (
         <View style={styles.container}>
-            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
+            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
                 <ScrollView contentContainerStyle={styles.subContainer}>
 
                     <Text style={styles.titulo}>Bienvenido a tu nueva biblioteca virtual</Text>
                     <Text style={styles.subtitulo}>Crear usuario</Text>
 
-                    <TextInput style={styles.input} placeholder="Nombre..." onChangeText={(txt) => setForm({ ...form, nombre: txt })} />
-                    <TextInput style={styles.input} placeholder="Nombre de Usuario..." onChangeText={(txt) => setForm({ ...form, nombreUsuario: txt })} />
-                    <TextInput style={styles.input} placeholder="Email..." onChangeText={(txt) => setForm({ ...form, email: txt })} />
+                    <TextInput style={styles.input} autoCapitalize="none" autoCorrect={false} placeholder="Nombre..." onChangeText={(txt) => setForm({ ...form, nombre: txt })} />
+                    <TextInput style={styles.input} autoCapitalize="none" autoCorrect={false} placeholder="Nombre de Usuario..." onChangeText={(txt) => setForm({ ...form, nombreUsuario: txt })} />
+                    <TextInput style={styles.input} autoCapitalize="none" autoCorrect={false} placeholder="Email..." onChangeText={(txt) => setForm({ ...form, email: txt })} />
 
                     <View style={styles.inputD}>
-                        <TextInput style={styles.textoInput} onChangeText={(txt) => setForm({ ...form, password: txt })} placeholder="Contraseña..." secureTextEntry={!mostrarPassword} />
+                        <TextInput style={styles.textoInput} autoCapitalize="none" autoCorrect={false} onChangeText={(txt) => setForm({ ...form, password: txt })} placeholder="Contraseña..." secureTextEntry={!mostrarPassword} />
                         <TouchableOpacity style={styles.icon} onPress={() => setmostrarPassword(!mostrarPassword)} >
                             <Entypo name={mostrarPassword ? 'eye-with-line' : 'eye'} size={24} color="white" />
                         </TouchableOpacity>
                     </View>
 
                     <View style={styles.inputD}>
-                        <TextInput style={styles.textoInput} onChangeText={(txt) => setForm({ ...form, conformarPassword: txt })} placeholder="Confirmar contraseña..." secureTextEntry={!mostrarPasswordD} />
+                        <TextInput style={styles.textoInput} autoCapitalize="none" autoCorrect={false} onChangeText={(txt) => setForm({ ...form, conformarPassword: txt })} placeholder="Confirmar contraseña..." secureTextEntry={!mostrarPasswordD} />
                         <TouchableOpacity style={styles.icon} onPress={() => setmostrarPasswordD(!mostrarPasswordD)} >
                             <Entypo name={mostrarPasswordD ? 'eye-with-line' : 'eye'} size={24} color="white" />
                         </TouchableOpacity>

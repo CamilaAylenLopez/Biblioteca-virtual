@@ -13,7 +13,6 @@ export default function NuevoLibro({ navigation }) {
     const [form, setForm] = useState({
         titulo: '', autor: '', sinopsis: '', imagen_url: '', calificacion: '', lanzamiento: '', genero: ''
     });
-    const [error, setError] = useState(false);
     const [image, setImage] = useState();
     const [fecha, setFecha] = useState(new Date());
     const [mostrarCalendario, setMostrarCalendario] = useState(false);
@@ -91,7 +90,6 @@ export default function NuevoLibro({ navigation }) {
     };
 
     const agregarLibro = async () => {
-        setError(false);
         if (!form.titulo || !form.autor || !form.genero) {
             alerta("Error", "Completa todos los campos");
             return;
@@ -109,7 +107,6 @@ export default function NuevoLibro({ navigation }) {
                 alerta("¡Éxito!", "Libro agregado correctamente");
                 navigation.navigate('Home');
             } else {
-                setError(true);
                 alerta("Error", "No se pudo guardar el libro");
             }
         } catch (error) {

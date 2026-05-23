@@ -12,7 +12,6 @@ export default function NuevoPersonaje({ navigation, route }) {
     const [form, setForm] = useState({
         nombre: '', imagen_url: '', descripcion: ''
     });
-    const [error, setError] = useState(false);
     const [image, setImage] = useState();
 
     const alerta = (titulo, mensaje) => {
@@ -58,7 +57,6 @@ export default function NuevoPersonaje({ navigation, route }) {
     };
 
     const agregarPersonaje = async () => {
-        setError(false);
         if (!form.nombre) {
             alerta("Error", "El nombre es un campo obligatorio");
             return;
@@ -76,7 +74,6 @@ export default function NuevoPersonaje({ navigation, route }) {
                 alerta("¡Éxito!", "Personaje agregado correctamente");
                 navigation.goBack();
             } else {
-                setError(true);
                 alerta("Error", "No se pudo guardar el personaje");
             }
         } catch (error) {

@@ -14,7 +14,6 @@ export default function EditarInfoPersonaje({ navigation, route }) {
         nombre: '', imagen_url: '', descripcion: ''
     });
     const [image, setImage] = useState('')
-    const [error, setError] = useState(false);
 
     useEffect(() => {
         if (isFocused) {
@@ -61,7 +60,6 @@ export default function EditarInfoPersonaje({ navigation, route }) {
     };
 
     const actualizar = async () => {
-        setError(false);
 
         try {
             const respuesta = await actualizarPersonaje(personajeId, { ...personaje });
@@ -69,7 +67,6 @@ export default function EditarInfoPersonaje({ navigation, route }) {
                 Alert.alert("¡Éxito!", "Personaje actualizado correctamente");
                 navigation.goBack();
             } else {
-                setError(true);
                 Alert.alert("Error", "No se pudo actualizar los datos del personaje");
             }
         } catch (error) {

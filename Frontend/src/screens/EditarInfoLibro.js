@@ -15,7 +15,6 @@ export default function EditarInfoLibro({ navigation, route }) {
         titulo: '', autor: '', sinopsis: '', imagen_url: '', calificacion: '', lanzamiento: '', genero: ''
     });
     const [image, setImage] = useState()
-    const [error, setError] = useState(false);
     const [fecha, setFecha] = useState(new Date());
     const [mostrarCalendario, setMostrarCalendario] = useState(false);
 
@@ -69,7 +68,6 @@ export default function EditarInfoLibro({ navigation, route }) {
     };
 
     const actualizar = async () => {
-        setError(false);
 
         try {
             const respuesta = await actualizarLibro(libroId, { ...libro });
@@ -81,7 +79,6 @@ export default function EditarInfoLibro({ navigation, route }) {
                 }
                 navigation.goBack();
             } else {
-                setError(true);
                 if (Platform.OS === 'web') {
                     alert("Error", "No se pudo actualizar el libro");
                 } else {

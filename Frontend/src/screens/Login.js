@@ -8,7 +8,6 @@ export default function Login({ navigation, setUsuarioLogueado }) {
   const [nombreUsuario, setnombreUsuario] = useState('');
   const [password, setpassword] = useState('');
   const [mostrarPassword, setmostrarPassword] = useState(false);
-  const [error, setError] = useState(false);
 
   const alerta = (titulo, mensaje) => {
     if (Platform.OS === 'web') {
@@ -19,7 +18,6 @@ export default function Login({ navigation, setUsuarioLogueado }) {
   };
 
   const logIn = async () => {
-    setError(false);
 
     if (!nombreUsuario || !password) {
       alerta("Error", "Completa todos los campos");
@@ -35,7 +33,6 @@ export default function Login({ navigation, setUsuarioLogueado }) {
         await AsyncStorage.setItem('@hora_login', horaActual);
         setUsuarioLogueado(true);
       } else {
-        setError(true);
         alerta("Error", "Datos incorrectos");
       }
     } catch (error) {
@@ -60,8 +57,6 @@ export default function Login({ navigation, setUsuarioLogueado }) {
           </View>
 
           <Text style={styles.textoContrasena}>¿Has olvidado tu contraseña?</Text>
-
-          {error ? <Text style={styles.error}>Los datos son incorrectos</Text> : null}
 
           <TouchableOpacity style={styles.button} onPress={logIn}>
             <Text style={styles.buttonText}>Iniciar sesion</Text>
