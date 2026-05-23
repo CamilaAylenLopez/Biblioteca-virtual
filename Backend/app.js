@@ -471,6 +471,20 @@ app.delete('/eliminarPersonaje/:id', async (req, res) =>{
     }
 });
 
+app.delete('/eliminarLibro/:id', async (req, res) =>{
+    const id = req.params.id;
+    try{
+        const [result] = await pool.query('DELETE FROM libro WHERE id = ?', [id]);
+        if(result.affectedRows === 0){
+            return res.status(404).json({ok: false, mensaje: "No se encontro libro"});
+        }
+        res.json({ ok: true, mensaje: "Libro eliminado" });
+    }catch(error){
+        console.error(error);
+        res.status(500).json({ok: false, mensaje: "Error al eliminar libro"});
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Servidor en http://0.0.0.0:${PORT}`);

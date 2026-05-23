@@ -238,7 +238,20 @@ export const eliminarPersonaje = async (id) => {
         });
         return { ok: res.ok, data: await res.json() };
     } catch (error) {
-        console.error("Error en registro:", error);
+        console.error("Error:", error);
+        return { ok: false, data: { error: "Error de red" } };
+    }
+};
+
+export const eliminarLibro = async (id) => {
+    try {
+        const res = await fetch(`${API_URL}/eliminarLibro/${id}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+        });
+        return { ok: res.ok, data: await res.json() };
+    } catch (error) {
+        console.error("Error:", error);
         return { ok: false, data: { error: "Error de red" } };
     }
 };

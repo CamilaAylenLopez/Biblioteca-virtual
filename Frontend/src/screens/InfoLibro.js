@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, TextInput, Alert, Modal, Platform, KeyboardAvoidingView } from 'react-native';
-import { getLibrosById, getPersonajesByIdLibro, getComentariosByIdLibro, nuevoComentario, getBibliotecas, crearBiblioteca, guardarLibroEnBiblioteca } from '../api/api';
+import { getLibrosById, getPersonajesByIdLibro, getComentariosByIdLibro, nuevoComentario, getBibliotecas, crearBiblioteca, guardarLibroEnBiblioteca, eliminarLibro } from '../api/api';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import { useIsFocused } from '@react-navigation/native';
@@ -58,6 +58,21 @@ export default function InfoLibro({ navigation, route }) {
             cargarDatos();
         }
     }, [libroId, isFocused]);
+
+    const deleteLibro = async () => {
+        try {
+            const respuesta = await eliminarLibro(libroId);
+            if (respuesta.ok) {
+                alerta("Exito", "Libro eliminado con exito");
+                navigation.goBack();
+            } else {
+                alerta("Error", "No se ha podido eliminar el Libro");
+            }
+        } catch (error) {
+            console.error(error);
+            alerta("Error", "No se ha podido eliminar el Libro");
+        }
+    };
 
     const calificacionEstrellas = (rating) => {
         let estrellas = [];
@@ -182,6 +197,9 @@ export default function InfoLibro({ navigation, route }) {
     return (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
             <ScrollView>
+                <TouchableOpacity style={styles.icon} onPress={deleteLibro}>
+                    <FontAwesome name="trash" size={35} color="white" />
+                </TouchableOpacity>
                 <View style={{ justifyContent: 'center', alignContent: 'center' }}>
                     <Image
                         source={libro.imagen_url ? { uri: libro.imagen_url } : require('../img/Imagenotfound.png')}
@@ -345,7 +363,7 @@ const styles = StyleSheet.create({
         resizeMode: 'cover',
         alignSelf: 'center',
         margin: 20,
-        marginTop: 40,
+        marginTop: 10,
     },
     fotoUsuario: {
         width: 60,
@@ -505,6 +523,12 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#bcbcbc',
         fontFamily: 'Roboto-Regular'
-    }
+    },
+    icon: {
+        display: 'flex',
+        alignItems: 'flex-end',
+        margin: 5,
+        marginTop: 40,
+    },
 });
 
