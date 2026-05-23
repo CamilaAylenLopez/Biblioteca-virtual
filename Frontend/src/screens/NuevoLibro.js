@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, ScrollView, TouchableOpacity, Alert, TextInput, Platform } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, ScrollView, TouchableOpacity, Alert, TextInput, Platform, KeyboardAvoidingView } from 'react-native';
 import { nuevoLibro } from '../../api';
 import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
@@ -29,6 +29,7 @@ export default function NuevoLibro({ navigation }) {
     useEffect(() => {
         if (isFocused) {
             setForm({ titulo: '', autor: '', sinopsis: '', imagen_url: '', calificacion: '', lanzamiento: '', genero: '' });
+            setImage(null);
         }
     }, [isFocused]);
 
@@ -96,8 +97,14 @@ export default function NuevoLibro({ navigation }) {
             return;
         }
 
+        const datosParaEnviar = {
+            ...form,
+            image_url : image,
+            lanzamiento: form.lanzamiento === '' ? null : form.lanzamiento
+        };
+
         try {
-            const respuesta = await nuevoLibro({ ...form, imagen_url: image });
+            const respuesta = await nuevoLibro(datosParaEnviar);
             if (respuesta.ok) {
                 alerta("¡Éxito!", "Libro agregado correctamente");
                 navigation.navigate('Home');
@@ -111,7 +118,8 @@ export default function NuevoLibro({ navigation }) {
     };
 
     return (
-        <ScrollView style={styles.container}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
+        <ScrollView>
             <View style={styles.subContainer}>
                 {/*SELECCIOANR IMAGEN*/}
                 <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>
@@ -124,7 +132,7 @@ export default function NuevoLibro({ navigation }) {
                 <TextInput style={styles.input} value={form.sinopsis} placeholder="Sinopsis..." onChangeText={(txt) => setForm({ ...form, sinopsis: txt })} />
 
                 {/*INPUT FECHA*/}
-                <View style={{ zIndex: 1, width: '100%', marginVertical: 5 }}>
+                <View style={{ zIndex: 1, width: '100%'}}>
                     {Platform.OS === 'web' ? (
                         <View style={styles.inputD}>
                             <TextInput type="date" value={form.lanzamiento} placeholder='YYYY-MM-DD' onChange={(e) => onChangeFechaWeb(e.target.value)} max={new Date().toISOString().split('t')[0]} style={styles.inputWeb} />
@@ -162,7 +170,6 @@ export default function NuevoLibro({ navigation }) {
 
                 {/*INPUT GENERO*/}
                 <DropdownSelect
-                    style={styles.drop}
                     label=" "
                     placeholder="*Elegir genero..."
                     options={[
@@ -187,16 +194,16 @@ export default function NuevoLibro({ navigation }) {
                     selectedValue={form.genero}
                     onValueChange={(value) => setForm({ ...form, genero: value })}
                     isSearchable
-                    primaryColor={'#7D6461'}
+                    primaryColor={'#282828'}
                     dropdownStyle={{
-                        backgroundColor: '#7D6461',
-                        borderColor: '#7D6461',
+                        backgroundColor: '#282828',
+                        borderColor: '#282828',
                         borderRadius: 50,
                     }}
                     dropdownIconStyle={{ color: 'white' }}
                     dropdownPlaceholderStyle={{ color: 'white', }}
-                    placeholderStyle={{ color: 'white', fontSize: 16 }}
-                    selectedItemStyle={{ color: 'white' }}
+                    placeholderStyle={{ color: '#afafaf', fontSize: 16 }}
+                    selectedItemStyle={{ color: 'white', fontSize: 16 }}
                 />
 
                 {/*BOTON DE ACEPTAR*/}
@@ -205,6 +212,7 @@ export default function NuevoLibro({ navigation }) {
                 </TouchableOpacity>
             </View>
         </ScrollView>
+        </KeyboardAvoidingView>
     )
 }
 const styles = StyleSheet.create({
@@ -222,20 +230,6 @@ const styles = StyleSheet.create({
         margin: 20,
         borderRadius: 50,
     },
-    button: {
-        width: '50%',
-        height: 50,
-        backgroundColor: '#7D6461',
-        justifyContent: 'center',
-        alignSelf: 'center',
-        borderRadius: 50,
-        marginTop: 10,
-        textAlign: 'center'
-    },
-    drop: {
-        backgroundColor: '#7D6461',
-        fontSize: 16,
-    },
     buttonText: {
         color: 'white',
         fontSize: 14,
@@ -252,7 +246,7 @@ const styles = StyleSheet.create({
     input: {
         width: '100%',
         height: 50,
-        backgroundColor: '#7D6461',
+        backgroundColor: '#282828',
         borderRadius: 30,
         paddingHorizontal: 15,
         marginTop: 25,
@@ -263,13 +257,12 @@ const styles = StyleSheet.create({
     button: {
         width: '50%',
         height: 50,
-        backgroundColor: '#7D6461',
+        backgroundColor: '#282828',
         justifyContent: 'center',
         alignSelf: 'center',
         borderRadius: 50,
-        marginTop: 10,
         textAlign: 'center',
-        fontFamily: 'Roboto-Regular'
+        fontFamily: 'Roboto-Regular',
     },
     buttonText: {
         color: 'white',
@@ -295,7 +288,7 @@ const styles = StyleSheet.create({
     inputD: {
         width: '100%',
         height: 50,
-        backgroundColor: '#7D6461',
+        backgroundColor: '#282828',
         borderRadius: 30,
         justifyContent: 'center',
         paddingHorizontal: 15,
@@ -303,7 +296,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Roboto-Regular'
     },
     textoFecha: {
-        color: 'white',
+        color: '#afafaf',
         fontSize: 16,
         fontFamily: 'Roboto-Regular'
     },

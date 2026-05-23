@@ -208,7 +208,7 @@ app.post('/newComentario', async (req, res) => {
             VALUES (?,?,?,?)
         `;
         const [result] = await pool.query(query, [
-            texto, estrellas, usuario_id, libro_id
+            texto, estrellas || null, usuario_id, libro_id
         ]);
         const queryCalificacionLibro = `
             UPDATE libro
@@ -238,7 +238,7 @@ app.post('/newLibro', async (req, res) => {
             (titulo, autor, sinopsis, imagen_url, calificacion, lanzamiento, genero)
             VALUES (?,?,?,?,?,?,?)`;
         const [result] = await pool.query(query, [
-            titulo, autor, sinopsis, imagen_url, calificacion, lanzamiento, genero
+            titulo, autor, sinopsis || null, imagen_url || null, calificacion || null, lanzamiento|| null, genero
         ]);
         res.status(201).json({
             ok: true,
@@ -349,7 +349,7 @@ app.post('/newPersonaje', async (req, res) => {
             INSERT INTO personaje
             (nombre, imagen_url, descripcion)
             VALUES (?,?,?)`;
-        const [result] = await pool.query(queryPersonaje, [nombre, imagen_url, descripcion]);
+        const [result] = await pool.query(queryPersonaje, [nombre, imagen_url || null, descripcion || null]);
 
         const personajeId = result.insertId;
 

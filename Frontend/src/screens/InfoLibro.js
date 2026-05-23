@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, TextInput, Alert, Modal, Platform } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, TextInput, Alert, Modal, Platform, KeyboardAvoidingView } from 'react-native';
 import { getLibrosById, getPersonajesByIdLibro, getComentariosByIdLibro, nuevoComentario, getBibliotecas, crearBiblioteca, guardarLibroEnBiblioteca } from '../../api';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Fontisto from '@expo/vector-icons/Fontisto';
@@ -15,7 +15,6 @@ export default function InfoLibro({ navigation, route }) {
     const [personajes, setPersonajes] = useState([]);
     const [comentarios, setComentarios] = useState([]);
     const [newComentario, setNewComentario] = useState('');
-    const [error, setError] = useState(false);
     const [usuario, setUsuario] = useState({
         nombre: '', foto: '', id: ''
     });
@@ -132,32 +131,31 @@ export default function InfoLibro({ navigation, route }) {
         }
     };
 
-    const alerta = (titulo, mensaje) =>{
-        if(Platform.OS === 'web'){
+    const alerta = (titulo, mensaje) => {
+        if (Platform.OS === 'web') {
             alert(mensaje)
-        }else{
+        } else {
             Alert.alert(titulo, mensaje)
         }
     };
 
     const sendComentario = async () => {
-        setError(false);
         if (!newComentario || newComentario.trim() === "") {
-            alerta("Error","Completa todos los campos");
+            alerta("Error", "Completa todos los campos");
             return;
         }
         try {
 
             const data = {
                 texto: newComentario,
-                estrellas: estrellas,
+                estrellas: estrellas || null,
                 usuario_id: usuario.id,
                 libro_id: libroId
             }
 
             const respuesta = await nuevoComentario(data);
             if (respuesta.ok) {
-                alerta("¡Éxito!", "Comenatrio agregado correctamente");
+                alerta("¡Éxito!", "Comentario agregado correctamente");
                 setNewComentario("");
                 setEstrellas(0);
                 try {
@@ -170,7 +168,6 @@ export default function InfoLibro({ navigation, route }) {
                 setLibro(dataLibroActualizado);
 
             } else {
-                setError(true);
                 alerta("Error", "No se pudo subir el comenario");
             }
         } catch (error) {
@@ -182,124 +179,125 @@ export default function InfoLibro({ navigation, route }) {
     if (cargando) return <ActivityIndicator size="large" color="white" style={{ marginTop: 50 }} />;
     if (!libro) return <Text style={{ color: 'white' }}>Cargando...</Text>;
 
-    console.log(comentarios)
-
     return (
-        <ScrollView style={styles.container}>
-            <View style={{ justifyContent: 'center', alignContent: 'center' }}>
-                <Image
-                    source={libro.imagen_url ? { uri: libro.imagen_url } : require('../img/Imagenotfound.png')}
-                    style={styles.imagen}
-                />
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
+            <ScrollView>
+                <View style={{ justifyContent: 'center', alignContent: 'center' }}>
+                    <Image
+                        source={libro.imagen_url ? { uri: libro.imagen_url } : require('../img/Imagenotfound.png')}
+                        style={styles.imagen}
+                    />
 
-                <View style={styles.estrellas}>
-                    {calificacionEstrellas(libro.calificacion)}
-                </View>
-
-                <View style={{ flexDirection: 'row', margin: 5, alignSelf: 'center' }}>
-                    <Text style={styles.titulo}>{libro.titulo} </Text>
-                    <TouchableOpacity onPress={() => setModalVisible(true)}>
-                        <Fontisto name="favorite" size={24} color="white" />
-                    </TouchableOpacity>
-                </View>
-
-                <Text style={styles.subtexto}>Creado por {libro.autor} - {libro.lanzamiento ? libro.lanzamiento.split('T')[0] : 'No disponible'}</Text>
-                <Text style={styles.subtexto}>{libro.genero}</Text>
-                <Text style={styles.descripcion}>{libro.sinopsis || "Sin descripción disponible."}</Text>
-
-                <Modal animationType="slide" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
-                    <View style={styles.modalBack}>
-                        <View style={styles.modalContainer}>
-                            <Text style={styles.modalTitulo}>Guardar en biblioteca...</Text>
-                            <FlatList
-                                data={bibliotecas}
-                                keyExtractor={(item) => item.id.toString()}
-                                style={{ width: '100%', maxHeight: 180 }}
-                                renderItem={({ item }) => (
-                                    <TouchableOpacity style={styles.itemBiblioteca} onPress={() => handleGuardarLibro(item.id)}>
-                                        <Text style={styles.textoItem}>{item.nombre}</Text>
-                                    </TouchableOpacity>
-                                )}
-                                ListEmptyComponent={
-                                    <Text style={{ color: 'white', textAlign: 'center', marginVertical: 15 }}>No has creado ninguna biblioteca todavía.</Text>
-                                }
-                            />
-                            <View style={styles.separador} />
-
-                            <Text style={styles.subtituloModal}>Crear nueva biblioteca</Text>
-                            <TextInput style={styles.inputModal} value={nombreNuevaBiblioteca} placeholder='Nombre...' onChangeText={(txt) => setNombreNuevaBiblioteca(txt)} />
-
-                            <View>
-                                <TouchableOpacity style={styles.buttonCrear} onPress={handleCrearBiblioteca}>
-                                    <Text style={{ color: 'white', fontWeight: 'bold', textAlign: 'center' }}>Crear</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity style={styles.buttonCerrar} onPress={() => setModalVisible(false)}>
-                                    <Text style={{ color: '#7D6461', fontWeight: 'bold', textAlign: 'center' }}>Cerrar</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
+                    <View style={styles.estrellas}>
+                        {calificacionEstrellas(libro.calificacion)}
                     </View>
-                </Modal>
 
-                <View style={styles.subContainer}>
-                    <Text style={styles.subtitulo}>Personajes</Text>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                        {Array.isArray(personajes) ? personajes.map((p) => (
-                            <View key={p.id} style={styles.personajeCard}>
-                                <TouchableOpacity onPress={() => navigation.navigate('InfoPersonaje', { personajeId: p.id })}>
-                                    <Image source={{ uri: p.imagen_url }} style={styles.fotoPersonaje} />
-                                </TouchableOpacity>
-                                <Text style={styles.nombrePersonaje} numberOfLines={1} ellipsizeMode="tail">{p.nombre}</Text>
-                            </View>
-                        )) : <Text style={{ color: 'white' }}>No hay personajes para este libro</Text>}
-                        <TouchableOpacity onPress={() => navigation.navigate('NuevoPersonaje', { libroId: libro.id })} style={styles.personajeCard}>
-                            <Image source={require('../img/addusericon.jpg')} style={styles.fotoPersonaje} />
-                            <Text style={styles.nombrePersonaje}>Agregar personaje</Text>
+                    <View style={{ flexDirection: 'row', margin: 5, alignSelf: 'center' }}>
+                        <Text style={styles.titulo}>{libro.titulo} </Text>
+                        <TouchableOpacity onPress={() => setModalVisible(true)}>
+                            <Fontisto name="favorite" size={24} color="white" />
                         </TouchableOpacity>
-                    </ScrollView>
-                </View>
+                    </View>
 
-                <View style={styles.subContainer}>
-                    <Text style={styles.subtitulo}>Comentarios</Text>
-                    {Array.isArray(comentarios) ? comentarios.map((c) => (
-                        <View style={styles.comentariosContainer} key={c.id}>
-                            <View style={styles.horizontal}>
-                                <Image
-                                    source={c.foto_perfil ? { uri: c.foto_perfil } : require('../img/userIcon.webp')}
-                                    style={styles.fotoUsuario}
+                    <Text style={styles.subtexto}>Creado por {libro.autor} - {libro.lanzamiento ? libro.lanzamiento.split('T')[0] : 'Fecha desconocida'}</Text>
+                    <Text style={styles.subtexto}>{libro.genero}</Text>
+                    <Text style={styles.descripcion}>{libro.sinopsis || "Sin descripción disponible."}</Text>
+
+                    <Modal animationType="slide" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
+                        <View style={styles.modalBack}>
+                            <View style={styles.modalContainer}>
+                                <Text style={styles.modalTitulo}>Guardar en biblioteca...</Text>
+                                <FlatList
+                                    data={bibliotecas}
+                                    keyExtractor={(item) => item.id.toString()}
+                                    style={{ width: '100%', maxHeight: 180 }}
+                                    renderItem={({ item }) => (
+                                        <TouchableOpacity style={styles.itemBiblioteca} onPress={() => handleGuardarLibro(item.id)}>
+                                            <Text style={styles.textoItem}>{item.nombre}</Text>
+                                        </TouchableOpacity>
+                                    )}
+                                    ListEmptyComponent={
+                                        <Text style={{ color: 'white', textAlign: 'center', marginVertical: 15 }}>No has creado ninguna biblioteca todavía.</Text>
+                                    }
                                 />
-                                <View style={styles.vertical}>
-                                    <Text style={{ color: 'white' }}>{c.nombreUsuario}</Text>
-                                    <View style={styles.estrellasD}>
-                                        {calificacionEstrellas(c.estrellas)}
-                                    </View>
+                                <View style={styles.separador} />
+
+                                <Text style={styles.subtituloModal}>Crear nueva biblioteca</Text>
+                                <TextInput style={styles.inputModal} value={nombreNuevaBiblioteca} placeholder='Nombre...' onChangeText={(txt) => setNombreNuevaBiblioteca(txt)} />
+
+                                <View>
+                                    <TouchableOpacity style={styles.buttonCrear} onPress={handleCrearBiblioteca}>
+                                        <Text style={{ color: 'white', fontWeight: 'bold', textAlign: 'center' }}>Crear</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity style={styles.buttonCerrar} onPress={() => setModalVisible(false)}>
+                                        <Text style={{ color: '#282828', fontWeight: 'bold', textAlign: 'center' }}>Cerrar</Text>
+                                    </TouchableOpacity>
                                 </View>
                             </View>
-                            <Text style={{ color: 'white' }}>{c.texto}</Text>
                         </View>
-                    )) : <Text style={{ color: 'white' }}>¡Se el primero en hacer un comentario!</Text>}
-                    <View style={styles.comentariosContainer}>
-                        <View style={styles.horizontal}>
-                            <Image
-                                source={usuario.foto ? { uri: usuario.foto } : require('../img/userIcon.webp')}
-                                style={styles.fotoUsuario}
-                            />
-                            <Text style={{ color: 'white' }}>{usuario.nombre}</Text>
-                        </View>
-                        {renderEstrellas()}
+                    </Modal>
 
-                        <View style={styles.horizontal}>
-                            <TextInput style={styles.inputComenatrio} value={newComentario} placeholder="Agregar comentario..." onChangeText={(txt) => setNewComentario(txt)} />
-                            <TouchableOpacity onPress={sendComentario}>
-                                <FontAwesome name="send" size={24} color="white" />
+                    <View style={styles.subContainer}>
+                        <Text style={styles.subtitulo}>Personajes</Text>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                            {Array.isArray(personajes) ? personajes.map((p) => (
+                                <View key={p.id} style={styles.personajeCard}>
+                                    <TouchableOpacity onPress={() => navigation.navigate('InfoPersonaje', { personajeId: p.id })}>
+                                        <Image source={{ uri: p.imagen_url }} style={styles.fotoPersonaje} />
+                                    </TouchableOpacity>
+                                    <Text style={styles.nombrePersonaje} numberOfLines={1} ellipsizeMode="tail">{p.nombre}</Text>
+                                </View>
+                            )) : <Text style={{ color: 'white' }}>No hay personajes para este libro</Text>}
+                            <TouchableOpacity onPress={() => navigation.navigate('NuevoPersonaje', { libroId: libro.id })} style={styles.personajeCard}>
+                                <Image source={require('../img/addusericon.jpg')} style={styles.fotoPersonaje} />
+                                <Text style={styles.nombrePersonaje}>Agregar personaje</Text>
                             </TouchableOpacity>
-                        </View>
+                        </ScrollView>
+                    </View>
 
+                    <View style={styles.subContainer}>
+                        <Text style={styles.subtitulo}>Comentarios</Text>
+                        {Array.isArray(comentarios) ? comentarios.map((c) => (
+                            <View style={styles.comentariosContainer} key={c.id}>
+                                <View style={styles.horizontal}>
+                                    <Image
+                                        source={c.foto_perfil ? { uri: c.foto_perfil } : require('../img/userIcon.webp')}
+                                        style={styles.fotoUsuario}
+                                    />
+                                    <View style={styles.vertical}>
+                                        <Text style={{ color: 'white' }}>{c.nombreUsuario}</Text>
+                                        <View style={styles.estrellasD}>
+                                            {calificacionEstrellas(c.estrellas)}
+                                        </View>
+                                    </View>
+                                </View>
+                                <Text style={{ color: 'white' }}>{c.texto}</Text>
+                            </View>
+                        )) : <Text style={{ color: 'white' }}>¡Se el primero en hacer un comentario!</Text>}
+                        <View style={styles.comentariosContainer}>
+                            <View style={styles.horizontal}>
+                                <Image
+                                    source={usuario.foto ? { uri: usuario.foto } : require('../img/userIcon.webp')}
+                                    style={styles.fotoUsuario}
+                                />
+                                <Text style={{ color: 'white' }}>{usuario.nombre}</Text>
+                            </View>
+                            {renderEstrellas()}
+
+                            <View style={styles.horizontal}>
+                                <TextInput style={styles.inputComenatrio} value={newComentario} placeholder="Agregar comentario..." onChangeText={(txt) => setNewComentario(txt)} />
+
+                                <TouchableOpacity onPress={sendComentario}>
+                                    <FontAwesome name="send" size={24} color="white" />
+                                </TouchableOpacity>
+                            </View>
+
+                        </View>
                     </View>
                 </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </KeyboardAvoidingView>
     )
 };
 
@@ -316,14 +314,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     comentariosContainer: {
-        backgroundColor: '#7D6461',
+        backgroundColor: '#282828',
         marginBottom: 20,
         padding: 20,
         borderRadius: 20,
         fontFamily: 'Roboto-Regular'
     },
     comentariosContainerD: {
-        backgroundColor: '#7D6461',
+        backgroundColor: '#282828',
         marginBottom: 20,
         padding: 20,
         borderRadius: 20,
@@ -412,7 +410,7 @@ const styles = StyleSheet.create({
     input: {
         width: '100%',
         height: 50,
-        backgroundColor: '#7D6461',
+        backgroundColor: '#282828',
         borderRadius: 50,
         paddingHorizontal: 15,
         marginTop: 25,
@@ -423,7 +421,7 @@ const styles = StyleSheet.create({
     inputComenatrio: {
         width: '100%',
         height: 50,
-        backgroundColor: '#7D6461',
+        backgroundColor: '#282828',
         borderRadius: 50,
         paddingHorizontal: 15,
         color: 'white',
@@ -490,7 +488,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     buttonCrear: {
-        backgroundColor: '#7D6461',
+        backgroundColor: '#282828',
         alignContent: 'center',
         paddingHorizontal: 20,
         paddingVertical: 15,
@@ -505,7 +503,7 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         borderRadius: 10,
         borderWidth: 1,
-        borderColor: '#7D6461',
+        borderColor: '#282828',
         fontFamily: 'Roboto-Regular'
     }
 });

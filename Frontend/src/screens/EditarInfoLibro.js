@@ -202,10 +202,10 @@ export default function EditarInfoLibro({ navigation, route }) {
                     selectedValue={libro.genero}
                     onValueChange={(value) => setLibro({ ...libro, genero: value })}
                     isSearchable
-                    primaryColor={'#7D6461'}
+                    primaryColor={'#282828'}
                     dropdownStyle={{
-                        backgroundColor: '#7D6461',
-                        borderColor: '#7D6461',
+                        backgroundColor: '#282828',
+                        borderColor: '#282828',
                         borderRadius: 50,
                     }}
                     dropdownIconStyle={{ color: 'white' }}
@@ -237,12 +237,14 @@ const styles = StyleSheet.create({
     },
     imagenConteiner: {
         margin: 20,
-        borderRadius: 50,
+        marginBottom: 5,
+        height: 300,
+        width: 200,
     },
     button: {
         width: '50%',
         height: 50,
-        backgroundColor: '#7D6461',
+        backgroundColor: '#282828',
         justifyContent: 'center',
         alignSelf: 'center',
         borderRadius: 50,
@@ -252,7 +254,7 @@ const styles = StyleSheet.create({
         fontWeight: '500'
     },
     drop: {
-        backgroundColor: '#7D6461',
+        backgroundColor: '#282828',
         fontSize: 16,
     },
     buttonText: {
@@ -271,7 +273,7 @@ const styles = StyleSheet.create({
     input: {
         width: '100%',
         height: 50,
-        backgroundColor: '#7D6461',
+        backgroundColor: '#282828',
         borderRadius: 30,
         paddingHorizontal: 15,
         marginTop: 25,
@@ -283,7 +285,7 @@ const styles = StyleSheet.create({
     button: {
         width: '50%',
         height: 50,
-        backgroundColor: '#7D6461',
+        backgroundColor: '#282828',
         justifyContent: 'center',
         alignSelf: 'center',
         borderRadius: 50,
@@ -313,7 +315,7 @@ const styles = StyleSheet.create({
     inputD: {
         width: '100%',
         height: 50,
-        backgroundColor: '#7D6461',
+        backgroundColor: '#282828',
         borderRadius: 30,
         justifyContent: 'center',
         paddingHorizontal: 15,
@@ -338,8 +340,9 @@ const styles = StyleSheet.create({
     },
     imagen: {
         alignSelf: 'center',
-        width: 200,
-        height: 200,
+        resizeMode: 'cover',
+        width: '100%',
+        height: '100%',
     },
     contenedorCalendarioIOS: {
         borderRadius: 25,

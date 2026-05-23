@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, SafeAreaView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, SafeAreaView, Platform, KeyboardAvoidingView } from 'react-native';
 import { loginUsuario } from '../../api.js';
 import Entypo from '@expo/vector-icons/Entypo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -46,30 +46,32 @@ export default function Login({ navigation, setUsuarioLogueado }) {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.subContainer}>
-        <Text style={styles.titulo}>Bienvenido de nuevo a tu biblioteca virtual</Text>
-        <Text style={styles.subtitulo}>Inicio sesión</Text>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <ScrollView style={styles.subContainer}>
+          <Text style={styles.titulo}>Bienvenido de nuevo a tu biblioteca virtual</Text>
+          <Text style={styles.subtitulo}>Inicio sesión</Text>
 
-        <TextInput style={styles.input} value={nombreUsuario} onChangeText={nombreUsuario => setnombreUsuario(nombreUsuario)} placeholder="Usuario..." autoCapitalize="none" autoCorrect={false} />
-        <View style={styles.inputD}>
-          <TextInput style={styles.contrasenaInput} value={password} onChangeText={password => setpassword(password)} placeholder="Contraseña..." secureTextEntry={!mostrarPassword} autoCapitalize="none" autoCorrect={false} />
-          <TouchableOpacity style={styles.icon} onPress={() => setmostrarPassword(!mostrarPassword)} >
-            <Entypo name={mostrarPassword ? 'eye-with-line' : 'eye'} size={24} color="white" />
+          <TextInput style={styles.input} value={nombreUsuario} onChangeText={nombreUsuario => setnombreUsuario(nombreUsuario)} placeholder="Usuario..." autoCapitalize="none" autoCorrect={false} />
+          <View style={styles.inputD}>
+            <TextInput style={styles.contrasenaInput} value={password} onChangeText={password => setpassword(password)} placeholder="Contraseña..." secureTextEntry={!mostrarPassword} autoCapitalize="none" autoCorrect={false} />
+            <TouchableOpacity style={styles.icon} onPress={() => setmostrarPassword(!mostrarPassword)} >
+              <Entypo name={mostrarPassword ? 'eye-with-line' : 'eye'} size={24} color="white" />
+            </TouchableOpacity>
+          </View>
+
+          <Text style={styles.textoContrasena}>¿Has olvidado tu contraseña?</Text>
+
+          {error ? <Text style={styles.error}>Los datos son incorrectos</Text> : null}
+
+          <TouchableOpacity style={styles.button} onPress={logIn}>
+            <Text style={styles.buttonText}>Iniciar sesion</Text>
           </TouchableOpacity>
-        </View>
 
-        <Text style={styles.textoContrasena}>¿Has olvidado tu contraseña?</Text>
-
-        {error ? <Text style={styles.error}>Los datos son incorrectos</Text> : null}
-
-        <TouchableOpacity style={styles.button} onPress={logIn}>
-          <Text style={styles.buttonText}>Iniciar sesion</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => navigation.navigate('CrearUsuario')}>
-          <Text style={styles.link}>¿Todavía no tienes una cuenta? Crear usuario.</Text>
-        </TouchableOpacity>
-      </ScrollView>
+          <TouchableOpacity onPress={() => navigation.navigate('CrearUsuario')}>
+            <Text style={styles.link}>¿Todavía no tienes una cuenta? Crear usuario.</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
 }

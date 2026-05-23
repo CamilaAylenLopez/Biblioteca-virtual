@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     button: {
         width: '50%',
         height: 50,
-        backgroundColor: '#7D6461',
+        backgroundColor: '#282828',
         justifyContent: 'center',
         alignSelf: 'center',
         borderRadius: 50,
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
         fontWeight: '500'
     },
     drop: {
-        backgroundColor: '#7D6461',
+        backgroundColor: '#282828',
         fontSize: 16,
     },
     buttonText: {
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
     input: {
         width: '100%',
         height: 50,
-        backgroundColor: '#7D6461',
+        backgroundColor: '#282828',
         borderRadius: 30,
         paddingHorizontal: 15,
         marginTop: 25,
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     button: {
         width: '50%',
         height: 50,
-        backgroundColor: '#7D6461',
+        backgroundColor: '#282828',
         justifyContent: 'center',
         alignSelf: 'center',
         borderRadius: 50,
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     inputD: {
         width: '100%',
         height: 50,
-        backgroundColor: '#7D6461',
+        backgroundColor: '#282828',
         borderRadius: 30,
         justifyContent: 'center',
         paddingHorizontal: 15,

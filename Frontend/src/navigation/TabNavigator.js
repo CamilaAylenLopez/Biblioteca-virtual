@@ -19,12 +19,13 @@ export default function TabNavigator({ setUsuarioLogueado }){
         initialRouteName='Home' 
         screenOptions={{ 
             headerShown: false,
-            tabBarActiveBackgroundColor: '#7D6461',
+            tabBarActiveBackgroundColor: '#282828',
             tabBarActiveTintColor: 'white',
             tabBarInactiveTintColor: 'white',
             tabBarStyle:{
                 color: 'white',
-                backgroundColor: '#594745',
+                backgroundColor: '#000000',
+                borderColor:'#000000',
             }
         }}
         >

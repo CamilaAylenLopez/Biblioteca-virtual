@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Platform, Alert, KeyboardAvoidingView } from 'react-native';
 import { getPersonajeById, eliminarPersonaje } from '../../api';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Fontisto from '@expo/vector-icons/Fontisto';
@@ -88,17 +88,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         fontFamily: 'Roboto-Regular'
     },
-    comentariosContainer: {
-        backgroundColor: '#7D6461',
-        marginBottom: 20,
-        padding: 20,
-        borderRadius: 20,
-        fontFamily: 'Roboto-Regular'
-    },
     icon:{
         display: 'flex',
         alignItems: 'flex-end',
         margin: 5,
+        marginTop: 40,
     },
     horizontal: {
         flexDirection: 'row',
@@ -115,7 +109,7 @@ const styles = StyleSheet.create({
         resizeMode: 'cover',
         alignSelf: 'center',
         margin: 20,
-        marginTop: 40,
+        marginTop: 10,
     },
     fotoUsuario: {
         width: 60,

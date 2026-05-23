@@ -1,20 +1,18 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text, Alert, StyleSheet, ScrollView, Platform } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, Alert, StyleSheet, ScrollView, Platform, KeyboardAvoidingView } from 'react-native';
 import { registrarUsuario } from '../../api';
 import Entypo from '@expo/vector-icons/Entypo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function CrearUsuario({ navigation, setUsuarioLogueado }) {
     const [form, setForm] = useState({
-        nombre: '', apellido: '', nombreUsuario: '', email: '', password: ''
+        nombre: '', apellido: '', nombreUsuario: '', email: '', password: '', conformarPassword: ''
     });
-    const [error, setError] = useState(false);
-    const [mensaje, setMensaje] = useState('');
     const [mostrarPassword, setmostrarPassword] = useState(false);
     const [mostrarPasswordD, setmostrarPasswordD] = useState(false);
 
     const validarContra = (password) => {
-        const regex = /^(?=.*[A-Z])(?=.*[!?/()@#$%^&*.,_-]).{8,}$/;
+        const regex = /^(?=.*[A-Z])(?=.*[!?/()@#$%^&*.,_-¿¡=<>]).{8,}$/;
         return regex.test(password);
     }
     const validarEmail = (email) => {
@@ -23,42 +21,51 @@ export default function CrearUsuario({ navigation, setUsuarioLogueado }) {
     }
 
     const handleRegistro = async () => {
-        setError(false);
         if (!form.nombreUsuario || !form.password || !form.email) {
             if (Platform.OS === 'web') {
                 alert("Faltan completar campos");
             } else {
-                Alert.alert("Error", "Faltan completar campos");
+                Alert.alert("¡Error!", "Faltan completar campos");
             }
             return;
         }
 
         if (!validarEmail(form.email)) {
-            setError(true);
-            setMensaje("El email no es valido");
+            if (Platform.OS === 'web') {
+                alert("El email no es valido");
+            } else {
+                Alert.alert("¡Error!", "El email no es valido");
+            }
             return;
         }
 
         if (!validarContra(form.password)) {
-            setError(true);
-            setMensaje(
-                "La contraseña debe tener:\n" +
-                "- Al menos 8 caracteres\n" +
-                "- Una letra mayuscula\n" +
-                "- Un caracter esecial (ej: !, @, #, $)"
-            );
+            if (Platform.OS === 'web') {
+                alert("La contraseña debe tener:\n" +
+                    "- Al menos 8 caracteres\n" +
+                    "- Una letra mayuscula\n" +
+                    "- Un caracter esecial (ej: !, @, #, $)");
+            } else {
+                Alert.alert("Error!", "La contraseña debe tener:\n" +
+                    "- Al menos 8 caracteres\n" +
+                    "- Una letra mayuscula\n" +
+                    "- Un caracter esecial (ej: !, @, #, $)");
+            }
             return;
         }
 
         if (form.password !== form.conformarPassword) {
-            setError(true);
-            setMensaje("Las constraseñas no coinciden");
+            if (Platform.OS === 'web') {
+                alert("Las constraseñas no coinciden");
+            } else {
+                Alert.alert("¡Error!", "Las constraseñas no coinciden");
+            }
             return;
         }
 
         try {
             const respuesta = await registrarUsuario(form);
-            if (respuesta.ok) {
+            if (respuesta && respuesta.ok) {
                 if (respuesta.data.usuario) {
                     await AsyncStorage.setItem(
                         '@usuario_sesion',
@@ -67,16 +74,20 @@ export default function CrearUsuario({ navigation, setUsuarioLogueado }) {
                 }
                 const horaActual = Date.now().toString();
                 await AsyncStorage.setItem('@hora_login', horaActual);
-                setUsuarioLogueado(true);
 
                 if (Platform.OS === 'web') {
                     alert(respuesta.data.mensaje);
                 } else {
                     Alert.alert("¡Éxito!", respuesta.data.mensaje);
                 }
+                setUsuarioLogueado(true);
+
             } else {
-                setError(true);
-                setMensaje(respuesta.data.error);
+                if (Platform.OS === 'web') {
+                    alert(respuesta.data.error);
+                } else {
+                    Alert.alert("¡Error!", respuesta.data.error);
+                }
             }
         } catch (error) {
             console.error(error);
@@ -85,40 +96,39 @@ export default function CrearUsuario({ navigation, setUsuarioLogueado }) {
 
     return (
         <View style={styles.container}>
-            <ScrollView style={styles.subContainer}>
+            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
+                <ScrollView contentContainerStyle={styles.subContainer}>
 
-                <Text style={styles.titulo}>Bienvenido a tu nueva biblioteca virtual</Text>
-                <Text style={styles.subtitulo}>Craer usuario</Text>
+                    <Text style={styles.titulo}>Bienvenido a tu nueva biblioteca virtual</Text>
+                    <Text style={styles.subtitulo}>Crear usuario</Text>
 
-                <TextInput style={styles.input} placeholder="Nombre..." onChangeText={(txt) => setForm({ ...form, nombre: txt })} />
-                <TextInput style={styles.input} placeholder="Nombre de Usuario..." onChangeText={(txt) => setForm({ ...form, nombreUsuario: txt })} />
-                <TextInput style={styles.input} placeholder="Email..." onChangeText={(txt) => setForm({ ...form, email: txt })} />
+                    <TextInput style={styles.input} placeholder="Nombre..." onChangeText={(txt) => setForm({ ...form, nombre: txt })} />
+                    <TextInput style={styles.input} placeholder="Nombre de Usuario..." onChangeText={(txt) => setForm({ ...form, nombreUsuario: txt })} />
+                    <TextInput style={styles.input} placeholder="Email..." onChangeText={(txt) => setForm({ ...form, email: txt })} />
 
-                <View style={styles.inputD}>
-                    <TextInput style={styles.textoInput} onChangeText={(txt) => setForm({ ...form, password: txt })} placeholder="Contraseña..." secureTextEntry={!mostrarPassword} />
-                    <TouchableOpacity style={styles.icon} onPress={() => setmostrarPassword(!mostrarPassword)} >
-                        <Entypo name={mostrarPassword ? 'eye-with-line' : 'eye'} size={24} color="white" />
+                    <View style={styles.inputD}>
+                        <TextInput style={styles.textoInput} onChangeText={(txt) => setForm({ ...form, password: txt })} placeholder="Contraseña..." secureTextEntry={!mostrarPassword} />
+                        <TouchableOpacity style={styles.icon} onPress={() => setmostrarPassword(!mostrarPassword)} >
+                            <Entypo name={mostrarPassword ? 'eye-with-line' : 'eye'} size={24} color="white" />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={styles.inputD}>
+                        <TextInput style={styles.textoInput} onChangeText={(txt) => setForm({ ...form, conformarPassword: txt })} placeholder="Confirmar contraseña..." secureTextEntry={!mostrarPasswordD} />
+                        <TouchableOpacity style={styles.icon} onPress={() => setmostrarPasswordD(!mostrarPasswordD)} >
+                            <Entypo name={mostrarPasswordD ? 'eye-with-line' : 'eye'} size={24} color="white" />
+                        </TouchableOpacity>
+                    </View>
+
+                    <TouchableOpacity onPress={handleRegistro} style={styles.button}>
+                        <Text style={styles.buttonText}>Registrarse</Text>
                     </TouchableOpacity>
-                </View>
 
-                <View style={styles.inputD}>
-                    <TextInput style={styles.textoInput} onChangeText={(txt) => setForm({ ...form, conformarPassword: txt })} placeholder="Confirmar contraseña..." secureTextEntry={!mostrarPasswordD} />
-                    <TouchableOpacity style={styles.icon} onPress={() => setmostrarPasswordD(!mostrarPasswordD)} >
-                        <Entypo name={mostrarPasswordD ? 'eye-with-line' : 'eye'} size={24} color="white" />
+                    <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                        <Text style={styles.link}>¿Ya tienes una cuenta creada? Iniciar sesión.</Text>
                     </TouchableOpacity>
-                </View>
-
-
-                {error ? <Text style={styles.error}>{mensaje}</Text> : null}
-
-                <TouchableOpacity onPress={handleRegistro} style={styles.button}>
-                    <Text style={styles.buttonText}>Registrarse</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                    <Text style={styles.link}>¿Ya tienes una cuenta creada? Iniciar sesión.</Text>
-                </TouchableOpacity>
-            </ScrollView>
+                </ScrollView>
+            </KeyboardAvoidingView>
         </View>
     );
 }
@@ -129,6 +139,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#8E7960',
     },
     subContainer: {
+        flexGrow: 1,
+        padding: 20,
         backgroundColor: '#DBD3CF',
         marginVertical: 40,
         marginHorizontal: 30,
@@ -162,7 +174,8 @@ const styles = StyleSheet.create({
         color: 'white',
         outlineStyle: 'none',
         fontSize: 16,
-        fontFamily: 'Roboto-Regular'
+        fontFamily: 'Roboto-Regular',
+        minWidth: '100%',
     },
     button: {
         width: '50%',
@@ -172,7 +185,8 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderRadius: 50,
         marginTop: 10,
-        textAlign: 'center'
+        textAlign: 'center',
+        minWidth: 130,
     },
     buttonText: {
         color: 'white',

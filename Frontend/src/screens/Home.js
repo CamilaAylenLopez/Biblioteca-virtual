@@ -7,7 +7,7 @@ import DropdownSelect from 'react-native-input-select';
 export default function Home({ navigation }) {
   const isFocused = useIsFocused();
   const [libros, setLibros] = useState([]);
-  const [generoSeleccionado, setGeneroSeleccionado] = useState(null);
+  const [generoSeleccionado, setGeneroSeleccionado] = useState(' ');
 
   useEffect(() => {
     if (isFocused) {
@@ -53,13 +53,13 @@ export default function Home({ navigation }) {
       <Text style={styles.header}>Mi Biblioteca Virtual</Text>
 
       <DropdownSelect
-        label=" "
+        label=""
         placeholder="Elegir genero"
         options={[
           {
             title: 'Generos...',
             data: [
-              { label: 'Todos'},
+              { label: 'Todos', value: ' '},
               { label: 'Terror', value: 'Terror' },
               { label: 'Romance', value: 'Romance' },
               { label: 'Misterio', value: 'Misterio' },
@@ -81,12 +81,12 @@ export default function Home({ navigation }) {
         primaryColor={'#282828'}
         dropdownStyle={{
           backgroundColor: '#282828',
-          borderColor: '#282828',
-          borderRadius: 50,
-          maxWidth: 160,
-          marginLeft: 10,
+          borderRadius: 20,
+          marginLeft: 20,
+          maxWidth: 140,
+          maxHeight: 50,
+          marginVertical: 10,
         }}
-        dropdownIconStyle={{ color: 'white' }}
         dropdownPlaceholderStyle={{ color: 'white', }}
         placeholderStyle={{ color: 'white', fontSize: 16 }}
         selectedItemStyle={{ color: 'white' }}
@@ -94,7 +94,7 @@ export default function Home({ navigation }) {
 
       {libros.length === 0 ? (
         <Text style={{ color: 'gray', textAlign: 'center', marginTop: 20, fontFamily: 'Roboto-Regular' }}>No hay libros disponibles</Text>
-      ) : generoSeleccionado ? (
+      ) : generoSeleccionado !== ' ' ? (
         renderSeccionGenero(generoSeleccionado)
       ) : (
         generosDisponibles.map(genero => renderSeccionGenero(genero))

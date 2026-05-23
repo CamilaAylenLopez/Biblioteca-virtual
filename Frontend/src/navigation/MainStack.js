@@ -37,7 +37,7 @@ export default function MainStack({ setUsuarioLogueado }) {
         ),
         headerRight: null,
         headerStyle: {
-          backgroundColor: '#7D6461',
+          backgroundColor: '#282828',
         },
         headerTintColor: 'white',
         })}
@@ -54,7 +54,7 @@ export default function MainStack({ setUsuarioLogueado }) {
         ),
         headerRight: null,
         headerStyle: {
-          backgroundColor: '#7D6461',
+          backgroundColor: '#282828',
         },
         headerTintColor: 'white',
         })}
@@ -75,7 +75,7 @@ export default function MainStack({ setUsuarioLogueado }) {
           </TouchableOpacity>
         ),
         headerStyle: {
-          backgroundColor: '#7D6461',
+          backgroundColor: '#282828',
         },
         headerTintColor: 'white',
         })}
@@ -96,7 +96,7 @@ export default function MainStack({ setUsuarioLogueado }) {
           </TouchableOpacity>
         ),
         headerStyle: {
-          backgroundColor: '#7D6461',
+          backgroundColor: '#282828',
         },
         headerTintColor: 'white',
         })}
@@ -113,7 +113,7 @@ export default function MainStack({ setUsuarioLogueado }) {
         ),
         headerRight: () => null,
         headerStyle: {
-          backgroundColor: '#7D6461',
+          backgroundColor: '#282828',
         },
         headerTintColor: 'white',
         })}
@@ -129,7 +129,7 @@ export default function MainStack({ setUsuarioLogueado }) {
         ),
         headerRight: null,
         headerStyle: {
-          backgroundColor: '#7D6461',
+          backgroundColor: '#282828',
         },
         headerTintColor: 'white',
         })}

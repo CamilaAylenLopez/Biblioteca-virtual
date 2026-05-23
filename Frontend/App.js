@@ -25,19 +25,17 @@ export default function App() {
       try {
         const sesion = await AsyncStorage.getItem('@usuario_sesion');
         const horaLoginStr = await AsyncStorage.getItem('@hora_login');
-        
+
         if (sesion && horaLoginStr) {
           const horaLogin = parseInt(horaLoginStr, 10);
           const horaActual = Date.now();
-          const TIEMPO_EXPIRACION = 60000 * 10; // sería un minuto por 10
+          const TIEMPO_EXPIRACION = 60000 * 5; // sería un minuto por 10
 
-          if(horaActual - horaLogin > TIEMPO_EXPIRACION){
+          if (horaActual - horaLogin > TIEMPO_EXPIRACION) {
             await AsyncStorage.removeItem('@usuario_sesion');
             await AsyncStorage.removeItem('@hora_login');
             setUsuarioLogueado(false);
-            setCargando(false);
-            Alert.alert("Sesión cerrada", "Tu sesión ha expirado por inactividad. Vuelve a iniciar sesión.");
-          }else{
+          } else {
             setUsuarioLogueado(true);
           }
         } else {
@@ -51,6 +49,41 @@ export default function App() {
     };
     verificarSesion();
   }, []);
+
+  useEffect(() => {
+    let intervalo = null;
+
+    if(usuarioLogueado){
+      intervalo = setInterval(async () => {
+        const horaLoginStr = await AsyncStorage.getItem('@hora_login');
+        if(horaLoginStr){
+          const horaLogin = parseInt(horaLoginStr, 10);
+          const horaActual = Date.now();
+          const TIEMPO_EXPIRACION = 60000 * 5;
+
+          if(horaActual - horaLogin > TIEMPO_EXPIRACION){
+            clearInterval(intervalo);
+            forzarCierreSesion();
+          }
+        }
+      }, 5000);
+    }
+
+    return () => {
+      if (intervalo) clearInterval(intervalo);
+    };
+  }, [usuarioLogueado]);
+
+  const forzarCierreSesion = async () => {
+    try {
+      await AsyncStorage.removeItem('@usuario_sesion');
+      await AsyncStorage.removeItem('@hora_login');
+      setUsuarioLogueado(false);
+      Alert.alert("Sesion expirada", "Has alcanzado el limite de 5 minutos. Inicia sesión nuevamente.");
+    } catch (error) {
+      console.error("Error al cerrar sesión automaticmanete: ", error);
+    }
+  };
 
   if (cargando || !fontsLoaded) {
     return (
@@ -80,7 +113,7 @@ export default function App() {
             <Stack.Screen name="Login">
               {(props) => <Login {...props} setUsuarioLogueado={setUsuarioLogueado} />}
             </Stack.Screen>
-            
+
             <Stack.Screen name="CrearUsuario">
               {(props) => <CrearUsuario {...props} setUsuarioLogueado={setUsuarioLogueado} />}
             </Stack.Screen>

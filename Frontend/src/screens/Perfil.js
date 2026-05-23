@@ -142,13 +142,14 @@ const styles = StyleSheet.create({
   button: {
     width: '50%',
     height: 50,
-    backgroundColor: '#7D6461',
+    backgroundColor: '#282828',
     justifyContent: 'center',
     alignSelf: 'center',
     borderRadius: 50,
     marginTop: 10,
     textAlign: 'center',
-    fontFamily: 'Roboto-Regular'
+    fontFamily: 'Roboto-Regular',
+    marginBottom: 20,
   },
   buttonText: {
     color: 'white',
