@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Platform, Alert, KeyboardAvoidingView } from 'react-native';
-import { getPersonajeById, eliminarPersonaje } from '../../api';
+import { getPersonajeById, eliminarPersonaje } from '../api/api';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import { useIsFocused } from '@react-navigation/native';

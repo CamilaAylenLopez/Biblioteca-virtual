@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, ScrollView, Alert, TouchableOpacity, ActivityIndicator, TextInput } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
-import { actualizarPersonaje, getPersonajeById } from '../../api';
+import { actualizarPersonaje, getPersonajeById } from '../api/api';
 import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from 'expo-image-picker';
 import DropdownSelect from 'react-native-input-select';

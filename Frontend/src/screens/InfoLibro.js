@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, TextInput, Alert, Modal, Platform, KeyboardAvoidingView } from 'react-native';
-import { getLibrosById, getPersonajesByIdLibro, getComentariosByIdLibro, nuevoComentario, getBibliotecas, crearBiblioteca, guardarLibroEnBiblioteca } from '../../api';
+import { getLibrosById, getPersonajesByIdLibro, getComentariosByIdLibro, nuevoComentario, getBibliotecas, crearBiblioteca, guardarLibroEnBiblioteca } from '../api/api';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import { useIsFocused } from '@react-navigation/native';

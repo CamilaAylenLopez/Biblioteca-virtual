@@ -79,7 +79,7 @@ export default function App() {
       await AsyncStorage.removeItem('@usuario_sesion');
       await AsyncStorage.removeItem('@hora_login');
       setUsuarioLogueado(false);
-      Alert.alert("Sesion expirada", "Has alcanzado el limite de 5 minutos. Inicia sesión nuevamente.");
+      Alert.alert("Sesion expirada", "Has alcanzado el limite de 30 minutos. Inicia sesión nuevamente.");
     } catch (error) {
       console.error("Error al cerrar sesión automaticmanete: ", error);
     }

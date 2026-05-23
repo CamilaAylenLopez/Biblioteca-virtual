@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { getLibros } from '../../api.js';
+import { getLibros } from '../api/api.js';
 import { useIsFocused } from '@react-navigation/native';
 import DropdownSelect from 'react-native-input-select';
 

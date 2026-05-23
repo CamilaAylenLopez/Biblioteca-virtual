@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, Alert, StyleSheet, ScrollView, Platform, KeyboardAvoidingView } from 'react-native';
-import { registrarUsuario } from '../../api';
+import { registrarUsuario } from '../api/api';
 import Entypo from '@expo/vector-icons/Entypo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 

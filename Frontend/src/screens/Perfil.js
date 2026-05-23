@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getBiblioteca } from '../../api.js';
+import { getBiblioteca } from '../api/api.js';
 import Entypo from '@expo/vector-icons/Entypo';
 import { useIsFocused } from '@react-navigation/native';
 

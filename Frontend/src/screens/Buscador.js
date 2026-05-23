@@ -1,39 +1,50 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, TextInput } from 'react-native';
-import { resultadoBusqueda } from '../../api';
+import { resultadoBusqueda } from '../api/api';
 import { FontAwesome, AntDesign } from '@expo/vector-icons';
+import { useIsFocused } from '@react-navigation/native';
+import { setCommentRange } from 'typescript';
 
 export default function Buscador({ navigation }) {
     const [query, setQuery] = useState('');
     const [resultados, setResultados] = useState([]);
     const [filtro, setFiltro] = useState('todo');
     const [cargando, setCargando] = useState(false);
-
-    const realizarBusqueda = async (texto) => {
-        if (texto.length < 2) {
-            setResultados([]);
-            return;
-        }
-        setCargando(true);
-        try {
-            const data = await resultadoBusqueda(texto);
-            setResultados(data);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setCargando(false);
-        }
-    };
-
+    const isFocused = useIsFocused();
 
     useEffect(() => {
+        if (isFocused) {
+            setQuery('');
+            setResultados([]);
+            setCargando(false);
+        }
+
+        return () => {
+            setQuery('');
+            setResultados([]);
+            setCargando(false);
+        };
+    }, [isFocused]);
+
+    useEffect(() => {
+        if (query.trim().length <= 1) {
+            setResultados([]);
+            setCargando(false);
+            return;
+        }
+
+        setCargando(true);
+
         const delayDebounceFn = setTimeout(() => {
-            if (query.trim().length > 1) {
-                resultadoBusqueda(encodeURIComponent(query)).then(data => {
-                    console.log("Resultados recibidos:", data);
-                    setResultados(data);
+
+            resultadoBusqueda(encodeURIComponent(query))
+                .then(data => {
+                    setResultados(data || []);
+                })
+                .catch(err => console.error(err))
+                .finally(() => {
+                    setCargando(false);
                 });
-            }
         }, 500);
         return () => clearTimeout(delayDebounceFn);
     }, [query]);
@@ -49,8 +60,8 @@ export default function Buscador({ navigation }) {
                 navigation.navigate('InfoPersonaje', { personaje: item.id });
             }
         }}>
-            
-            <Image source={item.imagen_url ? { uri: item.imagen_url} : require('../img/Imagenotfound.png')} style={item.tipo === 'libro' ? styles.imgLibro : styles.imgPersonaje} />
+
+            <Image source={item.imagen_url ? { uri: item.imagen_url } : require('../img/Imagenotfound.png')} style={item.tipo === 'libro' ? styles.imgLibro : styles.imgPersonaje} />
             <View style={styles.info}>
                 <Text style={styles.nombre}>{item.nombre}</Text>
                 <View style={styles.containerTipoTexto}>
@@ -83,7 +94,7 @@ export default function Buscador({ navigation }) {
                 <FlatList data={resultadosFiltrados}
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={renderItem}
-                    ListEmptyComponent={query.length > 1 && <Text style={styles.vacio}>No se encontraron resultados</Text>}
+                    ListEmptyComponent={query.trim().length > 1 && <Text style={styles.vacio}>No se encontraron resultados</Text>}
                 />
             )}
         </View>
