@@ -31,7 +31,6 @@ export default function EditarPerfil({ navigation, route }) {
             const cargarDatos = async () => {
                 try {
                     const datosUsuario = await getUsuarioById(id);
-                    console.log(datosUsuario);
                     setNuevosDatos(datosUsuario);
 
                     if (datosUsuario.fecha_nacimiento) {
@@ -48,6 +47,11 @@ export default function EditarPerfil({ navigation, route }) {
             cargarDatos();
         };
     }, [isFocused]);
+
+    const validarEmail = (email) => {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    };
 
     const selectImagen = async () => {
         try {
@@ -80,6 +84,10 @@ export default function EditarPerfil({ navigation, route }) {
     };
 
     const actualizar = async () => {
+        if (!validarEmail(nuevosDatos.email)) {
+            alerta("¡Error!", "El email no es valido");
+            return;
+        }
 
         try {
             const respuesta = await actualizarPerfil(id, { ...nuevosDatos });

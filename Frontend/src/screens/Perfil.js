@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Platform, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getBiblioteca } from '../api/api.js';
 import Entypo from '@expo/vector-icons/Entypo';
@@ -10,22 +10,70 @@ export default function Perfil({ navigation, setUsuarioLogueado }) {
   const [usuario, setUsuario] = useState(null);
   const [biblioteca, setBiblioteca] = useState([]);
 
+  const alerta = (titulo, mensaje) => {
+    if (Platform.OS === 'web') {
+      alert(mensaje)
+    } else {
+      Alert.alert(titulo, mensaje)
+    }
+  };
+
+  const procesarCierreDeSesion = async () => {
+    try {
+      await AsyncStorage.removeItem('@usuario_sesion');
+      await AsyncStorage.removeItem('@token_sesion');
+      setUsuarioLogueado(false);
+      alerta("Sesión expirada", "Tu sesión ha caducado. Por favor, inicia sesión nuevamente.");
+    } catch (error) {
+      console.log(error);
+      alerta("Error", "Hubo un error al intentar cerrar sesión.");
+    }
+  };
+
   useEffect(() => {
+
     const obtenerDatos = async () => {
       try {
         const sesion = await AsyncStorage.getItem('@usuario_sesion');
-        if (sesion != null) {
-          const usuarioParseado = JSON.parse(sesion);
-          setUsuario(usuarioParseado);
-          const data = await getBiblioteca(usuarioParseado.id);
-          setBiblioteca(data);
+
+        const usuarioParseado = JSON.parse(sesion);
+        setUsuario(usuarioParseado);
+
+        const data = await getBiblioteca(usuarioParseado.id);
+
+        if (!data || data.ok === false || data.status === 401 || data.error) {
+          console.log("La API rechazó el token o devolvió un error.");
+          await procesarCierreDeSesion();
+          return;
         }
+
+        setBiblioteca(data);
       } catch (error) {
         console.error(error);
+        await procesarCierreDeSesion();
       }
     };
+
     obtenerDatos();
   }, [isFocused]);
+
+  if (!usuario) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#7D6461" />
+      </View>
+    )
+  }
+
+  const cerrarSesion = async () => {
+    try {
+      await AsyncStorage.removeItem('@usuario_sesion');
+      await AsyncStorage.removeItem('@token_sesion');
+      setUsuarioLogueado(false);
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+    }
+  };
 
   const renderBiblioteca = (nombre) => {
     const bibliotecaFiltrada = biblioteca.filter(b => b.nombre === nombre);
@@ -44,7 +92,7 @@ export default function Perfil({ navigation, setUsuarioLogueado }) {
             <View style={styles.card}>
               <TouchableOpacity onPress={() => navigation.navigate('InfoLibro', { libroId: item.libro_id })}>
                 <Image
-                  source={item.imagen_url ? { uri: item.imagen_url} : require('../img/Imagenotfound.png')}
+                  source={item.imagen_url ? { uri: item.imagen_url } : require('../img/Imagenotfound.png')}
                   style={styles.portada}
                 />
                 <Text style={styles.tituloLibro} numberOfLines={2}>{item.titulo}</Text>
@@ -56,21 +104,13 @@ export default function Perfil({ navigation, setUsuarioLogueado }) {
     );
   };
 
-
-  if (!usuario) return <Text>Cargando perfil...</Text>;
-
-  const cerrarSesion = async () => {
-    await AsyncStorage.removeItem('@usuario_sesion');
-    setUsuarioLogueado(false);
-  };
-
   const nombresBibliotecas = [...new Set(biblioteca.map(b => b.nombre))];
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 60 }}>
       <View style={styles.horizontal}>
         <Image
-          source={usuario.foto_perfil ? { uri: usuario.foto_perfil} : require('../img/userIcon.webp')}
+          source={usuario.foto_perfil ? { uri: usuario.foto_perfil } : require('../img/userIcon.webp')}
           style={styles.foto}
         />
         <View style={styles.vertical}>
@@ -96,9 +136,8 @@ export default function Perfil({ navigation, setUsuarioLogueado }) {
           </View>
         ))
       ) : (
-        <Text style={{color: 'white'}}>No has guardado ningun libro aun.</Text>
+        <Text style={{ color: 'white' }}>No has guardado ningun libro aun.</Text>
       )}
-
 
       <TouchableOpacity onPress={cerrarSesion} style={styles.button}>
         <Text style={styles.buttonText}>Cerrar sesión</Text>
@@ -142,7 +181,7 @@ const styles = StyleSheet.create({
   button: {
     width: '50%',
     height: 50,
-    backgroundColor: '#282828',
+    backgroundColor: '#703b3b',
     justifyContent: 'center',
     alignSelf: 'center',
     borderRadius: 50,

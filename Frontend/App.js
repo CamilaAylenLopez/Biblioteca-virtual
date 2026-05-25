@@ -23,22 +23,11 @@ export default function App() {
   useEffect(() => {
     const verificarSesion = async () => {
       try {
-        const sesion = await AsyncStorage.getItem('@usuario_sesion');
-        const horaLoginStr = await AsyncStorage.getItem('@hora_login');
+        const token = await AsyncStorage.getItem('@token_sesion');
 
-        if (sesion && horaLoginStr) {
-          const horaLogin = parseInt(horaLoginStr, 10);
-          const horaActual = Date.now();
-          const TIEMPO_EXPIRACION = 60000 * 30; // sería un minuto por 30
-
-          if (horaActual - horaLogin > TIEMPO_EXPIRACION) {
-            await AsyncStorage.removeItem('@usuario_sesion');
-            await AsyncStorage.removeItem('@hora_login');
-            setUsuarioLogueado(false);
-          } else {
-            setUsuarioLogueado(true);
-          }
-        } else {
+        if(token){
+          setUsuarioLogueado(true);
+        }else{
           setUsuarioLogueado(false);
         }
       } catch (error) {
@@ -50,36 +39,12 @@ export default function App() {
     verificarSesion();
   }, []);
 
-  useEffect(() => {
-    let intervalo = null;
-
-    if(usuarioLogueado){
-      intervalo = setInterval(async () => {
-        const horaLoginStr = await AsyncStorage.getItem('@hora_login');
-        if(horaLoginStr){
-          const horaLogin = parseInt(horaLoginStr, 10);
-          const horaActual = Date.now();
-          const TIEMPO_EXPIRACION = 60000 * 30;
-
-          if(horaActual - horaLogin > TIEMPO_EXPIRACION){
-            clearInterval(intervalo);
-            forzarCierreSesion();
-          }
-        }
-      }, 5000);
-    }
-
-    return () => {
-      if (intervalo) clearInterval(intervalo);
-    };
-  }, [usuarioLogueado]);
-
   const forzarCierreSesion = async () => {
     try {
       await AsyncStorage.removeItem('@usuario_sesion');
-      await AsyncStorage.removeItem('@hora_login');
+      await AsyncStorage.removeItem('@token_sesion');
       setUsuarioLogueado(false);
-      Alert.alert("Sesion expirada", "Has alcanzado el limite de 30 minutos. Inicia sesión nuevamente.");
+      Alert.alert("Sesion finalizada", "Has alcanzado el limite de 7 días. Inicia sesión nuevamente.");
     } catch (error) {
       console.error("Error al cerrar sesión automaticmanete: ", error);
     }
@@ -93,20 +58,12 @@ export default function App() {
     );
   }
 
-  if (cargando) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#121212' }}>
-        <ActivityIndicator size="large" color="#7D6461" />
-      </View>
-    )
-  }
-
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {usuarioLogueado === true ? (
+        {usuarioLogueado ? (
           <Stack.Screen name="Main">
-            {(props) => <MainStack {...props} setUsuarioLogueado={setUsuarioLogueado} />}
+            {(props) => <MainStack {...props} setUsuarioLogueado={setUsuarioLogueado} forzarCierreSesion={forzarCierreSesion}/>}
           </Stack.Screen>
         ) : (
           <>

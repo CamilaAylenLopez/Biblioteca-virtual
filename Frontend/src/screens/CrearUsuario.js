@@ -30,7 +30,7 @@ export default function CrearUsuario({ navigation, setUsuarioLogueado }) {
     };
 
     const handleRegistro = async () => {
-        if (!form.nombreUsuario || !form.password || !form.email) {
+        if (!form.nombreUsuario || !form.nombre || !form.password || !form.email) {
             alerta("¡Error!", "Faltan completar campos");
             return;
         }
@@ -45,7 +45,6 @@ export default function CrearUsuario({ navigation, setUsuarioLogueado }) {
                 "- Al menos 8 caracteres\n" +
                 "- Una letra mayuscula\n" +
                 "- Un caracter esecial (ej: !, @, #, $)");
-
             return;
         }
 
@@ -63,8 +62,9 @@ export default function CrearUsuario({ navigation, setUsuarioLogueado }) {
                         JSON.stringify(respuesta.data.usuario)
                     );
                 }
-                const horaActual = Date.now().toString();
-                await AsyncStorage.setItem('@hora_login', horaActual);
+                if (respuesta.data && respuesta.data.token) {
+                    await AsyncStorage.setItem('@token_sesion', respuesta.data.token);
+                }
 
                 alerta("¡Éxito!", "Usuario creado con éxito.")
 
@@ -75,45 +75,44 @@ export default function CrearUsuario({ navigation, setUsuarioLogueado }) {
             }
         } catch (error) {
             console.error(error);
+            alerta("¡Error!", "Hubo un problema de conexión con el servidor.");
         }
     };
 
     return (
-        <View style={styles.container}>
-            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-                <ScrollView contentContainerStyle={styles.subContainer}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
+            <ScrollView contentContainerStyle={styles.subContainer}>
 
-                    <Text style={styles.titulo}>Bienvenido a tu nueva biblioteca virtual</Text>
-                    <Text style={styles.subtitulo}>Crear usuario</Text>
+                <Text style={styles.titulo}>Bienvenido a tu nueva biblioteca virtual</Text>
+                <Text style={styles.subtitulo}>Crear usuario</Text>
 
-                    <TextInput style={styles.input} autoCapitalize="none" autoCorrect={false} placeholder="Nombre..." onChangeText={(txt) => setForm({ ...form, nombre: txt })} />
-                    <TextInput style={styles.input} autoCapitalize="none" autoCorrect={false} placeholder="Nombre de Usuario..." onChangeText={(txt) => setForm({ ...form, nombreUsuario: txt })} />
-                    <TextInput style={styles.input} autoCapitalize="none" autoCorrect={false} placeholder="Email..." onChangeText={(txt) => setForm({ ...form, email: txt })} />
+                <TextInput style={styles.input} autoCapitalize="none" autoCorrect={false} placeholder="Nombre..." onChangeText={(txt) => setForm({ ...form, nombre: txt })} />
+                <TextInput style={styles.input} autoCapitalize="none" autoCorrect={false} placeholder="Nombre de Usuario..." onChangeText={(txt) => setForm({ ...form, nombreUsuario: txt })} />
+                <TextInput style={styles.input} autoCapitalize="none" autoCorrect={false} placeholder="Email..." keyboardType="email-address" onChangeText={(txt) => setForm({ ...form, email: txt })} />
 
-                    <View style={styles.inputD}>
-                        <TextInput style={styles.textoInput} autoCapitalize="none" autoCorrect={false} onChangeText={(txt) => setForm({ ...form, password: txt })} placeholder="Contraseña..." secureTextEntry={!mostrarPassword} />
-                        <TouchableOpacity style={styles.icon} onPress={() => setmostrarPassword(!mostrarPassword)} >
-                            <Entypo name={mostrarPassword ? 'eye-with-line' : 'eye'} size={24} color="white" />
-                        </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.inputD}>
-                        <TextInput style={styles.textoInput} autoCapitalize="none" autoCorrect={false} onChangeText={(txt) => setForm({ ...form, conformarPassword: txt })} placeholder="Confirmar contraseña..." secureTextEntry={!mostrarPasswordD} />
-                        <TouchableOpacity style={styles.icon} onPress={() => setmostrarPasswordD(!mostrarPasswordD)} >
-                            <Entypo name={mostrarPasswordD ? 'eye-with-line' : 'eye'} size={24} color="white" />
-                        </TouchableOpacity>
-                    </View>
-
-                    <TouchableOpacity onPress={handleRegistro} style={styles.button}>
-                        <Text style={styles.buttonText}>Registrarse</Text>
+                <View style={styles.inputD}>
+                    <TextInput style={styles.textoInput} autoCapitalize="none" autoCorrect={false} onChangeText={(txt) => setForm({ ...form, password: txt })} placeholder="Contraseña..." secureTextEntry={!mostrarPassword} />
+                    <TouchableOpacity style={styles.icon} onPress={() => setmostrarPassword(!mostrarPassword)} >
+                        <Entypo name={mostrarPassword ? 'eye-with-line' : 'eye'} size={24} color="white" />
                     </TouchableOpacity>
+                </View>
 
-                    <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                        <Text style={styles.link}>¿Ya tienes una cuenta creada? Iniciar sesión.</Text>
+                <View style={styles.inputD}>
+                    <TextInput style={styles.textoInput} autoCapitalize="none" autoCorrect={false} onChangeText={(txt) => setForm({ ...form, conformarPassword: txt })} placeholder="Confirmar contraseña..." secureTextEntry={!mostrarPasswordD} />
+                    <TouchableOpacity style={styles.icon} onPress={() => setmostrarPasswordD(!mostrarPasswordD)} >
+                        <Entypo name={mostrarPasswordD ? 'eye-with-line' : 'eye'} size={24} color="white" />
                     </TouchableOpacity>
-                </ScrollView>
-            </KeyboardAvoidingView>
-        </View>
+                </View>
+
+                <TouchableOpacity onPress={handleRegistro} style={styles.button}>
+                    <Text style={styles.buttonText}>Registrarse</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                    <Text style={styles.link}>¿Ya tienes una cuenta creada? Iniciar sesión.</Text>
+                </TouchableOpacity>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 }
 
@@ -124,15 +123,15 @@ const styles = StyleSheet.create({
     },
     subContainer: {
         flexGrow: 1,
-        padding: 20,
         backgroundColor: '#DBD3CF',
         marginVertical: 40,
         marginHorizontal: 30,
+        paddingVertical: 40,
         paddingTop: 70,
         paddingHorizontal: 30,
         minHeight: 340,
-        Width: 600,
-        height: 800,
+        width: 350,
+        maxWidth: 450,
         borderRadius: 50,
         alignSelf: 'center',
     },
@@ -159,10 +158,9 @@ const styles = StyleSheet.create({
         outlineStyle: 'none',
         fontSize: 16,
         fontFamily: 'Roboto-Regular',
-        minWidth: '100%',
     },
     button: {
-        width: '50%',
+        width: '60%',
         height: 50,
         backgroundColor: '#7D6461',
         justifyContent: 'center',

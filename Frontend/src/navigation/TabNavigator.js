@@ -13,47 +13,47 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 const Tab = createBottomTabNavigator();
 
-export default function TabNavigator({ setUsuarioLogueado }){
+export default function TabNavigator({ setUsuarioLogueado }) {
     return (
-        <Tab.Navigator 
-        initialRouteName='Home' 
-        screenOptions={{ 
-            headerShown: false,
-            tabBarActiveBackgroundColor: '#282828',
-            tabBarActiveTintColor: 'white',
-            tabBarInactiveTintColor: 'white',
-            tabBarStyle:{
-                color: 'white',
-                backgroundColor: '#000000',
-                borderColor:'#000000',
-            }
-        }}
+        <Tab.Navigator
+            initialRouteName='Home'
+            screenOptions={{
+                headerShown: false,
+                tabBarActiveBackgroundColor: '#282828',
+                tabBarActiveTintColor: 'white',
+                tabBarInactiveTintColor: 'white',
+                tabBarStyle: {
+                    color: 'white',
+                    backgroundColor: '#000000',
+                    borderColor: '#000000',
+                }
+            }}
         >
-            <Tab.Screen 
-                name="Home" 
-                component={Home}
+            <Tab.Screen
+                name="Home"
                 options={{
-                    tabBarIcon: ({color, size}) => (<FontAwesome name="home" color={color} size={24} />)
-                }}
-            />
+                    tabBarIcon: ({ color, size }) => (<FontAwesome name="home" color={color} size={24} />)
+                }}>
+                {(props) => <Home {...props} setUsuarioLogueado={setUsuarioLogueado} />}
+            </Tab.Screen>
             <Tab.Screen
                 name="NuevoLibro"
-                component={NuevoLibro}
                 options={{
-                    tabBarIcon: ({color, size}) => (<Ionicons name="add-circle" color={color} size={24}/>)
-                }}
-            />
+                    tabBarIcon: ({ color, size }) => (<Ionicons name="add-circle" color={color} size={24} />)
+                }}>
+                {(props) => <NuevoLibro {...props} setUsuarioLogueado={setUsuarioLogueado} />}
+            </Tab.Screen>
             <Tab.Screen
                 name="Buscador"
-                component={Buscador}
                 options={{
-                    tabBarIcon: ({color, size}) => (<MaterialIcons name="search" color={color} size={24} />)
-                }}
-            />
+                    tabBarIcon: ({ color, size }) => (<MaterialIcons name="search" color={color} size={24} />),
+                }}>
+                {(props) => <Buscador {...props} setUsuarioLogueado={setUsuarioLogueado} />}
+            </Tab.Screen>
             <Tab.Screen
                 name="Perfil"
                 options={{
-                    tabBarIcon: ({color, size}) => (<FontAwesome name="user" color={color} size={24}/>),
+                    tabBarIcon: ({ color, size }) => (<FontAwesome name="user" color={color} size={24} />),
                 }}>
                 {(props) => <Perfil {...props} setUsuarioLogueado={setUsuarioLogueado} />}
             </Tab.Screen>

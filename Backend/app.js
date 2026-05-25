@@ -5,18 +5,36 @@ import cors from 'cors';
 import 'dotenv/config';
 import pool from './database.js'
 import bcrypt from 'bcrypt'
-import e from 'express';
+import { createRequire } from 'module';
 
+const require = createRequire(import.meta.url);
+const jwt = require('jsonwebtoken');
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
+const verificarToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ ok: false, error: 'Acceso denegado. Token inexistente.' });
+    }
+    try {
+        const verificado = jwt.verify(token, 'hgad6bsK)31/GSNnsdYY9=');
+        req.usuario = verificado;
+        next();
+    } catch (error) {
+        return res.status(403).json({ ok: false, error: 'Token inválido o expirado.' });
+    }
+};
+
+
 app.get('/', (req, res) => {
     res.send('Seridor funcionando');
 });
 
-app.get('/libros', async (req, res) => {
+app.get('/libros', verificarToken, async (req, res) => {
     try {
         const [libros] = await pool.query('SELECT * FROM libro');
         res.json(libros);
@@ -27,7 +45,7 @@ app.get('/libros', async (req, res) => {
     }
 });
 
-app.get('/libros/:id', async (req, res) => {
+app.get('/libros/:id', verificarToken, async (req, res) => {
     const { id } = req.params;
     try {
         const [rows] = await pool.query('SELECT * FROM libro WHERE id = ?', [id]);
@@ -42,7 +60,7 @@ app.get('/libros/:id', async (req, res) => {
     }
 });
 
-app.get('/libros/genero/:genero', async (req, res) => {
+app.get('/libros/genero/:genero', verificarToken, async (req, res) => {
     const generoReq = req.params.genero;
 
     try {
@@ -55,7 +73,7 @@ app.get('/libros/genero/:genero', async (req, res) => {
     }
 });
 
-app.get('/personajes/idLibro/:id', async (req, res) => {
+app.get('/personajes/idLibro/:id', verificarToken, async (req, res) => {
     const idLibro = req.params.id;
 
     try {
@@ -75,11 +93,11 @@ app.get('/personajes/idLibro/:id', async (req, res) => {
     }
 });
 
-app.get('/usuario/id/:id', async (req, res) => {
+app.get('/usuario/id/:id', verificarToken, async (req, res) => {
     const id = req.params.id;
 
     try {
-        const [usuario] = await pool.query('SELECT * FROM usuario WHERE id = ?', [id]);
+        const [usuario] = await pool.query('SELECT id, nombre, apellido, nombreUsuario, email, fecha_nacimiento, descripcion, foto_perfil FROM usuario WHERE id = ?', [id]);
         if (usuario.length > 0) {
             res.json(usuario[0]);
         } else {
@@ -91,7 +109,7 @@ app.get('/usuario/id/:id', async (req, res) => {
     }
 });
 
-app.get('/personaje/idPersonaje/:id', async (req, res) => {
+app.get('/personaje/idPersonaje/:id', verificarToken, async (req, res) => {
     const id = req.params.id;
 
     try {
@@ -107,7 +125,7 @@ app.get('/personaje/idPersonaje/:id', async (req, res) => {
     }
 });
 
-app.get('/libro/comentarios/idLibro/:id', async (req, res) => {
+app.get('/libro/comentarios/idLibro/:id', verificarToken, async (req, res) => {
     const idLibro = req.params.id;
 
     try {
@@ -127,7 +145,7 @@ app.get('/libro/comentarios/idLibro/:id', async (req, res) => {
     }
 });
 
-app.get('/biblioteca/idUsuario/:id', async (req, res) => {
+app.get('/biblioteca/idUsuario/:id', verificarToken, async (req, res) => {
     const idUsuario = req.params.id;
 
     try {
@@ -144,7 +162,7 @@ app.get('/biblioteca/idUsuario/:id', async (req, res) => {
     }
 });
 
-app.get('/bibliotecas/:id', async (req, res) => {
+app.get('/bibliotecas/:id', verificarToken, async (req, res) => {
     const idUsuario = req.params.id;
     try {
         const [rows] = await pool.query('SELECT id, nombre FROM biblioteca WHERE usuario_id = ?', [idUsuario]);
@@ -155,7 +173,7 @@ app.get('/bibliotecas/:id', async (req, res) => {
     }
 });
 
-app.post('/bibliotecas/crear', async (req, res) => {
+app.post('/bibliotecas/crear', verificarToken, async (req, res) => {
     const { idUsuario, nombre } = req.body;
     try {
         const [result] = await pool.query('INSERT INTO biblioteca (nombre, usuario_id) VALUES (?,?)', [nombre, idUsuario]);
@@ -169,7 +187,7 @@ app.post('/bibliotecas/crear', async (req, res) => {
     }
 });
 
-app.post('/bibliotecas/agregarLibro', async (req, res) => {
+app.post('/bibliotecas/agregarLibro', verificarToken, async (req, res) => {
     const { biblioteca_id, libro_id } = req.body;
     try {
         const [result] = await pool.query('INSERT INTO biblioteca_libro (biblioteca_id, libro_id) VALUES (?,?)', [biblioteca_id, libro_id]);
@@ -183,7 +201,7 @@ app.post('/bibliotecas/agregarLibro', async (req, res) => {
     }
 });
 
-app.get('/buscar/:texto', async (req, res) => {
+app.get('/buscar/:texto', verificarToken, async (req, res) => {
     const texto = req.params.texto;
     const busqueda = `%${texto}%`;
 
@@ -198,7 +216,7 @@ app.get('/buscar/:texto', async (req, res) => {
     }
 });
 
-app.post('/newComentario', async (req, res) => {
+app.post('/newComentario', verificarToken, async (req, res) => {
     const { texto, estrellas, usuario_id, libro_id } = req.body;
 
     try {
@@ -229,7 +247,7 @@ app.post('/newComentario', async (req, res) => {
     }
 });
 
-app.post('/newLibro', async (req, res) => {
+app.post('/newLibro', verificarToken, async (req, res) => {
     const { titulo, autor, sinopsis, imagen_url, calificacion, lanzamiento, genero } = req.body;
 
     try {
@@ -238,7 +256,7 @@ app.post('/newLibro', async (req, res) => {
             (titulo, autor, sinopsis, imagen_url, calificacion, lanzamiento, genero)
             VALUES (?,?,?,?,?,?,?)`;
         const [result] = await pool.query(query, [
-            titulo, autor, sinopsis || null, imagen_url || null, calificacion || null, lanzamiento|| null, genero
+            titulo, autor, sinopsis || null, imagen_url || null, calificacion || null, lanzamiento || null, genero
         ]);
         res.status(201).json({
             ok: true,
@@ -250,7 +268,7 @@ app.post('/newLibro', async (req, res) => {
     }
 });
 
-app.put('/updateLibro/:id', async (req, res) => {
+app.put('/updateLibro/:id', verificarToken, async (req, res) => {
     const id = req.params.id;
     const { titulo, autor, sinopsis, imagen_url, calificacion, lanzamiento, genero } = req.body;
 
@@ -276,7 +294,7 @@ app.put('/updateLibro/:id', async (req, res) => {
     }
 });
 
-app.put('/updatePersonaje/:id', async (req, res) => {
+app.put('/updatePersonaje/:id', verificarToken, async (req, res) => {
     const id = req.params.id;
     const { nombre, imagen_url, descripcion } = req.body;
 
@@ -302,7 +320,7 @@ app.put('/updatePersonaje/:id', async (req, res) => {
     }
 });
 
-app.put('/updateUsuario/:id', async (req, res) => {
+app.put('/updateUsuario/:id', verificarToken, async (req, res) => {
     const id = req.params.id;
     const { nombre, apellido, nombreUsuario, email, fecha_nacimiento, descripcion, foto_perfil } = req.body;
 
@@ -341,7 +359,7 @@ app.put('/updateUsuario/:id', async (req, res) => {
     }
 });
 
-app.post('/newPersonaje', async (req, res) => {
+app.post('/newPersonaje', verificarToken, async (req, res) => {
     const { idLibro, nombre, imagen_url, descripcion } = req.body;
 
     try {
@@ -380,22 +398,20 @@ app.post('/login', async (req, res) => {
 
         if (rows.length > 0) {
             const usuario = rows[0];
-
             const esValida = await bcrypt.compare(password, usuario.password);
 
             if (esValida) {
                 delete usuario.password;
+                const token = jwt.sign(
+                    { usuarioId: usuario.id, email: usuario.email },
+                    'hgad6bsK)31/GSNnsdYY9=',
+                    { expiresIn: '7d' } // o sea vence en 7 días
+                )
                 res.status(200).json({
                     mensaje: 'Login exitoso',
-                    usuario: {
-                        id: usuario.id,
-                        nombre: usuario.nombre,
-                        apellido: usuario.apellido,
-                        nombreUsuario: usuario.nombreUsuario,
-                        email: usuario.email,
-                        descripcion: usuario.descripcion,
-                        foto_perfil: usuario.foto_perfil
-                    }
+                    ok: true,
+                    token,
+                    usuario
                 });
             } else {
                 res.status(401).json({ error: 'Contraseña incorrecta' })
@@ -418,9 +434,7 @@ app.post('/nuevoUsuario', async (req, res) => {
         const [yaExiste] = await pool.query('SELECT * FROM usuario WHERE nombreUsuario = ? OR email = ?', [nombreUsuario, email]);
 
         if (yaExiste.length > 0) {
-            const mensaje = yaExiste[0].email === email
-                ? "El email ya esta registrado"
-                : "El nombre de usuario ya esta registrado"
+            const mensaje = yaExiste[0].email === email ? "El email ya esta registrado" : "El nombre de usuario ya esta registrado";
             return res.status(400).json({
                 ok: false,
                 error: mensaje
@@ -434,12 +448,19 @@ app.post('/nuevoUsuario', async (req, res) => {
         VALUES (?,?,?,?,?,?,?,?)`;
 
         const [result] = await pool.query(query, [
-            nombre, apellido || null, nombreUsuario, email, fecha_nacimiento|| null, hashedPassword, descripcion|| null, foto_perfil || null
+            nombre, apellido || null, nombreUsuario, email, fecha_nacimiento || null, hashedPassword, descripcion || null, foto_perfil || null
         ]);
+
+        const token = jwt.sign(
+            { usuarioId: usuario.id, email: usuario.email },
+            'hgad6bsK)31/GSNnsdYY9=',
+            { expiresIn: '7d' } // o sea vence en 7 días
+        )
 
         res.status(201).json({
             ok: true,
             mensaje: 'Usuario creado con exito',
+            token,
             usuario: {
                 id: result.insertId,
                 nombre: nombre,
@@ -453,35 +474,35 @@ app.post('/nuevoUsuario', async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ok: false, error: 'Error al registrar el usuario' });
+        res.status(500).json({ ok: false, error: 'Error al registrar el usuario' });
     }
 });
 
-app.delete('/eliminarPersonaje/:id', async (req, res) =>{
+app.delete('/eliminarPersonaje/:id', verificarToken, async (req, res) => {
     const id = req.params.id;
-    try{
+    try {
         const [result] = await pool.query('DELETE FROM personaje WHERE id = ?', [id]);
-        if(result.affectedRows === 0){
-            return res.status(404).json({ok: false, mensaje: "No se encontro personaje"});
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ ok: false, mensaje: "No se encontro personaje" });
         }
         res.json({ ok: true, mensaje: "Personaje eliminado" });
-    }catch(error){
+    } catch (error) {
         console.error(error);
-        res.status(500).json({ok: false, mensaje: "Error al eliminar personaje"});
+        res.status(500).json({ ok: false, mensaje: "Error al eliminar personaje" });
     }
 });
 
-app.delete('/eliminarLibro/:id', async (req, res) =>{
+app.delete('/eliminarLibro/:id', verificarToken, async (req, res) => {
     const id = req.params.id;
-    try{
+    try {
         const [result] = await pool.query('DELETE FROM libro WHERE id = ?', [id]);
-        if(result.affectedRows === 0){
-            return res.status(404).json({ok: false, mensaje: "No se encontro libro"});
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ ok: false, mensaje: "No se encontro libro" });
         }
         res.json({ ok: true, mensaje: "Libro eliminado" });
-    }catch(error){
+    } catch (error) {
         console.error(error);
-        res.status(500).json({ok: false, mensaje: "Error al eliminar libro"});
+        res.status(500).json({ ok: false, mensaje: "Error al eliminar libro" });
     }
 });
 
