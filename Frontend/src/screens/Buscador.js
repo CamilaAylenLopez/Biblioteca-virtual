@@ -12,6 +12,18 @@ export default function Buscador({ navigation }) {
     const [cargando, setCargando] = useState(false);
     const isFocused = useIsFocused();
 
+    const procesarCierreDeSesion = async () => {
+        try {
+            await AsyncStorage.removeItem('@usuario_sesion');
+            await AsyncStorage.removeItem('@token_sesion');
+            setUsuarioLogueado(false);
+            alerta("Sesión expirada", "Tu sesión ha caducado. Por favor, inicia sesión nuevamente.");
+        } catch (error) {
+            console.log(error);
+            alerta("Error", "Hubo un error al intentar cerrar sesión.");
+        }
+    };
+
     useEffect(() => {
         if (isFocused) {
             setQuery('');

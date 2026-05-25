@@ -18,6 +18,18 @@ export default function EditarInfoLibro({ navigation, route }) {
     const [fecha, setFecha] = useState(new Date());
     const [mostrarCalendario, setMostrarCalendario] = useState(false);
 
+    const procesarCierreDeSesion = async () => {
+        try {
+            await AsyncStorage.removeItem('@usuario_sesion');
+            await AsyncStorage.removeItem('@token_sesion');
+            setUsuarioLogueado(false);
+            alerta("Sesión expirada", "Tu sesión ha caducado. Por favor, inicia sesión nuevamente.");
+        } catch (error) {
+            console.log(error);
+            alerta("Error", "Hubo un error al intentar cerrar sesión.");
+        }
+    };
+
     useEffect(() => {
         if (isFocused) {
             const cargarDatos = async () => {

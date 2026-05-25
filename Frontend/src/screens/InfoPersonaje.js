@@ -12,6 +12,18 @@ export default function InfoPersonaje({ navigation, route }) {
     const [personaje, setPersonaje] = useState([]);
     const isFocused = useIsFocused();
 
+    const procesarCierreDeSesion = async () => {
+        try {
+            await AsyncStorage.removeItem('@usuario_sesion');
+            await AsyncStorage.removeItem('@token_sesion');
+            setUsuarioLogueado(false);
+            alerta("Sesión expirada", "Tu sesión ha caducado. Por favor, inicia sesión nuevamente.");
+        } catch (error) {
+            console.log(error);
+            alerta("Error", "Hubo un error al intentar cerrar sesión.");
+        }
+    };
+
     useEffect(() => {
         if (isFocused) {
             const cargarDatos = async () => {
@@ -42,10 +54,10 @@ export default function InfoPersonaje({ navigation, route }) {
             if (respuesta.ok) {
                 alerta("Exito", "Personaje elimiando con exito");
                 navigation.goBack();
-            }else{
+            } else {
                 alerta("Error", "No se ha podido eliminar el personaje");
             }
-        }catch(error){
+        } catch (error) {
             console.error(error);
             alerta("Error", "No se ha podido eliminar el personaje");
         }
@@ -88,7 +100,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         fontFamily: 'Roboto-Regular'
     },
-    icon:{
+    icon: {
         display: 'flex',
         alignItems: 'flex-end',
         margin: 5,

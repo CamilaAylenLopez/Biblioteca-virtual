@@ -71,7 +71,8 @@ export default function CrearUsuario({ navigation, setUsuarioLogueado }) {
                 setUsuarioLogueado(true);
 
             } else {
-                alerta("¡Error!", respuesta.data.error);
+                const mensajeError = respuesta?.data?.error || "No se pudo completar el registro.";
+                alerta("¡Error!", mensajeError);
             }
         } catch (error) {
             console.error(error);

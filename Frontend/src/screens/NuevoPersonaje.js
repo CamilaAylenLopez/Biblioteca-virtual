@@ -22,6 +22,18 @@ export default function NuevoPersonaje({ navigation, route }) {
         }
     };
 
+    const procesarCierreDeSesion = async () => {
+        try {
+            await AsyncStorage.removeItem('@usuario_sesion');
+            await AsyncStorage.removeItem('@token_sesion');
+            setUsuarioLogueado(false);
+            alerta("Sesión expirada", "Tu sesión ha caducado. Por favor, inicia sesión nuevamente.");
+        } catch (error) {
+            console.log(error);
+            alerta("Error", "Hubo un error al intentar cerrar sesión.");
+        }
+    };
+
     useEffect(() => {
         if (isFocused) {
             setForm({ nombre: '', imagen_url: '', descripcion: '' });
@@ -86,7 +98,7 @@ export default function NuevoPersonaje({ navigation, route }) {
         <ScrollView style={styles.container}>
             <View style={styles.subContainer}>
                 <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>
-                    <Image  source={image ? { uri: image } : require('../img/addimage.jpg')} style={styles.imagen} />
+                    <Image source={image ? { uri: image } : require('../img/addimage.jpg')} style={styles.imagen} />
                 </TouchableOpacity>
 
                 <TextInput style={styles.input} value={form.nombre} placeholder="Nombre*" onChangeText={(txt) => setForm({ ...form, nombre: txt })} />
