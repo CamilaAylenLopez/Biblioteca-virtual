@@ -6,13 +6,31 @@ import 'dotenv/config';
 import pool from './database.js'
 import bcrypt from 'bcrypt'
 import { createRequire } from 'module';
+import helmet from 'helmet';
+import { rateLimit } from 'express-rate-limit';
 
 const require = createRequire(import.meta.url);
 const jwt = require('jsonwebtoken');
 const app = express();
+app.use(helmet());
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
+const limitadorGeneral = rateLimit({
+    //hasta 100 peticiones en 15 minutos
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: { ok: false, error: 'Demasiadas peticiones desde esta IP, intenta más tarde.' }
+});
+app.use(limitadorGeneral)
+
+const limitadorLogin = rateLimit({
+    //10 intentos en 15 minutos
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    message: { ok: false, error: 'Demasiados intentos de inicio de sesión. Bloqueado por 15 minutos.' }
+});
 
 const verificarToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
@@ -404,7 +422,7 @@ app.post('/newPersonaje', verificarToken, async (req, res) => {
     }
 });
 
-app.post('/login', async (req, res) => {
+app.post('/login', limitadorLogin, async (req, res) => {
     console.log("Datos recibidos en el backend:", req.body);
     try {
         const { nombreUsuario, password } = req.body;
@@ -466,8 +484,10 @@ app.post('/nuevoUsuario', async (req, res) => {
             nombre, apellido || null, nombreUsuario, email, fecha_nacimiento || null, hashedPassword, descripcion || null, foto_perfil || null
         ]);
 
+        const nuevoUsuarioId = result.insertId;
+
         const token = jwt.sign(
-            { usuarioId: usuario.id, email: usuario.email },
+            { usuarioId: nuevoUsuarioId, email: usuario.email },
             process.env.JWT_SECRET,
             { expiresIn: '7d' } // o sea vence en 7 días
         )

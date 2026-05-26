@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        paddingTop: 60,
+        paddingTop: 120,
         backgroundColor: '#121212',
     },
     subContainer: {
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#282828',
         borderRadius: 50,
         paddingHorizontal: 15,
-        marginBottom: 15,
+        marginVertical: 15,
         color: 'white',
         ...Platform.select({ web: { outlineStyle: 'none' } }),
         fontFamily: 'Roboto-Regular'
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#282828',
         borderRadius: 30,
         paddingHorizontal: 15,
-        marginTop: 25,
+        marginTop: 20,
         color: 'white',
         ...Platform.select({ web: { outlineStyle: 'none' } }),
         fontSize: 16,
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignSelf: 'center',
         borderRadius: 50,
-        marginTop: 10,
+        marginTop: 30,
         textAlign: 'center',
         fontFamily: 'Roboto-Regular'
     },

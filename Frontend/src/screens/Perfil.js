@@ -82,7 +82,10 @@ export default function Perfil({ navigation, setUsuarioLogueado }) {
     return (
       <View style={styles.contenedorGenero}>
         <TouchableOpacity onPress={() => navigation.navigate('DetalleBiblioteca', { bibliotecaId: bibliotecaId, nombreBiblioteca: nombre })}>
-          <Text style={styles.nombreBiblioteca}>{nombre} </Text>
+          <View style={styles.horizontal}>
+            <Text style={styles.nombreBiblioteca}>{nombre}</Text>
+            <Entypo name="chevron-right" size={24} color="white" />
+          </View>
         </TouchableOpacity>
         <FlatList
           horizontal
@@ -174,7 +177,6 @@ const styles = StyleSheet.create({
   },
   biografia: {
     fontSize: 20,
-    marginBottom: 20,
     color: 'white',
     padding: 20,
     fontFamily: 'Roboto-Regular'
@@ -207,7 +209,7 @@ const styles = StyleSheet.create({
   },
   horizontal: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignContent: 'center',
     marginBottom: 10,
   },
   vertical: {

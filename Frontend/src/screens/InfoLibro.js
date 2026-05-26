@@ -405,7 +405,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     imagen: {
-        width: '60%',
+        width: '70%',
         height: 400,
         resizeMode: 'cover',
         alignSelf: 'center',
