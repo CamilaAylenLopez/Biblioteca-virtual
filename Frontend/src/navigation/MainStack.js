@@ -13,6 +13,7 @@ import NuevoPersonaje from '../screens/NuevoPersonaje';
 import InfoPersonaje from '../screens/InfoPersonaje';
 import EditarInfoLibro from '../screens/EditarInfoLibro';
 import EditarInfoPersonaje from '../screens/EditarInfoPersonaje';
+import DetalleBiblioteca from '../screens/DetalleBiblioteca';
 import Perfil from '../screens/Perfil';
 import EditarPerfil from '../screens/EditarPerfil';
 
@@ -26,7 +27,7 @@ export default function MainStack({ setUsuarioLogueado }) {
         {(props) => <TabNavigator {...props} setUsuarioLogueado={setUsuarioLogueado} />}
       </Stack.Screen>
 
-      
+
       <Stack.Screen name="EditarInfoLibro" options={({ navigation }) => ({
         headerShown: true,
         headerTitle: '',
@@ -41,10 +42,10 @@ export default function MainStack({ setUsuarioLogueado }) {
           backgroundColor: '#282828',
         },
         headerTintColor: 'white',
-        })}>
-          {(props) => <EditarInfoLibro {...props} setUsuarioLogueado={setUsuarioLogueado} />}
-        </Stack.Screen>
-      
+      })}>
+        {(props) => <EditarInfoLibro {...props} setUsuarioLogueado={setUsuarioLogueado} />}
+      </Stack.Screen>
+
       <Stack.Screen name="EditarInfoPersonaje" options={({ navigation }) => ({
         headerShown: true,
         headerTitle: '',
@@ -59,9 +60,9 @@ export default function MainStack({ setUsuarioLogueado }) {
           backgroundColor: '#282828',
         },
         headerTintColor: 'white',
-        })}>
-          {(props) => <EditarInfoPersonaje {...props} setUsuarioLogueado={setUsuarioLogueado} />}
-        </Stack.Screen>
+      })}>
+        {(props) => <EditarInfoPersonaje {...props} setUsuarioLogueado={setUsuarioLogueado} />}
+      </Stack.Screen>
 
       <Stack.Screen name="InfoLibro" options={({ navigation, route }) => ({
         headerShown: true,
@@ -81,9 +82,9 @@ export default function MainStack({ setUsuarioLogueado }) {
           backgroundColor: '#282828',
         },
         headerTintColor: 'white',
-        })}>
-          {(props) => <InfoLibro {...props} setUsuarioLogueado={setUsuarioLogueado} />}
-        </Stack.Screen>
+      })}>
+        {(props) => <InfoLibro {...props} setUsuarioLogueado={setUsuarioLogueado} />}
+      </Stack.Screen>
 
       <Stack.Screen name="InfoPersonaje" options={({ navigation, route }) => ({
         headerShown: true,
@@ -103,9 +104,9 @@ export default function MainStack({ setUsuarioLogueado }) {
           backgroundColor: '#282828',
         },
         headerTintColor: 'white',
-        })}>
-          {(props) => <InfoPersonaje {...props} setUsuarioLogueado={setUsuarioLogueado} />}
-        </Stack.Screen>
+      })}>
+        {(props) => <InfoPersonaje {...props} setUsuarioLogueado={setUsuarioLogueado} />}
+      </Stack.Screen>
 
       <Stack.Screen name="NuevoPersonaje" options={({ navigation }) => ({
         headerShown: true,
@@ -121,11 +122,11 @@ export default function MainStack({ setUsuarioLogueado }) {
           backgroundColor: '#282828',
         },
         headerTintColor: 'white',
-        })}>
-          {(props) => <NuevoPersonaje {...props} setUsuarioLogueado={setUsuarioLogueado} />}
-        </Stack.Screen>
-        
-        <Stack.Screen name="EditarPerfil" options={({ navigation }) => ({
+      })}>
+        {(props) => <NuevoPersonaje {...props} setUsuarioLogueado={setUsuarioLogueado} />}
+      </Stack.Screen>
+
+      <Stack.Screen name="EditarPerfil" options={({ navigation }) => ({
         headerShown: true,
         headerTitle: '',
         headerTransparent: true,
@@ -139,10 +140,27 @@ export default function MainStack({ setUsuarioLogueado }) {
           backgroundColor: '#282828',
         },
         headerTintColor: 'white',
-        })}>
-          {(props) => <EditarPerfil {...props} setUsuarioLogueado={setUsuarioLogueado} />}
-        </Stack.Screen>
-      
+      })}>
+        {(props) => <EditarPerfil {...props} setUsuarioLogueado={setUsuarioLogueado} />}
+      </Stack.Screen>
+
+      <Stack.Screen name="DetalleBiblioteca" options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: '',
+        headerTransparent: true,
+        headerLeft: () => (
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 15 }}>
+            <MaterialIcons name="cancel" size={28} color="white" />
+          </TouchableOpacity>
+        ),
+        headerRight: null,
+        headerStyle: {
+          backgroundColor: '#282828',
+        },
+        headerTintColor: 'white',
+      })}>
+        {(props) => <DetalleBiblioteca {...props} setUsuarioLogueado={setUsuarioLogueado} />}
+      </Stack.Screen>
     </Stack.Navigator>
   );
 }

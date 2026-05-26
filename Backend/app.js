@@ -145,6 +145,22 @@ app.get('/libro/comentarios/idLibro/:id', verificarToken, async (req, res) => {
     }
 });
 
+app.get('/biblioteca/:id', verificarToken, async (req, res) => {
+    const idBiblioteca = req.params.id;
+
+    try {
+        const [biblioteca] = await pool.query(`
+            SELECT bl.biblioteca_id, l.id AS libro_id, l.titulo, l.imagen_url
+            FROM libro l
+            INNER JOIN biblioteca_libro bl on l.id = bl.libro_id
+            WHERE bl.biblioteca_id = ?`, [idBiblioteca]);
+        res.json(biblioteca)
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error en la BD' });
+    }
+});
+
 app.get('/biblioteca/idUsuario/:id', verificarToken, async (req, res) => {
     const idUsuario = req.params.id;
 
@@ -503,6 +519,34 @@ app.delete('/eliminarLibro/:id', verificarToken, async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ ok: false, mensaje: "Error al eliminar libro" });
+    }
+});
+
+app.delete('/eliminarBiblioteca/:id', verificarToken, async (req, res) => {
+    const id = req.params.id;
+    try {
+        const [result] = await pool.query('DELETE FROM biblioteca WHERE id = ?', [id]);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ ok: false, mensaje: "No se encontro biblioteca" });
+        }
+        res.json({ ok: true, mensaje: "biblioteca eliminada" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ ok: false, mensaje: "Error al eliminar biblioteca" });
+    }
+});
+
+app.delete('/eliminarLibroBiblioteca/:biblioteca_id/:libro_id', verificarToken, async (req, res) => {
+    const { biblioteca_id, libro_id } = req.params;
+    try {
+        const [result] = await pool.query('DELETE FROM biblioteca_libro WHERE biblioteca_id = ? AND libro_id = ?', [biblioteca_id, libro_id]);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ ok: false, mensaje: "No se encontro el libro en la biblioteca" });
+        }
+        res.json({ ok: true, mensaje: "libro eliminado de biblioteca" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ ok: false, mensaje: "Error al eliminar libro de biblioteca" });
     }
 });
 

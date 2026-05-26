@@ -77,9 +77,13 @@ export default function Perfil({ navigation, setUsuarioLogueado }) {
 
     if (bibliotecaFiltrada.length === 0) return null;
 
+    const bibliotecaId = bibliotecaFiltrada[0].biblioteca_id;
+
     return (
       <View style={styles.contenedorGenero}>
-        <Text style={styles.nombreBiblioteca}>{nombre}</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('DetalleBiblioteca', { bibliotecaId: bibliotecaId, nombreBiblioteca: nombre })}>
+          <Text style={styles.nombreBiblioteca}>{nombre} </Text>
+        </TouchableOpacity>
         <FlatList
           horizontal
           data={bibliotecaFiltrada}

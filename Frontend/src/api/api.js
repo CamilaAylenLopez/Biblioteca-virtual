@@ -153,6 +153,24 @@ export const getBiblioteca = async (id) => {
     }
 };
 
+export const getBibliotecaById = async (id) => {
+    try {
+        const token = await AsyncStorage.getItem('@token_sesion');
+        const res = await fetch(`${API_URL}/biblioteca/${id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token ? `Bearer ${token}` : '',
+            }
+        });
+        await verificarStatusToken(res);
+        return await res.json();
+    } catch (error) {
+        console.error("Error en encontrar la biblioteca");
+        throw error;
+    }
+};
+
 export const getBibliotecas = async (id) => {
     try {
         const token = await AsyncStorage.getItem('@token_sesion');
@@ -392,6 +410,42 @@ export const eliminarLibro = async (id) => {
     try {
         const token = await AsyncStorage.getItem('@token_sesion');
         const res = await fetch(`${API_URL}/eliminarLibro/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token ? `Bearer ${token}` : '',
+            }
+        });
+        await verificarStatusToken(res);
+        return { ok: res.ok, data: await res.json() };
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    }
+};
+
+export const eliminarBiblioteca = async (id) => {
+    try {
+        const token = await AsyncStorage.getItem('@token_sesion');
+        const res = await fetch(`${API_URL}/eliminarBiblioteca/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token ? `Bearer ${token}` : '',
+            }
+        });
+        await verificarStatusToken(res);
+        return { ok: res.ok, data: await res.json() };
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    }
+};
+
+export const eliminarLibroBiblioteca = async (idBiblioteca, idLibro) => {
+    try {
+        const token = await AsyncStorage.getItem('@token_sesion');
+        const res = await fetch(`${API_URL}/eliminarLibroBiblioteca/${idBiblioteca}/${idLibro}/`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
