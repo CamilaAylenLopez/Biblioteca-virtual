@@ -171,7 +171,7 @@ export default function EditarPerfil({ navigation, route, setUsuarioLogueado }) 
     if (!nuevosDatos) return <Text style={{ color: 'white' }}>Cargando...</Text>;
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             <View style={styles.subContainer}>
                 {/*SELECCIONAR IMAGEN*/}
                 <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>

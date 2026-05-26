@@ -4,14 +4,21 @@ import { getPersonajeById, eliminarPersonaje } from '../api/api';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import { useIsFocused } from '@react-navigation/native';
-import { navigate } from 'expo-router/build/global-state/routing';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function InfoPersonaje({ navigation, route }) {
+export default function InfoPersonaje({ navigation, route, setUsuarioLogueado }) {
     const { personajeId } = route.params;
     const [cargando, setCargando] = useState(true);
-    const [personaje, setPersonaje] = useState([]);
+    const [personaje, setPersonaje] = useState(null);
     const isFocused = useIsFocused();
+
+    const alerta = (titulo, mensaje) => {
+        if (Platform.OS === 'web') {
+            alert(mensaje)
+        } else {
+            Alert.alert(titulo, mensaje)
+        }
+    };
 
     const procesarCierreDeSesion = async () => {
         try {
@@ -33,6 +40,12 @@ export default function InfoPersonaje({ navigation, route }) {
                     setPersonaje(dataPersonaje);
                 } catch (error) {
                     console.error(error);
+                    if (error.message === 'TOKEN_EXPIRADO') {
+                        await procesarCierreDeSesion();
+                        setUsuarioLogueado(false);
+                    } else {
+                        alerta("Error", "Hubo un problema de conexión.");
+                    }
                 } finally {
                     setCargando(false);
                 }
@@ -40,14 +53,6 @@ export default function InfoPersonaje({ navigation, route }) {
             cargarDatos();
         }
     }, [personajeId, isFocused]);
-
-    const alerta = (titulo, mensaje) => {
-        if (Platform.OS === 'web') {
-            alert(mensaje)
-        } else {
-            Alert.alert(titulo, mensaje)
-        }
-    };
 
     const deletePersonaje = async () => {
         try {
@@ -60,7 +65,12 @@ export default function InfoPersonaje({ navigation, route }) {
             }
         } catch (error) {
             console.error(error);
-            alerta("Error", "No se ha podido eliminar el personaje");
+            if (error.message === 'TOKEN_EXPIRADO') {
+                await procesarCierreDeSesion();
+                setUsuarioLogueado(false);
+            } else {
+                alerta("Error", "Hubo un problema de conexión.");
+            }
         }
     };
 
@@ -70,7 +80,7 @@ export default function InfoPersonaje({ navigation, route }) {
     return (
         <ScrollView style={styles.container}>
             <TouchableOpacity style={styles.icon} onPress={deletePersonaje}>
-                <FontAwesome name="trash" size={35} color="white" />
+                <FontAwesome name="trash" size={35} color="#bebebe" />
             </TouchableOpacity>
             <View style={{ justifyContent: 'center', alignContent: 'center' }}>
                 <Image
@@ -92,29 +102,15 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        paddingTop: 40,
+        paddingTop: 50,
         marginTop: 50,
         backgroundColor: '#121212',
-    },
-    subContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        fontFamily: 'Roboto-Regular'
     },
     icon: {
         display: 'flex',
         alignItems: 'flex-end',
         margin: 5,
         marginTop: 40,
-    },
-    horizontal: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    vertical: {
-        flexDirection: 'column',
-        justifyContent: 'center',
     },
     imagen: {
         width: '60%',
@@ -124,13 +120,6 @@ const styles = StyleSheet.create({
         margin: 20,
         marginTop: 10,
     },
-    fotoUsuario: {
-        width: 60,
-        height: 60,
-        borderRadius: 100,
-        marginRight: 10,
-        backgroundColor: '#333',
-    },
     titulo: {
         textAlign: 'center',
         fontSize: 20,
@@ -138,49 +127,13 @@ const styles = StyleSheet.create({
         padding: 5,
         fontFamily: 'Roboto-Bold'
     },
-    subtexto: {
-        textAlign: 'center',
-        color: '#cdcaca',
-        fontSize: 16,
-        fontFamily: 'Roboto-Regular'
-    },
     descripcion: {
         color: 'white',
         margin: 20,
         fontFamily: 'Roboto-Regular'
     },
-    estrellas: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        margin: 10,
-    },
-    estrellasD: {
-        flexDirection: 'row',
-        margin: 10,
-    },
     subContainer: {
         margin: 20,
         paddingLeft: 10,
-    },
-    subtitulo: {
-        color: 'white',
-        fontSize: 20,
-        marginBottom: 10,
-        fontFamily: 'Roboto-Bold'
-    },
-    personajeCard: {
-        alignItems: 'center',
-        marginRight: 15,
-    },
-    fotoPersonaje: {
-        width: 100,
-        height: 150,
-    },
-    nombrePersonaje: {
-        color: 'white',
-        fontSize: 12,
-        marginTop: 5,
-        fontFamily: 'Roboto-Regular'
     },
 });

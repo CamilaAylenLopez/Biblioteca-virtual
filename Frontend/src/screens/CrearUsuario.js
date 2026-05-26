@@ -82,7 +82,7 @@ export default function CrearUsuario({ navigation, setUsuarioLogueado }) {
 
     return (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
-            <ScrollView contentContainerStyle={styles.subContainer}>
+            <ScrollView contentContainerStyle={styles.subContainer} showsVerticalScrollIndicator={false}>
 
                 <Text style={styles.titulo}>Bienvenido a tu nueva biblioteca virtual</Text>
                 <Text style={styles.subtitulo}>Crear usuario</Text>

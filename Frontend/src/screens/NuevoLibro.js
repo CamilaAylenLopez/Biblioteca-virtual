@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, ScrollView, TouchableOpacity, Alert, TextInput, Platform, KeyboardAvoidingView } from 'react-native';
 import { nuevoLibro } from '../api/api';
-import { Camera, CameraType } from 'expo-camera';
-import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from 'expo-image-picker';
 import { useIsFocused } from '@react-navigation/native';
 import DropdownSelect from 'react-native-input-select';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function NuevoLibro({ navigation }) {
+export default function NuevoLibro({ navigation, setUsuarioLogueado }) {
     const isFocused = useIsFocused();
     const [form, setForm] = useState({
         titulo: '', autor: '', sinopsis: '', imagen_url: '', calificacion: '', lanzamiento: '', genero: ''
@@ -123,12 +122,18 @@ export default function NuevoLibro({ navigation }) {
             }
         } catch (error) {
             console.error(error);
+            if (error.message === 'TOKEN_EXPIRADO') {
+                await procesarCierreDeSesion();
+                setUsuarioLogueado(false);
+            } else {
+                alerta("Error", "Hubo un problema de conexión.");
+            }
         }
     };
 
     return (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
-            <ScrollView>
+            <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={styles.subContainer}>
                     {/*SELECCIOANR IMAGEN*/}
                     <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>
@@ -144,7 +149,7 @@ export default function NuevoLibro({ navigation }) {
                     <View style={{ zIndex: 1, width: '100%' }}>
                         {Platform.OS === 'web' ? (
                             <View style={styles.inputD}>
-                                <TextInput type="date" value={form.lanzamiento} placeholder='YYYY-MM-DD' onChange={(e) => onChangeFechaWeb(e.target.value)} max={new Date().toISOString().split('t')[0]} style={styles.inputWeb} />
+                                <TextInput type="date" value={form.lanzamiento} placeholder='YYYY-MM-DD' onChange={(e) => onChangeFechaWeb(e.target.value)} max={new Date().toISOString().split('T')[0]} style={styles.inputWeb} />
                             </View>
                         ) : (
                             <View>
@@ -163,7 +168,6 @@ export default function NuevoLibro({ navigation }) {
                                                 maximumDate={new Date()}
                                                 locale="es-ES"
                                             />
-
 
                                             {Platform.OS === 'ios' && (
                                                 <TouchableOpacity style={styles.btnListoIOS} onPress={() => setMostrarCalendario(false)}>
@@ -239,19 +243,6 @@ const styles = StyleSheet.create({
         margin: 20,
         borderRadius: 50,
     },
-    buttonText: {
-        color: 'white',
-        fontSize: 14,
-        alignSelf: 'center',
-        margin: 5,
-        fontFamily: 'Roboto-Regular'
-    },
-    titulo: {
-        fontSize: 35,
-        marginBottom: 40,
-        textAlign: 'center',
-        fontFamily: 'Roboto-Bold'
-    },
     input: {
         width: '100%',
         height: 50,
@@ -274,7 +265,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontFamily: 'Roboto-Regular',
         height: 120,
-        textAlignVertical: 'top',
         paddingTop: 15,
     },
     button: {
@@ -296,18 +286,6 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         fontFamily: 'Roboto-Regular'
     },
-    link: {
-        color: '#6868AC',
-        marginTop: 50,
-        fontFamily: 'Roboto-Regular'
-    },
-    error: {
-        color: '#b91e1e',
-        padding: 10,
-        fontSize: 18,
-        justifyContent: 'center',
-        fontFamily: 'Roboto-Regular'
-    },
     inputD: {
         width: '100%',
         height: 50,
@@ -323,13 +301,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontFamily: 'Roboto-Regular'
     },
-    textoInput: {
-        color: 'white',
-        flex: 1,
-        ...Platform.select({ web: { outlineStyle: 'none' } }),
-        fontSize: 16,
-        fontFamily: 'Roboto-Regular'
-    },
     icon: {
         padding: 5,
         paddingTop: 12,
@@ -338,6 +309,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         width: 200,
         height: 200,
+        resizeMode: 'cover',
     },
     contenedorCalendarioIOS: {
         borderRadius: 25,

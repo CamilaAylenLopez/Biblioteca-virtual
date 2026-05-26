@@ -22,6 +22,14 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
     const [bibliotecas, setBibliotecas] = useState([]);
     const [nombreNuevaBiblioteca, setNombreNuevaBiblioteca] = useState('');
 
+    const alerta = (titulo, mensaje) => {
+        if (Platform.OS === 'web') {
+            alert(mensaje)
+        } else {
+            Alert.alert(titulo, mensaje)
+        }
+    };
+
     const procesarCierreDeSesion = async () => {
         try {
             await AsyncStorage.removeItem('@usuario_sesion');
@@ -108,7 +116,7 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
                 nombreIcono = "star-half-empty";
             } else {
                 nombreIcono = "star-o";
-                colorIcono = "#555";
+                colorIcono = "#555555";
             }
             estrellas.push(<FontAwesome key={i} name={nombreIcono} size={24} color={colorIcono} style={{ margin: 3, }} />)
         }
@@ -163,7 +171,6 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
 
             if (respuesta.ok) {
                 alerta("Exito", "El libro se guardo correctamente");
-
                 setModalVisible(false);
             } else {
                 //agregar funcion para que se elimine
@@ -180,21 +187,13 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
         }
     };
 
-    const alerta = (titulo, mensaje) => {
-        if (Platform.OS === 'web') {
-            alert(mensaje)
-        } else {
-            Alert.alert(titulo, mensaje)
-        }
-    };
-
     const sendComentario = async () => {
         if (!newComentario || newComentario.trim() === "") {
             alerta("Error", "Completa todos los campos");
             return;
         }
-        try {
 
+        try {
             const data = {
                 texto: newComentario,
                 estrellas: estrellas || null,
@@ -207,11 +206,13 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
                 alerta("¡Éxito!", "Comentario agregado correctamente");
                 setNewComentario("");
                 setEstrellas(0);
+
                 try {
                     const dataComentarios = await getComentariosByIdLibro(libroId);
                     setComentarios(dataComentarios);
+                    const dataLibroActualizado = await getLibrosById(libroId);
+                    setLibro(dataLibroActualizado);
                 } catch (error) {
-                    alerta("Error", "Error al cargar comentarios");
                     if (error.message === 'TOKEN_EXPIRADO') {
                         await procesarCierreDeSesion();
                         setUsuarioLogueado(false);
@@ -219,8 +220,7 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
                         alerta("Error", "Hubo un problema de conexión.");
                     }
                 };
-                const dataLibroActualizado = await getLibrosById(libroId);
-                setLibro(dataLibroActualizado);
+
             } else {
                 alerta("Error", "No se pudo subir el comenario");
             }
@@ -240,9 +240,9 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
 
     return (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
-            <ScrollView>
+            <ScrollView showsVerticalScrollIndicator={false}>
                 <TouchableOpacity style={styles.icon} onPress={deleteLibro}>
-                    <FontAwesome name="trash" size={35} color="white" />
+                    <FontAwesome name="trash" size={35} color="#bebebe" />
                 </TouchableOpacity>
                 <View style={{ justifyContent: 'center', alignContent: 'center' }}>
                     <Image
@@ -264,7 +264,8 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
                     <Text style={styles.subtexto}>Creado por {libro.autor} - {libro.lanzamiento ? libro.lanzamiento.split('T')[0] : 'Fecha desconocida'}</Text>
                     <Text style={styles.subtexto}>{libro.genero}</Text>
                     <Text style={styles.descripcion}>{libro.sinopsis || "Sin descripción disponible."}</Text>
-
+                    
+                    {/* SECCIÓN GUARDAR LIBRO */}
                     <Modal animationType="slide" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
                         <View style={styles.modalBack}>
                             <View style={styles.modalContainer}>
@@ -300,6 +301,7 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
                         </View>
                     </Modal>
 
+                    {/* SECCIÓN PERSONAJES */}
                     <View style={styles.subContainer}>
                         <Text style={styles.subtitulo}>Personajes</Text>
                         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -318,6 +320,7 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
                         </ScrollView>
                     </View>
 
+                    {/* SECCIÓN COMENTARIOS */}
                     <View style={styles.subContainer}>
                         <Text style={styles.subtitulo}>Comentarios</Text>
                         {Array.isArray(comentarios) ? comentarios.map((c) => (
@@ -348,7 +351,7 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
                             {renderEstrellas()}
 
                             <View style={styles.horizontal}>
-                                <TextInput style={styles.inputComenatrio} value={newComentario} placeholder="Agregar comentario..." onChangeText={(txt) => setNewComentario(txt)} />
+                                <TextInput multiline numberOfLines={3} style={styles.inputComenatrio} value={newComentario} placeholder="Agregar comentario..." onChangeText={(txt) => setNewComentario(txt)} />
 
                                 <TouchableOpacity onPress={sendComentario}>
                                     <FontAwesome name="send" size={24} color="white" />
@@ -372,8 +375,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#121212',
     },
     subContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
+        margin: 20,
+        paddingLeft: 10,
     },
     comentariosContainer: {
         backgroundColor: '#282828',
@@ -444,10 +447,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         margin: 10,
     },
-    subContainer: {
-        margin: 20,
-        paddingLeft: 10,
-    },
     subtitulo: {
         color: 'white',
         fontSize: 20,
@@ -482,17 +481,21 @@ const styles = StyleSheet.create({
     },
     inputComenatrio: {
         width: '100%',
-        height: 50,
         backgroundColor: '#282828',
-        borderRadius: 50,
+        borderRadius: 30,
         paddingHorizontal: 15,
+        marginTop: 5,
         color: 'white',
         ...Platform.select({ web: { outlineStyle: 'none' } }),
-        fontFamily: 'Roboto-Regular'
+        fontSize: 16,
+        fontFamily: 'Roboto-Regular',
+        height: 50,
+        textAlignVertical: 'top',
+        paddingTop: 15,
     },
     modalBack: {
         flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.5)',
+        backgroundColor: 'rgba(0,0,0,0.7)',
         justifyContent: 'flex-end',
     },
     modalContainer: {
@@ -530,6 +533,7 @@ const styles = StyleSheet.create({
     },
     separador: {
         width: '100%',
+        height: 1,
         marginVertical: 15,
     },
     inputModal: {
@@ -547,11 +551,11 @@ const styles = StyleSheet.create({
         width: '100%',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginTop: 10,
+        marginTop: 15,
     },
     buttonCrear: {
+        flex: 0.48,
         backgroundColor: '#bcbcbc',
-        alignContent: 'center',
         paddingHorizontal: 20,
         paddingVertical: 15,
         borderRadius: 10,
@@ -560,7 +564,8 @@ const styles = StyleSheet.create({
         fontFamily: 'Roboto-Regular'
     },
     buttonCerrar: {
-        alignContent: 'center',
+        flex: 0.48,
+        justifyContent: 'center',
         paddingHorizontal: 20,
         paddingVertical: 15,
         borderRadius: 10,
@@ -571,8 +576,6 @@ const styles = StyleSheet.create({
     icon: {
         display: 'flex',
         alignItems: 'flex-end',
-        margin: 5,
-        marginTop: 40,
     },
 });
 

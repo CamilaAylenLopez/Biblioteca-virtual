@@ -111,7 +111,7 @@ export default function EditarInfoPersonaje({ navigation, route, setUsuarioLogue
     if (!personaje) return <Text style={{ color: 'white' }}>Cargando...</Text>;
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             <View style={styles.subContainer}>
                 <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>
                     <Image source={{ uri: image }} style={styles.imagen} />

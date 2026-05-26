@@ -48,7 +48,7 @@ export default function Login({ navigation, setUsuarioLogueado }) {
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
-      <ScrollView contentContainerStyle={styles.subContainer}>
+      <ScrollView contentContainerStyle={styles.subContainer} showsVerticalScrollIndicator={false}>
         <Text style={styles.titulo}>Bienvenido de nuevo a tu biblioteca virtual</Text>
         <Text style={styles.subtitulo}>Inicio sesión</Text>
 

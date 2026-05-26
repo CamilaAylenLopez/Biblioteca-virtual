@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, ScrollView, TouchableOpacity, Alert, TextInput, Platform } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, Alert, TextInput, Platform } from 'react-native';
 import { nuevoPersonaje } from '../api/api';
-import { Camera, CameraType } from 'expo-camera';
-import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from 'expo-image-picker';
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function NuevoPersonaje({ navigation, route }) {
+export default function NuevoPersonaje({ navigation, route, setUsuarioLogueado }) {
     const isFocused = useIsFocused();
     const { libroId } = route.params;
     const [form, setForm] = useState({
@@ -54,7 +52,7 @@ export default function NuevoPersonaje({ navigation, route }) {
             let result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
-                aspect: [2, 3],
+                aspect: [1, 1],
                 quality: 0.2,
                 base64: true,
             });
@@ -91,19 +89,24 @@ export default function NuevoPersonaje({ navigation, route }) {
             }
         } catch (error) {
             console.error(error);
-            alerta("error", "no se pudo")
+            if (error.message === 'TOKEN_EXPIRADO') {
+                await procesarCierreDeSesion();
+                setUsuarioLogueado(false);
+            } else {
+                alerta("Error", "Hubo un problema de conexión.");
+            }
         }
     };
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             <View style={styles.subContainer}>
                 <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>
                     <Image source={image ? { uri: image } : require('../img/addimage.jpg')} style={styles.imagen} />
                 </TouchableOpacity>
 
-                <TextInput style={styles.input} value={form.nombre} placeholder="Nombre*" onChangeText={(txt) => setForm({ ...form, nombre: txt })} />
-                <TextInput style={styles.inputLargo} multiline numberOfLines={4} value={form.descripcion} placeholder="Descripcion" onChangeText={(txt) => setForm({ ...form, descripcion: txt })} />
+                <TextInput style={styles.input} value={form.nombre} placeholder="*Nombre..." onChangeText={(txt) => setForm({ ...form, nombre: txt })} />
+                <TextInput style={styles.inputLargo} multiline numberOfLines={4} value={form.descripcion} placeholder="Descripcion..." onChangeText={(txt) => setForm({ ...form, descripcion: txt })} />
 
                 <TouchableOpacity style={styles.button} onPress={agregarPersonaje}>
                     <Text style={styles.buttonText}>Hecho</Text>
@@ -116,8 +119,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        paddingTop: 80,
-        marginTop: 50,
+        paddingTop: 60,
         backgroundColor: '#121212',
     },
     subContainer: {
@@ -127,42 +129,7 @@ const styles = StyleSheet.create({
     imagenConteiner: {
         margin: 20,
         borderRadius: 50,
-    },
-    button: {
-        width: '50%',
-        height: 50,
-        backgroundColor: '#6868AC',
-        justifyContent: 'center',
-        alignSelf: 'center',
-        borderRadius: 50,
-        marginTop: 10,
-        textAlign: 'center'
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 14,
-        alignSelf: 'center',
-        margin: 5,
-        fontFamily: 'Roboto-Regular'
-    },
-    titulo: {
-        fontSize: 35,
-        marginBottom: 40,
-        textAlign: 'center',
-        fontFamily: 'Roboto-Bold'
-    },
-    subtitulo: {
-        fontSize: 24,
-        marginBottom: 40,
-        textAlign: 'center',
-        fontFamily: 'Roboto-Bold'
-    },
-    textoContrasena: {
-        paddingTop: 0,
-        marginTop: 0,
-        fontSize: 13,
-        marginBottom: 20,
-        fontFamily: 'Roboto-Regular'
+        overflow: 'hidden',
     },
     input: {
         width: '100%',
@@ -192,7 +159,7 @@ const styles = StyleSheet.create({
     button: {
         width: '50%',
         height: 50,
-        backgroundColor: '#282828',
+        backgroundColor: '#6868AC',
         justifyContent: 'center',
         alignSelf: 'center',
         borderRadius: 50,
@@ -206,36 +173,6 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         margin: 5,
         fontWeight: '500',
-        fontFamily: 'Roboto-Regular'
-    },
-    link: {
-        color: '#6868AC',
-        marginTop: 50,
-        fontFamily: 'Roboto-Regular'
-    },
-    error: {
-        color: '#f00',
-        padding: 10,
-        fontSize: 18,
-        justifyContent: 'center',
-        fontFamily: 'Roboto-Regular'
-    },
-    inputD: {
-        flexDirection: 'row',
-        width: '100%',
-        height: 50,
-        backgroundColor: '#282828',
-        borderRadius: 50,
-        paddingHorizontal: 15,
-        marginBottom: 15,
-        color: 'white',
-        ...Platform.select({ web: { outlineStyle: 'none' } }),
-        fontFamily: 'Roboto-Regular'
-    },
-    textoInput: {
-        color: 'white',
-        flex: 1,
-        ...Platform.select({ web: { outlineStyle: 'none' } }),
         fontFamily: 'Roboto-Regular'
     },
     icon: {

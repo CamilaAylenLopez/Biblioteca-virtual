@@ -104,7 +104,7 @@ export default function Perfil({ navigation, setUsuarioLogueado }) {
   const nombresBibliotecas = [...new Set(biblioteca.map(b => b.nombre))];
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 60 }}>
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 60 }} showsVerticalScrollIndicator={false}>
       <View style={styles.horizontal}>
         <Image
           source={usuario.foto_perfil ? { uri: usuario.foto_perfil } : require('../img/userIcon.webp')}
