@@ -138,7 +138,7 @@ export default function NuevoLibro({ navigation }) {
                     {/*INPUTS NORMALES*/}
                     <TextInput style={styles.input} value={form.titulo} placeholder="*Titulo..." onChangeText={(txt) => setForm({ ...form, titulo: txt })} />
                     <TextInput style={styles.input} value={form.autor} placeholder="*Autor..." onChangeText={(txt) => setForm({ ...form, autor: txt })} />
-                    <TextInput style={styles.input} value={form.sinopsis} placeholder="Sinopsis..." onChangeText={(txt) => setForm({ ...form, sinopsis: txt })} />
+                    <TextInput style={styles.inputLargo} multiline numberOfLines={4} value={form.sinopsis} placeholder="Sinopsis..." onChangeText={(txt) => setForm({ ...form, sinopsis: txt })} />
 
                     {/*INPUT FECHA*/}
                     <View style={{ zIndex: 1, width: '100%' }}>
@@ -260,13 +260,27 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         marginTop: 25,
         color: 'white',
-        outlineStyle: 'none',
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
         fontSize: 16,
+    },
+    inputLargo: {
+        width: '100%',
+        backgroundColor: '#282828',
+        borderRadius: 30,
+        paddingHorizontal: 15,
+        marginTop: 25,
+        color: 'white',
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
+        fontSize: 16,
+        fontFamily: 'Roboto-Regular',
+        height: 120,
+        textAlignVertical: 'top',
+        paddingTop: 15,
     },
     button: {
         width: '50%',
         height: 50,
-        backgroundColor: '#282828',
+        backgroundColor: '#6868AC',
         justifyContent: 'center',
         alignSelf: 'center',
         borderRadius: 50,
@@ -312,7 +326,7 @@ const styles = StyleSheet.create({
     textoInput: {
         color: 'white',
         flex: 1,
-        outlineStyle: 'none',
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
         fontSize: 16,
         fontFamily: 'Roboto-Regular'
     },
@@ -352,7 +366,7 @@ const styles = StyleSheet.create({
         border: 'none',
         fontSize: '16px',
         width: '100%',
-        outlineStyle: 'none',
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
         cursor: 'pointer',
         fontFamily: 'Roboto-Regular'
     }

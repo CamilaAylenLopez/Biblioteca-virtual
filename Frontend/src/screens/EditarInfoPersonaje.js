@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, ScrollView, Alert, TouchableOpacity, ActivityIndicator, TextInput } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, ScrollView, Alert, TouchableOpacity, ActivityIndicator, TextInput, Platform } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { actualizarPersonaje, getPersonajeById } from '../api/api';
 import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from 'expo-image-picker';
 import DropdownSelect from 'react-native-input-select';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function EditarInfoPersonaje({ navigation, route }) {
+export default function EditarInfoPersonaje({ navigation, route, setUsuarioLogueado }) {
     const { personajeId } = route.params;
     const isFocused = useIsFocused();
     const [cargando, setCargando] = useState(true);
@@ -14,6 +15,14 @@ export default function EditarInfoPersonaje({ navigation, route }) {
         nombre: '', imagen_url: '', descripcion: ''
     });
     const [image, setImage] = useState('');
+
+    const alerta = (titulo, mensaje) => {
+        if (Platform.OS === 'web') {
+            alert(mensaje)
+        } else {
+            Alert.alert(titulo, mensaje)
+        }
+    };
 
     const procesarCierreDeSesion = async () => {
         try {
@@ -36,6 +45,12 @@ export default function EditarInfoPersonaje({ navigation, route }) {
                     setImage(dataPersonaje.imagen_url);
                 } catch (error) {
                     console.error(error);
+                    if (error.message === 'TOKEN_EXPIRADO') {
+                        await procesarCierreDeSesion();
+                        setUsuarioLogueado(false);
+                    } else {
+                        alerta("Error", "Hubo un problema de conexión.");
+                    }
                 } finally {
                     setCargando(false);
                 }
@@ -49,7 +64,7 @@ export default function EditarInfoPersonaje({ navigation, route }) {
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
             if (status !== 'granted') {
-                Alert.alert("Permiso no concedido");
+                alerta("Permiso no concedido");
                 return;
             }
 
@@ -76,13 +91,19 @@ export default function EditarInfoPersonaje({ navigation, route }) {
         try {
             const respuesta = await actualizarPersonaje(personajeId, { ...personaje });
             if (respuesta.ok) {
-                Alert.alert("¡Éxito!", "Personaje actualizado correctamente");
+                alerta("¡Éxito!", "Personaje actualizado correctamente");
                 navigation.goBack();
             } else {
-                Alert.alert("Error", "No se pudo actualizar los datos del personaje");
+                alerta("Error", "No se pudo actualizar los datos del personaje");
             }
         } catch (error) {
             console.error(error);
+            if (error.message === 'TOKEN_EXPIRADO') {
+                await procesarCierreDeSesion();
+                setUsuarioLogueado(false);
+            } else {
+                alerta("Error", "Hubo un problema de conexión.");
+            }
         }
     };
 
@@ -96,8 +117,8 @@ export default function EditarInfoPersonaje({ navigation, route }) {
                     <Image source={{ uri: image }} style={styles.imagen} />
                 </TouchableOpacity>
 
-                <TextInput style={styles.input} value={personaje.nombre} placeholder={personaje.nombre} onChangeText={(txt) => setPersonaje({ ...personaje, nombre: txt })} />
-                <TextInput style={styles.input} value={personaje.descripcion} placeholder={personaje.descripcion} onChangeText={(txt) => setPersonaje({ ...personaje, descripcion: txt })} />
+                <TextInput style={styles.input} value={personaje.nombre} placeholder="Nombre" onChangeText={(txt) => setPersonaje({ ...personaje, nombre: txt })} />
+                <TextInput style={styles.inputLargo} multiline numberOfLines={4} value={personaje.descripcion} placeholder="Descripción" onChangeText={(txt) => setPersonaje({ ...personaje, descripcion: txt })} />
 
                 <TouchableOpacity style={styles.button} onPress={actualizar}>
                     <Text style={styles.buttonText}>Hecho</Text>
@@ -111,7 +132,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        paddingTop: 80,
+        paddingTop: 30,
         marginTop: 50,
         backgroundColor: '#121212',
     },
@@ -121,16 +142,15 @@ const styles = StyleSheet.create({
     },
     imagenConteiner: {
         margin: 20,
-        borderRadius: 50,
     },
     button: {
         width: '50%',
         height: 50,
-        backgroundColor: '#282828',
+        backgroundColor: '#6868AC',
         justifyContent: 'center',
         alignSelf: 'center',
         borderRadius: 50,
-        marginTop: 10,
+        marginTop: 30,
         textAlign: 'center',
         fontWeight: '500'
     },
@@ -159,27 +179,23 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         marginTop: 25,
         color: 'white',
-        outlineStyle: 'none',
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
         fontSize: 16,
         fontFamily: 'Roboto-Regular'
     },
-    button: {
-        width: '50%',
-        height: 50,
+    inputLargo: {
+        width: '100%',
         backgroundColor: '#282828',
-        justifyContent: 'center',
-        alignSelf: 'center',
-        borderRadius: 50,
-        marginTop: 10,
-        textAlign: 'center',
-    },
-    buttonText: {
+        borderRadius: 30,
+        paddingHorizontal: 15,
+        marginTop: 25,
         color: 'white',
-        fontSize: 14,
-        alignSelf: 'center',
-        margin: 5,
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
         fontSize: 16,
-        fontFamily: 'Roboto-Regular'
+        fontFamily: 'Roboto-Regular',
+        height: 120,
+        textAlignVertical: 'top',
+        paddingTop: 15,
     },
     link: {
         color: '#6868AC',
@@ -202,14 +218,14 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         marginBottom: 15,
         color: 'white',
-        outlineStyle: 'none',
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
         fontSize: 16,
         fontFamily: 'Roboto-Regular'
     },
     textoInput: {
         color: 'white',
         flex: 1,
-        outlineStyle: 'none',
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
         fontSize: 16,
         fontFamily: 'Roboto-Regular'
     },

@@ -1,16 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, ActivityIndicator, TouchableOpacity, TextInput, Platform, Alert } from 'react-native';
 import { resultadoBusqueda } from '../api/api';
 import { FontAwesome, AntDesign } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
-import { setCommentRange } from 'typescript';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Buscador({ navigation }) {
+export default function Buscador({ navigation, setUsuarioLogueado }) {
     const [query, setQuery] = useState('');
     const [resultados, setResultados] = useState([]);
     const [filtro, setFiltro] = useState('todo');
     const [cargando, setCargando] = useState(false);
     const isFocused = useIsFocused();
+
+    const alerta = (titulo, mensaje) => {
+        if (Platform.OS === 'web') {
+            alert(mensaje)
+        } else {
+            Alert.alert(titulo, mensaje)
+        }
+    };
 
     const procesarCierreDeSesion = async () => {
         try {
@@ -53,7 +61,14 @@ export default function Buscador({ navigation }) {
                 .then(data => {
                     setResultados(data || []);
                 })
-                .catch(err => console.error(err))
+                .catch(async (err) => {
+                    console.error("Error en búsqueda: ", err);
+                    if (err.message === 'TOKEN_EXPIRADO') {
+                        await procesarCierreDeSesion();
+                    } else {
+                        alerta("Error", "Hubo un problema al realizar la búsqueda.");
+                    }
+                })
                 .finally(() => {
                     setCargando(false);
                 });
@@ -118,7 +133,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#121212',
         paddingHorizontal: 15,
-        padding: 50,
+        paddingTop: 50,
     },
     buscarConteiner: {
         flexDirection: 'row',
@@ -128,12 +143,11 @@ const styles = StyleSheet.create({
         marginTop: 20,
         paddingHorizontal: 10,
         height: 45,
-        fontFamily: 'Roboto-Regular'
     },
     input: {
         flex: 1,
         color: 'white',
-        outlineStyle: 'none',
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
         fontSize: 18,
         fontFamily: 'Roboto-Regular'
     },
@@ -154,7 +168,6 @@ const styles = StyleSheet.create({
         color: '#c6c6c6',
         fontSize: 16,
         fontFamily: 'Roboto-Bold'
-
     },
     tabTextActivo: {
         color: '#6868AC',

@@ -6,8 +6,9 @@ import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from 'expo-image-picker';
 import DropdownSelect from 'react-native-input-select';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function EditarInfoLibro({ navigation, route }) {
+export default function EditarInfoLibro({ navigation, route, setUsuarioLogueado }) {
     const { libroId } = route.params;
     const isFocused = useIsFocused();
     const [cargando, setCargando] = useState(true);
@@ -17,6 +18,14 @@ export default function EditarInfoLibro({ navigation, route }) {
     const [image, setImage] = useState()
     const [fecha, setFecha] = useState(new Date());
     const [mostrarCalendario, setMostrarCalendario] = useState(false);
+
+    const alerta = (titulo, mensaje) => {
+        if (Platform.OS === 'web') {
+            alert(mensaje)
+        } else {
+            Alert.alert(titulo, mensaje)
+        }
+    };
 
     const procesarCierreDeSesion = async () => {
         try {
@@ -37,8 +46,19 @@ export default function EditarInfoLibro({ navigation, route }) {
                     const dataLibro = await getLibrosById(libroId);
                     setLibro(dataLibro)
                     setImage(dataLibro.imagen_url);
+
+                    if (dataLibro.lanzamiento) {
+                        const [year, month, day] = dataLibro.lanzamiento.split('-');
+                        setFecha(new Date(year, month - 1, day));
+                    }
                 } catch (error) {
                     console.error(error);
+                    if (error.message === 'TOKEN_EXPIRADO') {
+                        await procesarCierreDeSesion();
+                        setUsuarioLogueado(false);
+                    } else {
+                        alerta("Error", "Hubo un problema de conexión.");
+                    }
                 } finally {
                     setCargando(false);
                 }
@@ -53,11 +73,7 @@ export default function EditarInfoLibro({ navigation, route }) {
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
             if (status !== 'granted') {
-                if (Platform.OS === 'web') {
-                    alert("Permiso no concedido");
-                } else {
-                    Alert.alert("Error", "Permiso no concedido");
-                }
+                alerta("Error", "Permiso no concedido");
                 return;
             }
 
@@ -80,25 +96,21 @@ export default function EditarInfoLibro({ navigation, route }) {
     };
 
     const actualizar = async () => {
-
         try {
             const respuesta = await actualizarLibro(libroId, { ...libro });
             if (respuesta.ok) {
-                if (Platform.OS === 'web') {
-                    alert("¡Éxito!", "Libro actualizado correctamente");
-                } else {
-                    Alert.alert("¡Éxito!", "Libro actualizado correctamente");
-                }
+                alerta("¡Éxito!", "Libro actualizado correctamente");
                 navigation.goBack();
             } else {
-                if (Platform.OS === 'web') {
-                    alert("Error", "No se pudo actualizar el libro");
-                } else {
-                    Alert.alert("Error", "No se pudo actualizar el libro");
-                }
+                alerta("Error", "No se pudo actualizar el libro");
             }
         } catch (error) {
             console.error(error);
+            if (error.message === 'TOKEN_EXPIRADO') {
+                await procesarCierreDeSesion();
+            } else {
+                alerta("Error", "Ocurrió un error inesperado.");
+            }
         }
     };
 
@@ -146,7 +158,7 @@ export default function EditarInfoLibro({ navigation, route }) {
                 {/*INPUT NORMALES*/}
                 <TextInput style={styles.input} value={libro.titulo} placeholder={libro.titulo} onChangeText={(txt) => setLibro({ ...libro, titulo: txt })} />
                 <TextInput style={styles.input} value={libro.autor} placeholder={libro.autor} onChangeText={(txt) => setLibro({ ...libro, autor: txt })} />
-                <TextInput style={styles.input} value={libro.sinopsis} placeholder={libro.sinopsis} onChangeText={(txt) => setLibro({ ...libro, sinopsis: txt })} />
+                <TextInput style={styles.inputLargo} multiline numberOfLines={4} value={libro.sinopsis} placeholder={libro.sinopsis} onChangeText={(txt) => setLibro({ ...libro, sinopsis: txt })} />
 
                 {/*INPUT FECHA*/}
                 <View style={{ zIndex: 1, width: '100%', marginVertical: 5 }}>
@@ -253,7 +265,7 @@ const styles = StyleSheet.create({
     button: {
         width: '50%',
         height: 50,
-        backgroundColor: '#282828',
+        backgroundColor: '#6868AC',
         justifyContent: 'center',
         alignSelf: 'center',
         borderRadius: 50,
@@ -265,13 +277,6 @@ const styles = StyleSheet.create({
     drop: {
         backgroundColor: '#282828',
         fontSize: 16,
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 14,
-        alignSelf: 'center',
-        margin: 5,
-        fontFamily: 'Roboto-Regular',
     },
     titulo: {
         fontSize: 35,
@@ -287,19 +292,23 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         marginTop: 25,
         color: 'white',
-        outlineStyle: 'none',
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
         fontSize: 16,
         fontFamily: 'Roboto-Regular'
     },
-    button: {
-        width: '50%',
-        height: 50,
+    inputLargo: {
+        width: '100%',
         backgroundColor: '#282828',
-        justifyContent: 'center',
-        alignSelf: 'center',
-        borderRadius: 50,
-        marginTop: 10,
-        textAlign: 'center',
+        borderRadius: 30,
+        paddingHorizontal: 15,
+        marginTop: 25,
+        color: 'white',
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
+        fontSize: 16,
+        fontFamily: 'Roboto-Regular',
+        height: 120,
+        textAlignVertical: 'top',
+        paddingTop: 15,
     },
     buttonText: {
         color: 'white',
@@ -339,7 +348,7 @@ const styles = StyleSheet.create({
     textoInput: {
         color: 'white',
         flex: 1,
-        outlineStyle: 'none',
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
         fontSize: 16,
         fontFamily: 'Roboto-Regular'
     },
@@ -377,10 +386,11 @@ const styles = StyleSheet.create({
     inputWeb: {
         backgroundColor: 'transparent',
         color: 'white',
-        border: 'none',
         fontSize: '16px',
         width: '100%',
-        outlineStyle: 'none',
-        cursor: 'pointer'
+        ...Platform.select({
+            web: {outlineStyle: 'none'},
+            default: {borderWidth: 0}
+        }),
     },
 });

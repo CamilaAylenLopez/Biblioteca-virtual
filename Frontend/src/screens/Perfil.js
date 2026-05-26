@@ -35,22 +35,19 @@ export default function Perfil({ navigation, setUsuarioLogueado }) {
     const obtenerDatos = async () => {
       try {
         const sesion = await AsyncStorage.getItem('@usuario_sesion');
-
         const usuarioParseado = JSON.parse(sesion);
         setUsuario(usuarioParseado);
 
         const data = await getBiblioteca(usuarioParseado.id);
-
-        if (!data || data.ok === false || data.status === 401 || data.error) {
-          console.log("La API rechazó el token o devolvió un error.");
-          await procesarCierreDeSesion();
-          return;
-        }
-
         setBiblioteca(data);
       } catch (error) {
         console.error(error);
-        await procesarCierreDeSesion();
+        if (error.message === 'TOKEN_EXPIRADO') {
+          await procesarCierreDeSesion();
+          setUsuarioLogueado(false);
+        } else {
+          alerta("Error", "Hubo un problema de conexión.");
+        }
       }
     };
 

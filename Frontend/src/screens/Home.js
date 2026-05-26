@@ -37,12 +37,6 @@ export default function Home({ navigation, setUsuarioLogueado }) {
         try {
           setCargando(true);
 
-          const tokenActual = await AsyncStorage.getItem('@token_sesion');
-          if (tokenActual === 'un-token-falso-y-roto') {
-            await procesarCierreDeSesion();
-            return;
-          }
-
           const data = await getLibros();
 
           setLibros(data || []);

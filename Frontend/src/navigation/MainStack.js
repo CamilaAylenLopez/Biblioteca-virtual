@@ -21,12 +21,13 @@ const Stack = createNativeStackNavigator();
 export default function MainStack({ setUsuarioLogueado }) {
   return (
     <Stack.Navigator initialRouteName="Tab">
+
       <Stack.Screen name="Tab" options={{ headerShown: false }}>
         {(props) => <TabNavigator {...props} setUsuarioLogueado={setUsuarioLogueado} />}
       </Stack.Screen>
 
       
-      <Stack.Screen name="EditarInfoLibro" component={EditarInfoLibro} options={({ navigation }) => ({
+      <Stack.Screen name="EditarInfoLibro" options={({ navigation }) => ({
         headerShown: true,
         headerTitle: '',
         headerTransparent: true,
@@ -40,10 +41,11 @@ export default function MainStack({ setUsuarioLogueado }) {
           backgroundColor: '#282828',
         },
         headerTintColor: 'white',
-        })}
-        />
+        })}>
+          {(props) => <EditarInfoLibro {...props} setUsuarioLogueado={setUsuarioLogueado} />}
+        </Stack.Screen>
       
-      <Stack.Screen name="EditarInfoPersonaje" component={EditarInfoPersonaje} options={({ navigation }) => ({
+      <Stack.Screen name="EditarInfoPersonaje" options={({ navigation }) => ({
         headerShown: true,
         headerTitle: '',
         headerTransparent: true,
@@ -57,10 +59,11 @@ export default function MainStack({ setUsuarioLogueado }) {
           backgroundColor: '#282828',
         },
         headerTintColor: 'white',
-        })}
-        />
+        })}>
+          {(props) => <EditarInfoPersonaje {...props} setUsuarioLogueado={setUsuarioLogueado} />}
+        </Stack.Screen>
 
-      <Stack.Screen name="InfoLibro" component={InfoLibro} options={({ navigation, route }) => ({
+      <Stack.Screen name="InfoLibro" options={({ navigation, route }) => ({
         headerShown: true,
         headerTitle: '',
         headerTransparent: true,
@@ -70,7 +73,7 @@ export default function MainStack({ setUsuarioLogueado }) {
           </TouchableOpacity>
         ),
         headerRight: () => (
-          <TouchableOpacity onPress={() => navigation.navigate('EditarInfoLibro', { libroId: route.params.libroId })} style={{ marginRight: 15 }}>
+          <TouchableOpacity onPress={() => navigation.navigate('EditarInfoLibro', { libroId: route.params?.libroId })} style={{ marginRight: 15 }}>
             <FontAwesome name="pencil" size={28} color="white" />
           </TouchableOpacity>
         ),
@@ -78,10 +81,11 @@ export default function MainStack({ setUsuarioLogueado }) {
           backgroundColor: '#282828',
         },
         headerTintColor: 'white',
-        })}
-        />
+        })}>
+          {(props) => <InfoLibro {...props} setUsuarioLogueado={setUsuarioLogueado} />}
+        </Stack.Screen>
 
-      <Stack.Screen name="InfoPersonaje" component={InfoPersonaje} options={({ navigation, route }) => ({
+      <Stack.Screen name="InfoPersonaje" options={({ navigation, route }) => ({
         headerShown: true,
         headerTitle: '',
         headerTransparent: true,
@@ -91,7 +95,7 @@ export default function MainStack({ setUsuarioLogueado }) {
           </TouchableOpacity>
         ),
         headerRight: () => (
-          <TouchableOpacity onPress={() => navigation.navigate('EditarInfoPersonaje', { personajeId: route.params.personajeId })} style={{ marginRight: 15 }}>
+          <TouchableOpacity onPress={() => navigation.navigate('EditarInfoPersonaje', { personajeId: route.params?.personajeId })} style={{ marginRight: 15 }}>
             <FontAwesome name="pencil" size={28} color="white" />
           </TouchableOpacity>
         ),
@@ -99,10 +103,11 @@ export default function MainStack({ setUsuarioLogueado }) {
           backgroundColor: '#282828',
         },
         headerTintColor: 'white',
-        })}
-        />
+        })}>
+          {(props) => <InfoPersonaje {...props} setUsuarioLogueado={setUsuarioLogueado} />}
+        </Stack.Screen>
 
-      <Stack.Screen name="NuevoPersonaje" component={NuevoPersonaje} options={({ navigation }) => ({
+      <Stack.Screen name="NuevoPersonaje" options={({ navigation }) => ({
         headerShown: true,
         headerTitle: '',
         headerTransparent: true,
@@ -116,9 +121,11 @@ export default function MainStack({ setUsuarioLogueado }) {
           backgroundColor: '#282828',
         },
         headerTintColor: 'white',
-        })}
-        />
-        <Stack.Screen name="EditarPerfil" component={EditarPerfil} options={({ navigation }) => ({
+        })}>
+          {(props) => <NuevoPersonaje {...props} setUsuarioLogueado={setUsuarioLogueado} />}
+        </Stack.Screen>
+        
+        <Stack.Screen name="EditarPerfil" options={({ navigation }) => ({
         headerShown: true,
         headerTitle: '',
         headerTransparent: true,
@@ -132,11 +139,10 @@ export default function MainStack({ setUsuarioLogueado }) {
           backgroundColor: '#282828',
         },
         headerTintColor: 'white',
-        })}
-        />
+        })}>
+          {(props) => <EditarPerfil {...props} setUsuarioLogueado={setUsuarioLogueado} />}
+        </Stack.Screen>
       
     </Stack.Navigator>
   );
 }
-
-//https://www.youtube.com/watch?v=PmILHVEWZUY --> stack para ir para atras (ultimos minutos)

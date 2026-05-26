@@ -5,9 +5,8 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useSortedScreens } from 'expo-router/build/useScreens';
 
-export default function InfoLibro({ navigation, route }) {
+export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
     const { libroId } = route.params;
     const isFocused = useIsFocused();
     const [libro, setLibro] = useState(null);
@@ -63,6 +62,12 @@ export default function InfoLibro({ navigation, route }) {
 
                 } catch (error) {
                     console.error(error);
+                    if (error.message === 'TOKEN_EXPIRADO') {
+                        await procesarCierreDeSesion();
+                        setUsuarioLogueado(false);
+                    } else {
+                        alerta("Error", "Hubo un problema de conexión.");
+                    }
                 } finally {
                     setCargando(false);
                 }
@@ -82,7 +87,12 @@ export default function InfoLibro({ navigation, route }) {
             }
         } catch (error) {
             console.error(error);
-            alerta("Error", "No se ha podido eliminar el Libro");
+            if (error.message === 'TOKEN_EXPIRADO') {
+                await procesarCierreDeSesion();
+                setUsuarioLogueado(false);
+            } else {
+                alerta("Error", "Hubo un problema de conexión.");
+            }
         }
     };
 
@@ -137,6 +147,12 @@ export default function InfoLibro({ navigation, route }) {
             }
         } catch (error) {
             console.error(error);
+            if (error.message === 'TOKEN_EXPIRADO') {
+                await procesarCierreDeSesion();
+                setUsuarioLogueado(false);
+            } else {
+                alerta("Error", "Hubo un problema de conexión.");
+            }
         }
     };
 
@@ -155,6 +171,12 @@ export default function InfoLibro({ navigation, route }) {
             }
         } catch (error) {
             console.error(error);
+            if (error.message === 'TOKEN_EXPIRADO') {
+                await procesarCierreDeSesion();
+                setUsuarioLogueado(false);
+            } else {
+                alerta("Error", "Hubo un problema de conexión.");
+            }
         }
     };
 
@@ -189,17 +211,27 @@ export default function InfoLibro({ navigation, route }) {
                     const dataComentarios = await getComentariosByIdLibro(libroId);
                     setComentarios(dataComentarios);
                 } catch (error) {
-                    alerta("Error", "Error al cargar comentarios")
+                    alerta("Error", "Error al cargar comentarios");
+                    if (error.message === 'TOKEN_EXPIRADO') {
+                        await procesarCierreDeSesion();
+                        setUsuarioLogueado(false);
+                    } else {
+                        alerta("Error", "Hubo un problema de conexión.");
+                    }
                 };
                 const dataLibroActualizado = await getLibrosById(libroId);
                 setLibro(dataLibroActualizado);
-
             } else {
                 alerta("Error", "No se pudo subir el comenario");
             }
         } catch (error) {
             console.error(error);
-            alerta("Error", "No se ha podido subir el comentario");
+            if (error.message === 'TOKEN_EXPIRADO') {
+                await procesarCierreDeSesion();
+                setUsuarioLogueado(false);
+            } else {
+                alerta("Error", "Hubo un problema de conexión.");
+            }
         }
     };
 
@@ -445,7 +477,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         marginTop: 25,
         color: 'white',
-        outlineStyle: 'none',
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
         fontFamily: 'Roboto-Regular'
     },
     inputComenatrio: {
@@ -455,7 +487,7 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         paddingHorizontal: 15,
         color: 'white',
-        outlineStyle: 'none',
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
         fontFamily: 'Roboto-Regular'
     },
     modalBack: {

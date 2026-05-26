@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         marginBottom: 15,
         color: 'white',
-        outlineStyle: 'none',
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
         fontSize: 16,
         fontFamily: 'Roboto-Regular',
     },
@@ -201,13 +201,13 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         marginBottom: 15,
         color: 'white',
-        outlineStyle: 'none',
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
         fontFamily: 'Roboto-Regular'
     },
     textoInput: {
         color: 'white',
         flex: 1,
-        outlineStyle: 'none',
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
         fontSize: 16,
         fontFamily: 'Roboto-Regular'
     },

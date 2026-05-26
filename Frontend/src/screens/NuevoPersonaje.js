@@ -5,6 +5,7 @@ import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from 'expo-image-picker';
 import { useIsFocused } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function NuevoPersonaje({ navigation, route }) {
     const isFocused = useIsFocused();
@@ -102,7 +103,7 @@ export default function NuevoPersonaje({ navigation, route }) {
                 </TouchableOpacity>
 
                 <TextInput style={styles.input} value={form.nombre} placeholder="Nombre*" onChangeText={(txt) => setForm({ ...form, nombre: txt })} />
-                <TextInput style={styles.input} value={form.descripcion} placeholder="Descripcion" onChangeText={(txt) => setForm({ ...form, descripcion: txt })} />
+                <TextInput style={styles.inputLargo} multiline numberOfLines={4} value={form.descripcion} placeholder="Descripcion" onChangeText={(txt) => setForm({ ...form, descripcion: txt })} />
 
                 <TouchableOpacity style={styles.button} onPress={agregarPersonaje}>
                     <Text style={styles.buttonText}>Hecho</Text>
@@ -130,7 +131,7 @@ const styles = StyleSheet.create({
     button: {
         width: '50%',
         height: 50,
-        backgroundColor: '#282828',
+        backgroundColor: '#6868AC',
         justifyContent: 'center',
         alignSelf: 'center',
         borderRadius: 50,
@@ -171,8 +172,22 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         marginBottom: 15,
         color: 'white',
-        outlineStyle: 'none',
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
         fontFamily: 'Roboto-Regular'
+    },
+    inputLargo: {
+        width: '100%',
+        backgroundColor: '#282828',
+        borderRadius: 30,
+        paddingHorizontal: 15,
+        marginTop: 25,
+        color: 'white',
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
+        fontSize: 16,
+        fontFamily: 'Roboto-Regular',
+        height: 120,
+        textAlignVertical: 'top',
+        paddingTop: 15,
     },
     button: {
         width: '50%',
@@ -214,13 +229,13 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         marginBottom: 15,
         color: 'white',
-        outlineStyle: 'none',
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
         fontFamily: 'Roboto-Regular'
     },
     textoInput: {
         color: 'white',
         flex: 1,
-        outlineStyle: 'none',
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
         fontFamily: 'Roboto-Regular'
     },
     icon: {

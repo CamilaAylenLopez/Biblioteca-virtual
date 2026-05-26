@@ -7,7 +7,7 @@ import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function EditarPerfil({ navigation, route }) {
+export default function EditarPerfil({ navigation, route, setUsuarioLogueado }) {
     const { id } = route.params;
     const [nuevosDatos, setNuevosDatos] = useState({
         nombre: '', apellido: '', nombreUsuario: '', email: '', fecha_nacimiento: '', descripcion: '', foto_perfil: ''
@@ -52,6 +52,12 @@ export default function EditarPerfil({ navigation, route }) {
 
                 } catch (error) {
                     console.error(error);
+                    if (error.message === 'TOKEN_EXPIRADO') {
+                        await procesarCierreDeSesion();
+                        setUsuarioLogueado(false);
+                    } else {
+                        alerta("Error", "Hubo un problema de conexión.");
+                    }
                 } finally {
                     setCargando(false);
                 }
@@ -70,11 +76,7 @@ export default function EditarPerfil({ navigation, route }) {
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
             if (status !== 'granted') {
-                if (Platform.OS === 'web') {
-                    alert("Permiso no concedido");
-                } else {
-                    Alert.alert("Error", "Permiso no concedido");
-                }
+                alerta("Error", "Permiso no concedido");
                 return;
             }
 
@@ -122,10 +124,16 @@ export default function EditarPerfil({ navigation, route }) {
 
                 navigation.goBack();
             } else {
-                alerta("Error", respuesta.data.error);
+                alerta("Error", "No se ha podido actualizar el perfil.");
             }
         } catch (error) {
             console.error(error);
+            if (error.message === 'TOKEN_EXPIRADO') {
+                await procesarCierreDeSesion();
+                setUsuarioLogueado(false);
+            } else {
+                alerta("Error", "Hubo un problema de conexión.");
+            }
         }
     };
 
@@ -171,11 +179,11 @@ export default function EditarPerfil({ navigation, route }) {
                 </TouchableOpacity>
 
                 {/*INPUT NORMALES*/}
-                <TextInput style={styles.input} value={nuevosDatos.nombre} placeholder={nuevosDatos.nombre || "Agregar nombre"} onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, nombre: txt })} />
-                <TextInput style={styles.input} value={nuevosDatos.apellido} placeholder={nuevosDatos.apellido || "Agregar apellido"} onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, apellido: txt })} />
-                <TextInput style={styles.input} value={nuevosDatos.nombreUsuario} placeholder={nuevosDatos.nombreUsuario || "Agregar nombre de usuario"} onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, nombreUsuario: txt })} />
-                <TextInput style={styles.input} value={nuevosDatos.email} placeholder={nuevosDatos.email || "Agregar email"} onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, email: txt })} />
-                <TextInput style={styles.input} value={nuevosDatos.descripcion} placeholder={nuevosDatos.descripcion || "Agregar descripcion"} onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, descripcion: txt })} />
+                <TextInput style={styles.input} value={nuevosDatos.nombre} placeholder="Agregar nombre" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, nombre: txt })} />
+                <TextInput style={styles.input} value={nuevosDatos.apellido} placeholder="Agregar apellido" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, apellido: txt })} />
+                <TextInput style={styles.input} value={nuevosDatos.nombreUsuario} placeholder="Agregar nombre de usuario" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, nombreUsuario: txt })} />
+                <TextInput style={styles.input} value={nuevosDatos.email} placeholder="Agregar email" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, email: txt })} />
+                <TextInput style={styles.inputLargo} multiline numberOfLines={4} value={nuevosDatos.descripcion} placeholder="Agregar descripcion" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, descripcion: txt })} />
 
                 {/*INPUT FECHA*/}
                 <View style={{ zIndex: 1, width: '100%', marginVertical: 5 }}>
@@ -236,12 +244,11 @@ const styles = StyleSheet.create({
     },
     imagenConteiner: {
         margin: 10,
-        borderRadius: 50,
     },
     button: {
         width: '50%',
         height: 50,
-        backgroundColor: '#282828',
+        backgroundColor: '#6868AC',
         justifyContent: 'center',
         alignSelf: 'center',
         borderRadius: 50,
@@ -253,13 +260,6 @@ const styles = StyleSheet.create({
     drop: {
         backgroundColor: '#282828',
         fontSize: 16,
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 14,
-        alignSelf: 'center',
-        margin: 5,
-        fontFamily: 'Roboto-Regular'
     },
     titulo: {
         fontSize: 35,
@@ -275,19 +275,23 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         marginTop: 25,
         color: 'white',
-        outlineStyle: 'none',
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
         fontSize: 16,
         fontFamily: 'Roboto-Regular'
     },
-    button: {
-        width: '50%',
-        height: 50,
+    inputLargo: {
+        width: '100%',
         backgroundColor: '#282828',
-        justifyContent: 'center',
-        alignSelf: 'center',
-        borderRadius: 50,
-        marginTop: 10,
-        textAlign: 'center',
+        borderRadius: 30,
+        paddingHorizontal: 15,
+        marginTop: 25,
+        color: 'white',
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
+        fontSize: 16,
+        fontFamily: 'Roboto-Regular',
+        height: 120,
+        textAlignVertical: 'top',
+        paddingTop: 15,
     },
     buttonText: {
         color: 'white',
@@ -326,7 +330,7 @@ const styles = StyleSheet.create({
     textoInput: {
         color: 'white',
         flex: 1,
-        outlineStyle: 'none',
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
         fontSize: 16,
         fontFamily: 'Roboto-Regular'
     },
@@ -364,11 +368,12 @@ const styles = StyleSheet.create({
     inputWeb: {
         backgroundColor: 'transparent',
         color: 'white',
-        border: 'none',
         fontSize: '16px',
         width: '100%',
-        outlineStyle: 'none',
-        cursor: 'pointer',
+        ...Platform.select({ 
+            web: { outlineStyle: 'none' },
+            default: { borderWidth: 0 }
+        }),
         fontFamily: 'Roboto-Regular'
     },
 });
