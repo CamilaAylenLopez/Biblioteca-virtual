@@ -579,6 +579,11 @@ console.log("Biblioteca ID enviado:", biblioteca_id);
     }
 });
 
+app.use((err, req, res, next) => {
+    console.error("Error no controlado detectado:", err.stack);
+    res.status(500).json({ ok: false, error: 'Ocurrio un error interno en el servidor.' });
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Servidor en http://0.0.0.0:${PORT}`);
