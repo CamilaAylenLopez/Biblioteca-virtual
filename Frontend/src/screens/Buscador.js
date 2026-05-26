@@ -4,6 +4,7 @@ import { resultadoBusqueda } from '../api/api';
 import { FontAwesome, AntDesign } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 export default function Buscador({ navigation, setUsuarioLogueado }) {
     const [query, setQuery] = useState('');
@@ -23,7 +24,7 @@ export default function Buscador({ navigation, setUsuarioLogueado }) {
     const procesarCierreDeSesion = async () => {
         try {
             await AsyncStorage.removeItem('@usuario_sesion');
-            await AsyncStorage.removeItem('@token_sesion');
+            await SecureStore.deleteItemAsync('token_sesion');
             setUsuarioLogueado(false);
             alerta("Sesión expirada", "Tu sesión ha caducado. Por favor, inicia sesión nuevamente.");
         } catch (error) {

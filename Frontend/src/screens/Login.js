@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView,
 import { loginUsuario } from '../api/api.js';
 import Entypo from '@expo/vector-icons/Entypo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 export default function Login({ navigation, setUsuarioLogueado }) {
   const [nombreUsuario, setnombreUsuario] = useState('');
@@ -31,7 +32,8 @@ export default function Login({ navigation, setUsuarioLogueado }) {
         await AsyncStorage.setItem('@usuario_sesion', JSON.stringify(data.usuario));
 
         if (data && data.token) {
-          await AsyncStorage.setItem('@token_sesion', data.token);
+          //await AsyncStorage.setItem('@token_sesion', data.token);
+          await SecureStore.setItemAsync('token_sesion', data.token);
         }
 
         setUsuarioLogueado(true);

@@ -5,6 +5,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
     const { libroId } = route.params;
@@ -33,7 +34,7 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
     const procesarCierreDeSesion = async () => {
         try {
             await AsyncStorage.removeItem('@usuario_sesion');
-            await AsyncStorage.removeItem('@token_sesion');
+            await SecureStore.deleteItemAsync('token_sesion');
             setUsuarioLogueado(false);
             alerta("Sesión expirada", "Tu sesión ha caducado. Por favor, inicia sesión nuevamente.");
         } catch (error) {

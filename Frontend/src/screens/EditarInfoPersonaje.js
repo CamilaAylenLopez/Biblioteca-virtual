@@ -6,6 +6,7 @@ import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from 'expo-image-picker';
 import DropdownSelect from 'react-native-input-select';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 export default function EditarInfoPersonaje({ navigation, route, setUsuarioLogueado }) {
     const { personajeId } = route.params;
@@ -27,7 +28,7 @@ export default function EditarInfoPersonaje({ navigation, route, setUsuarioLogue
     const procesarCierreDeSesion = async () => {
         try {
             await AsyncStorage.removeItem('@usuario_sesion');
-            await AsyncStorage.removeItem('@token_sesion');
+            await SecureStore.deleteItemAsync('token_sesion');
             setUsuarioLogueado(false);
             alerta("Sesión expirada", "Tu sesión ha caducado. Por favor, inicia sesión nuevamente.");
         } catch (error) {

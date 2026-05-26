@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { eliminarBiblioteca, eliminarLibroBiblioteca, getBibliotecaById } from '../api/api.js';
 import { useIsFocused } from '@react-navigation/native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import * as SecureStore from 'expo-secure-store';
 
 export default function DetalleBiblioteca({ navigation, route, setUsuarioLogueado }) {
     const { bibliotecaId, nombreBiblioteca } = route.params;
@@ -22,7 +23,7 @@ export default function DetalleBiblioteca({ navigation, route, setUsuarioLoguead
     const procesarCierreDeSesion = async () => {
         try {
             await AsyncStorage.removeItem('@usuario_sesion');
-            await AsyncStorage.removeItem('@token_sesion');
+            await SecureStore.deleteItemAsync('token_sesion');
             setUsuarioLogueado(false);
             alerta("Sesión expirada", "Tu sesión ha caducado. Por favor, inicia sesión nuevamente.");
         } catch (error) {

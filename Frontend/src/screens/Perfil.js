@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getBiblioteca } from '../api/api.js';
 import Entypo from '@expo/vector-icons/Entypo';
 import { useIsFocused } from '@react-navigation/native';
+import * as SecureStore from 'expo-secure-store';
 
 export default function Perfil({ navigation, setUsuarioLogueado }) {
   const isFocused = useIsFocused();
@@ -21,7 +22,7 @@ export default function Perfil({ navigation, setUsuarioLogueado }) {
   const procesarCierreDeSesion = async () => {
     try {
       await AsyncStorage.removeItem('@usuario_sesion');
-      await AsyncStorage.removeItem('@token_sesion');
+      await SecureStore.deleteItemAsync('token_sesion');
       setUsuarioLogueado(false);
       alerta("Sesión expirada", "Tu sesión ha caducado. Por favor, inicia sesión nuevamente.");
     } catch (error) {

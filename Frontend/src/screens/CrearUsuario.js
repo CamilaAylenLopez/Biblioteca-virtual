@@ -63,7 +63,7 @@ export default function CrearUsuario({ navigation, setUsuarioLogueado }) {
                     );
                 }
                 if (respuesta.data && respuesta.data.token) {
-                    await AsyncStorage.setItem('@token_sesion', respuesta.data.token);
+                    await SecureStore.setItemAsync('token_sesion', respuesta.data.token);
                 }
 
                 alerta("¡Éxito!", "Usuario creado con éxito.")
