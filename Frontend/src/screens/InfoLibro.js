@@ -288,7 +288,7 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
                                 <Text style={styles.subtituloModal}>Crear nueva biblioteca</Text>
                                 <TextInput style={styles.inputModal} value={nombreNuevaBiblioteca} placeholder='Nombre...' onChangeText={(txt) => setNombreNuevaBiblioteca(txt)} />
 
-                                <View>
+                                <View style={styles.containerBotonesModal}>
                                     <TouchableOpacity style={styles.buttonCrear} onPress={handleCrearBiblioteca}>
                                         <Text style={{ color: 'white', fontWeight: 'bold', textAlign: 'center', color: 'black' }}>Crear</Text>
                                     </TouchableOpacity>
@@ -370,7 +370,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        paddingTop: 50,
+        paddingTop: 70,
         marginTop: 50,
         backgroundColor: '#121212',
     },
@@ -558,6 +558,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#bcbcbc',
         paddingHorizontal: 20,
         paddingVertical: 15,
+        alignContent: 'center',
         borderRadius: 10,
         justifyContent: 'center',
         marginBottom: 10,

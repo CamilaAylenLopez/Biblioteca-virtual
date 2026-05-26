@@ -434,8 +434,10 @@ export const eliminarBiblioteca = async (id) => {
                 'Authorization': token ? `Bearer ${token}` : '',
             }
         });
+        const data = await res.json(); 
         await verificarStatusToken(res);
-        return { ok: res.ok, data: await res.json() };
+        
+        return { ok: res.ok, data };
     } catch (error) {
         console.error("Error:", error);
         throw error;
@@ -445,15 +447,17 @@ export const eliminarBiblioteca = async (id) => {
 export const eliminarLibroBiblioteca = async (idBiblioteca, idLibro) => {
     try {
         const token = await AsyncStorage.getItem('@token_sesion');
-        const res = await fetch(`${API_URL}/eliminarLibroBiblioteca/${idBiblioteca}/${idLibro}/`, {
+        const res = await fetch(`${API_URL}/eliminarLibroBiblioteca/${idBiblioteca}/${idLibro}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': token ? `Bearer ${token}` : '',
             }
         });
+        const data = await res.json();
         await verificarStatusToken(res);
-        return { ok: res.ok, data: await res.json() };
+        
+        return { ok: res.ok, data };
     } catch (error) {
         console.error("Error:", error);
         throw error;

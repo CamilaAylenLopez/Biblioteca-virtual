@@ -21,14 +21,13 @@ const verificarToken = (req, res, next) => {
         return res.status(401).json({ ok: false, error: 'Acceso denegado. Token inexistente.' });
     }
     try {
-        const verificado = jwt.verify(token, 'hgad6bsK)31/GSNnsdYY9=');
+        const verificado = jwt.verify(token, process.env.JWT_SECRET);
         req.usuario = verificado;
         next();
     } catch (error) {
         return res.status(403).json({ ok: false, error: 'Token inválido o expirado.' });
     }
 };
-
 
 app.get('/', (req, res) => {
     res.send('Seridor funcionando');
@@ -420,7 +419,7 @@ app.post('/login', async (req, res) => {
                 delete usuario.password;
                 const token = jwt.sign(
                     { usuarioId: usuario.id, email: usuario.email },
-                    'hgad6bsK)31/GSNnsdYY9=',
+                    process.env.JWT_SECRET,
                     { expiresIn: '7d' } // o sea vence en 7 días
                 )
                 res.status(200).json({
@@ -469,7 +468,7 @@ app.post('/nuevoUsuario', async (req, res) => {
 
         const token = jwt.sign(
             { usuarioId: usuario.id, email: usuario.email },
-            'hgad6bsK)31/GSNnsdYY9=',
+            process.env.JWT_SECRET,
             { expiresIn: '7d' } // o sea vence en 7 días
         )
 
@@ -524,10 +523,11 @@ app.delete('/eliminarLibro/:id', verificarToken, async (req, res) => {
 
 app.delete('/eliminarBiblioteca/:id', verificarToken, async (req, res) => {
     const id = req.params.id;
+    const usuario_id = req.usuario.usuarioId;
     try {
-        const [result] = await pool.query('DELETE FROM biblioteca WHERE id = ?', [id]);
+        const [result] = await pool.query('DELETE FROM biblioteca WHERE id = ? AND usuario_id = ?', [id, usuario_id]);
         if (result.affectedRows === 0) {
-            return res.status(404).json({ ok: false, mensaje: "No se encontro biblioteca" });
+            return res.status(404).json({ ok: false, mensaje: "No se encontro biblioteca o no tienes permiso para completar esta acción." });
         }
         res.json({ ok: true, mensaje: "biblioteca eliminada" });
     } catch (error) {
@@ -538,10 +538,19 @@ app.delete('/eliminarBiblioteca/:id', verificarToken, async (req, res) => {
 
 app.delete('/eliminarLibroBiblioteca/:biblioteca_id/:libro_id', verificarToken, async (req, res) => {
     const { biblioteca_id, libro_id } = req.params;
+    const usuario_id = req.usuario.usuarioId;
+console.log("Biblioteca ID enviado:", biblioteca_id);
+    console.log("Libro ID enviado:", libro_id);
+    console.log("Usuario ID del Token:", usuario_id);
     try {
-        const [result] = await pool.query('DELETE FROM biblioteca_libro WHERE biblioteca_id = ? AND libro_id = ?', [biblioteca_id, libro_id]);
+        const [result] = await pool.query(`
+            DELETE bl 
+            FROM biblioteca_libro bl
+            INNER JOIN biblioteca b ON bl.biblioteca_id = b.id
+            WHERE bl.biblioteca_id = ? AND bl.libro_id = ? AND b.usuario_id = ?
+            `, [biblioteca_id, libro_id, usuario_id]);
         if (result.affectedRows === 0) {
-            return res.status(404).json({ ok: false, mensaje: "No se encontro el libro en la biblioteca" });
+            return res.status(404).json({ ok: false, mensaje: "No se encontro el libro en la biblioteca o no tienes permiso para completar esta acción." });
         }
         res.json({ ok: true, mensaje: "libro eliminado de biblioteca" });
     } catch (error) {

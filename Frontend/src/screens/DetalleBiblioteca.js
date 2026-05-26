@@ -148,9 +148,11 @@ export default function DetalleBiblioteca({ navigation, route, setUsuarioLoguead
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        padding: 20,
+        paddingTop: 50,
+        marginTop: 50,
         paddingVertical: 40,
         paddingHorizontal: 15,
-        paddingTop: 70,
         backgroundColor: '#121212',
     },
     subtitulo: {
@@ -176,7 +178,7 @@ const styles = StyleSheet.create({
     card: {
         width: 165,
         borderRadius: 10,
-        padding: 8,
+        paddingHorizontal: 25,
         paddingTop: 12,
         backgroundColor: '#282828',
         display: 'flex',

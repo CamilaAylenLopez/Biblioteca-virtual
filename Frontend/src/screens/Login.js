@@ -31,7 +31,6 @@ export default function Login({ navigation, setUsuarioLogueado }) {
         await AsyncStorage.setItem('@usuario_sesion', JSON.stringify(data.usuario));
 
         if (data && data.token) {
-          console.log(data.token)
           await AsyncStorage.setItem('@token_sesion', data.token);
         }
 
