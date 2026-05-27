@@ -37,16 +37,16 @@ export default function DetalleBiblioteca({ navigation, route, setUsuarioLoguead
             const obtenerDatos = async () => {
                 try {
                     const data = await getBibliotecaById(bibliotecaId);
-                    setLibros(data);
-                    setCargando(false);
+                    setLibros(data || []);
                 } catch (error) {
                     console.error(error);
                     if (error.message === 'TOKEN_EXPIRADO') {
                         await procesarCierreDeSesion();
-                        setUsuarioLogueado(false);
                     } else {
                         alerta("Error", "Hubo un problema de conexión.");
                     }
+                } finally {
+                    setCargando(false);
                 }
             };
             obtenerDatos();
@@ -157,6 +157,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#121212',
     },
     subtitulo: {
+        flex: 1,
         fontSize: 25,
         fontFamily: 'Roboto-Bold',
         color: 'white',
@@ -166,8 +167,9 @@ const styles = StyleSheet.create({
     },
     horizontal: {
         flexDirection: 'row',
+        justifyContent: 'space-between',
         marginBottom: 10,
-        paddingTop: 5,
+        marginTop: 5,
     },
     nombreBiblioteca: {
         fontSize: 18,
@@ -177,7 +179,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Roboto-Bold'
     },
     card: {
-        width: 165,
+        width: '47%',
         borderRadius: 10,
         paddingHorizontal: 25,
         paddingTop: 12,
@@ -193,7 +195,6 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         backgroundColor: '#333333',
         alignSelf: 'center',
-        fontFamily: 'Roboto-Regular'
     },
     tituloLibro: {
         color: 'white',
@@ -221,6 +222,5 @@ const styles = StyleSheet.create({
     },
     filaGrid: {
         justifyContent: 'space-between',
-        paddingHorizontal: 8,
     },
 });

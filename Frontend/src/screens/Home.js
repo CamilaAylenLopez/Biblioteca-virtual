@@ -40,7 +40,14 @@ export default function Home({ navigation, setUsuarioLogueado }) {
 
           const data = await getLibros();
 
-          setLibros(data || []);
+          if (Array.isArray(data)) {
+            setLibros(data);
+          } else {
+            setLibros([]);
+            if (data && (data.error || data.mensaje)) {
+              console.log("Respuesta inesperada del servidor:", data);
+            }
+          }
         } catch (error) {
           if (error.message === 'TOKEN_EXPIRADO') {
             await procesarCierreDeSesion();
@@ -56,7 +63,9 @@ export default function Home({ navigation, setUsuarioLogueado }) {
     }
   }, [isFocused]);
 
-  const generosDisponibles = [...new Set(libros.map(l => l.genero).filter(Boolean))];
+  const generosDisponibles = Array.isArray(libros)
+    ? [...new Set(libros.map(l => l.genero).filter(Boolean))]
+    : [];
 
   const opcionesDropdown = [
     {
@@ -78,7 +87,7 @@ export default function Home({ navigation, setUsuarioLogueado }) {
   const renderFilaGenero = ({ item: genero }) => {
     if (!genero || genero.trim() === '' || genero === 'Todos') return null;
 
-    const librosFiltrados = libros.filter(l => l.genero === genero);
+    const librosFiltrados = Array.isArray(libros) ? libros.filter(l => l.genero === genero) : [];
 
     if (librosFiltrados.length === 0) return null;
 

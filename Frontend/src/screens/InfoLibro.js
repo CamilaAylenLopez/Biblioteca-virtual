@@ -98,7 +98,6 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
             console.error(error);
             if (error.message === 'TOKEN_EXPIRADO') {
                 await procesarCierreDeSesion();
-                setUsuarioLogueado(false);
             } else {
                 alerta("Error", "Hubo un problema de conexión.");
             }
@@ -106,7 +105,9 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
     };
 
     const calificacionEstrellas = (rating) => {
-        let estrellas = [];
+        let estrellasArray = [];
+        if (!rating) return null;
+
         for (let i = 1; i <= 5; i++) {
             let nombreIcono = "";
             let colorIcono = '#FFD700';
@@ -119,16 +120,16 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
                 nombreIcono = "star-o";
                 colorIcono = "#555555";
             }
-            estrellas.push(<FontAwesome key={i} name={nombreIcono} size={24} color={colorIcono} style={{ margin: 3, }} />)
+            estrellasArray.push(<FontAwesome key={i} name={nombreIcono} size={24} color={colorIcono} style={{ margin: 3, }} />)
         }
-        return estrellas;
+        return estrellasArray;
     };
 
     const renderEstrellas = () => {
         return (
             <View style={{ flexDirection: 'row', marginVertical: 10 }}>
                 {[1, 2, 3, 4, 5].map((star) => (
-                    <TouchableOpacity key={star} onPress={() => setEstrellas(star)}>
+                    <TouchableOpacity key={star} onPress={() => setEstrellas(estrellas === star ? null : star)}>
                         <FontAwesome key={star} name={star <= estrellas ? "star" : "star-o"} size={24} color={star <= estrellas ? "#FFD700" : "#555"} style={{ margin: 3, }} />
                     </TouchableOpacity>
                 ))}
@@ -174,14 +175,12 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
                 alerta("Exito", "El libro se guardo correctamente");
                 setModalVisible(false);
             } else {
-                //agregar funcion para que se elimine
                 alerta("Error", "El libro ya se encuentra en esta biblioteca");
             }
         } catch (error) {
             console.error(error);
             if (error.message === 'TOKEN_EXPIRADO') {
                 await procesarCierreDeSesion();
-                setUsuarioLogueado(false);
             } else {
                 alerta("Error", "Hubo un problema de conexión.");
             }
@@ -206,22 +205,12 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
             if (respuesta.ok) {
                 alerta("¡Éxito!", "Comentario agregado correctamente");
                 setNewComentario("");
-                setEstrellas(0);
+                setEstrellas(null);
 
-                try {
-                    const dataComentarios = await getComentariosByIdLibro(libroId);
-                    setComentarios(dataComentarios);
-                    const dataLibroActualizado = await getLibrosById(libroId);
-                    setLibro(dataLibroActualizado);
-                } catch (error) {
-                    if (error.message === 'TOKEN_EXPIRADO') {
-                        await procesarCierreDeSesion();
-                        setUsuarioLogueado(false);
-                    } else {
-                        alerta("Error", "Hubo un problema de conexión.");
-                    }
-                };
-
+                const dataComentarios = await getComentariosByIdLibro(libroId);
+                setComentarios(dataComentarios);
+                const dataLibroActualizado = await getLibrosById(libroId);
+                setLibro(dataLibroActualizado);
             } else {
                 alerta("Error", "No se pudo subir el comenario");
             }
@@ -240,8 +229,8 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
     if (!libro) return <Text style={{ color: 'white' }}>Cargando...</Text>;
 
     return (
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
-            <ScrollView showsVerticalScrollIndicator={false}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}  style={styles.container}>
+            <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
                 <TouchableOpacity style={styles.icon} onPress={deleteLibro}>
                     <FontAwesome name="trash" size={35} color="#bebebe" />
                 </TouchableOpacity>
@@ -265,10 +254,10 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
                     <Text style={styles.subtexto}>Creado por {libro.autor} - {libro.lanzamiento ? libro.lanzamiento.split('T')[0] : 'Fecha desconocida'}</Text>
                     <Text style={styles.subtexto}>{libro.genero}</Text>
                     <Text style={styles.descripcion}>{libro.sinopsis || "Sin descripción disponible."}</Text>
-                    
+
                     {/* SECCIÓN GUARDAR LIBRO */}
                     <Modal animationType="slide" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
-                        <View style={styles.modalBack}>
+                        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.modalBack}>
                             <View style={styles.modalContainer}>
                                 <Text style={styles.modalTitulo}>Guardar en biblioteca...</Text>
                                 <FlatList
@@ -299,7 +288,7 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
                                     </TouchableOpacity>
                                 </View>
                             </View>
-                        </View>
+                        </KeyboardAvoidingView>
                     </Modal>
 
                     {/* SECCIÓN PERSONAJES */}
@@ -352,7 +341,7 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
                             {renderEstrellas()}
 
                             <View style={styles.horizontal}>
-                                <TextInput multiline numberOfLines={3} style={styles.inputComenatrio} value={newComentario} placeholder="Agregar comentario..." onChangeText={(txt) => setNewComentario(txt)} />
+                                <TextInput multiline numberOfLines={3} style={styles.inputComentario} value={newComentario} placeholder="Agregar comentario..." onChangeText={(txt) => setNewComentario(txt)} />
 
                                 <TouchableOpacity onPress={sendComentario}>
                                     <FontAwesome name="send" size={24} color="white" />
@@ -480,8 +469,8 @@ const styles = StyleSheet.create({
         ...Platform.select({ web: { outlineStyle: 'none' } }),
         fontFamily: 'Roboto-Regular'
     },
-    inputComenatrio: {
-        width: '100%',
+    inputComentario: {
+        flex: 1,
         backgroundColor: '#282828',
         borderRadius: 30,
         paddingHorizontal: 15,
@@ -563,7 +552,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         justifyContent: 'center',
         marginBottom: 10,
-        fontFamily: 'Roboto-Regular'
     },
     buttonCerrar: {
         flex: 0.48,
@@ -573,7 +561,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         borderWidth: 1,
         borderColor: '#bcbcbc',
-        fontFamily: 'Roboto-Regular'
     },
     icon: {
         display: 'flex',

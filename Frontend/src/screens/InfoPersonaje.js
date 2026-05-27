@@ -68,7 +68,6 @@ export default function InfoPersonaje({ navigation, route, setUsuarioLogueado })
             console.error(error);
             if (error.message === 'TOKEN_EXPIRADO') {
                 await procesarCierreDeSesion();
-                setUsuarioLogueado(false);
             } else {
                 alerta("Error", "Hubo un problema de conexión.");
             }
@@ -79,7 +78,7 @@ export default function InfoPersonaje({ navigation, route, setUsuarioLogueado })
     if (!personaje) return <Text style={{ color: 'white' }}>Cargando...</Text>;
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
             <TouchableOpacity style={styles.icon} onPress={deletePersonaje}>
                 <FontAwesome name="trash" size={35} color="#bebebe" />
             </TouchableOpacity>
@@ -103,14 +102,13 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        paddingTop: 70,
+        paddingTop: 60,
         marginTop: 50,
         backgroundColor: '#121212',
     },
     icon: {
         display: 'flex',
         alignItems: 'flex-end',
-        margin: 5,
         marginTop: 40,
     },
     imagen: {
@@ -119,7 +117,8 @@ const styles = StyleSheet.create({
         resizeMode: 'cover',
         alignSelf: 'center',
         margin: 20,
-        marginTop: 10,
+        marginTop: 5,
+        borderRadius: 10,
     },
     titulo: {
         textAlign: 'center',
@@ -131,6 +130,7 @@ const styles = StyleSheet.create({
     descripcion: {
         color: 'white',
         margin: 20,
+        marginBottom: 40,
         fontFamily: 'Roboto-Regular'
     },
     subContainer: {

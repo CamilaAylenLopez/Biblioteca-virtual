@@ -21,6 +21,7 @@ export const getLibros = async () => {
             }
         });
         await verificarStatusToken(res);
+        if (!res.ok) return [];
         return await res.json();
     } catch (error) {
         console.error("Error al obtener libros: ", error);
@@ -39,6 +40,7 @@ export const getLibrosByGenero = async (genero) => {
             }
         });
         await verificarStatusToken(res);
+        if (!res.ok) return [];
         return await res.json();
     } catch (error) {
         console.error("Error al filtrar por género: ", error);
@@ -57,9 +59,10 @@ export const getComentariosByIdLibro = async (idLibro) => {
             }
         });
         await verificarStatusToken(res);
+        if (!res.ok) return [];
         return await res.json();
     } catch (error) {
-        console.error("Error al enocntrar comentarios: ", error);
+        console.error("Error al encontrar comentarios: ", error);
         throw error;
     }
 };
@@ -75,6 +78,7 @@ export const getPersonajeById = async (idPersonaje) => {
             }
         });
         await verificarStatusToken(res);
+        if (!res.ok) return null;
         return await res.json();
     } catch (error) {
         console.error("Error al encontrar personaje: ", error);
@@ -93,6 +97,7 @@ export const getLibrosById = async (id) => {
             }
         });
         await verificarStatusToken(res);
+        if (!res.ok) return null;
         return await res.json();
     } catch (error) {
         console.error("Error al obtener libro por id: ", error);
@@ -111,6 +116,7 @@ export const getPersonajesByIdLibro = async (id) => {
             }
         });
         await verificarStatusToken(res);
+        if (!res.ok) return [];
         return await res.json();
     } catch (error) {
         console.error("Error al obtener ids de los personajes asociados a determinado libro");
@@ -129,6 +135,7 @@ export const getUsuarioById = async (id) => {
             }
         });
         await verificarStatusToken(res);
+        if (!res.ok) return null;
         return await res.json();
     } catch (error) {
         console.error("Error en encontra el usuario");
@@ -147,6 +154,7 @@ export const getBiblioteca = async (id) => {
             }
         });
         await verificarStatusToken(res);
+        if (!res.ok) return [];
         return await res.json();
     } catch (error) {
         console.error("Error en encontrar las bibliotecas");
@@ -165,6 +173,7 @@ export const getBibliotecaById = async (id) => {
             }
         });
         await verificarStatusToken(res);
+        if (!res.ok) return null;
         return await res.json();
     } catch (error) {
         console.error("Error en encontrar la biblioteca");
@@ -183,6 +192,7 @@ export const getBibliotecas = async (id) => {
             }
         });
         await verificarStatusToken(res);
+        if (!res.ok) return [];
         return await res.json();
     } catch (error) {
         console.error("Error en encontrar las bibliotecas");
@@ -202,7 +212,8 @@ export const crearBiblioteca = async (datos) => {
             body: JSON.stringify(datos),
         });
         await verificarStatusToken(res);
-        return { ok: res.ok, data: await res.json() };
+        const data = res.ok ? await res.json() : null;
+        return { ok: res.ok, data };
     } catch (error) {
         console.error("Error en registro:", error);
         throw error;
@@ -221,7 +232,8 @@ export const guardarLibroEnBiblioteca = async (datos) => {
             body: JSON.stringify(datos),
         });
         await verificarStatusToken(res);
-        return { ok: res.ok, data: await res.json() };
+        const data = res.ok ? await res.json() : null;
+        return { ok: res.ok, data };
     } catch (error) {
         console.error("Error en registro:", error);
         throw error;
@@ -239,6 +251,7 @@ export const resultadoBusqueda = async (texto) => {
             }
         });
         await verificarStatusToken(res);
+        if (!res.ok) return [];
         return await res.json();
     } catch (error) {
         console.error("Error al obtener resultado: ", error);
@@ -248,7 +261,6 @@ export const resultadoBusqueda = async (texto) => {
 
 export const actualizarLibro = async (id, datos) => {
     try {
-        const token = await SecureStore.getItemAsync('token_sesion');
         const res = await fetch(`${API_URL}/updateLibro/${id}`, {
             method: 'PUT',
             headers: {
@@ -258,6 +270,7 @@ export const actualizarLibro = async (id, datos) => {
             body: JSON.stringify(datos),
         });
         await verificarStatusToken(res);
+        if (!res.ok) return null;
         return await res.json();
     } catch (error) {
         console.error("Error en actualizarLibro:", error);
@@ -277,6 +290,7 @@ export const actualizarPersonaje = async (id, datos) => {
             body: JSON.stringify(datos),
         });
         await verificarStatusToken(res);
+        if (!res.ok) return null;
         return await res.json();
     } catch (error) {
         console.error("Error en actualizarPersonaje:", error);
@@ -296,7 +310,8 @@ export const actualizarPerfil = async (id, datos) => {
             body: JSON.stringify(datos),
         });
         await verificarStatusToken(res);
-        return { ok: res.ok, data: await res.json() };
+        const data = res.ok ? await res.json() : null;
+        return { ok: res.ok, data };
     } catch (error) {
         console.error("Error en actualizarPerfil:", error);
         throw error;
@@ -310,7 +325,8 @@ export const loginUsuario = async (nombreUsuario, password) => {
             headers: { 'Content-Type': 'application/json', },
             body: JSON.stringify({ nombreUsuario, password }),
         });
-        return { ok: res.ok, data: await res.json() };
+        const data = await res.json();
+        return { ok: res.ok, data };
     } catch (error) {
         console.error("Error en login:", error);
         throw error;
@@ -325,7 +341,8 @@ export const registrarUsuario = async (datos) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datos),
         });
-        return { ok: res.ok, data: await res.json() };
+        const data = await res.json();
+        return { ok: res.ok, data };
     } catch (error) {
         console.error("Error en registro:", error);
         throw error;
@@ -344,7 +361,8 @@ export const nuevoLibro = async (datos) => {
             body: JSON.stringify(datos),
         });
         await verificarStatusToken(res);
-        return { ok: res.ok, data: await res.json() };
+        const data = res.ok ? await res.json() : null;
+        return { ok: res.ok, data };
     } catch (error) {
         console.error("Error en registro:", error);
         throw error;
@@ -363,7 +381,8 @@ export const nuevoPersonaje = async (datos) => {
             body: JSON.stringify(datos),
         });
         await verificarStatusToken(res);
-        return { ok: res.ok, data: await res.json() };
+        const data = res.ok ? await res.json() : null;
+        return { ok: res.ok, data };
     } catch (error) {
         console.error("Error en registro:", error);
         throw error;
@@ -382,7 +401,8 @@ export const nuevoComentario = async (datos) => {
             body: JSON.stringify(datos),
         });
         await verificarStatusToken(res);
-        return { ok: res.ok, data: await res.json() };
+        const data = res.ok ? await res.json() : null;
+        return { ok: res.ok, data };
     } catch (error) {
         console.error("Error en registro:", error);
         throw error;
@@ -400,7 +420,8 @@ export const eliminarPersonaje = async (id) => {
             }
         });
         await verificarStatusToken(res);
-        return { ok: res.ok, data: await res.json() };
+        const data = res.ok ? await res.json() : null;
+        return { ok: res.ok, data };
     } catch (error) {
         console.error("Error:", error);
         throw error;
@@ -418,7 +439,8 @@ export const eliminarLibro = async (id) => {
             }
         });
         await verificarStatusToken(res);
-        return { ok: res.ok, data: await res.json() };
+        const data = res.ok ? await res.json() : null;
+        return { ok: res.ok, data };
     } catch (error) {
         console.error("Error:", error);
         throw error;
@@ -435,8 +457,8 @@ export const eliminarBiblioteca = async (id) => {
                 'Authorization': token ? `Bearer ${token}` : '',
             }
         });
-        const data = await res.json(); 
         await verificarStatusToken(res);
+        const data = res.ok ? await res.json() : null;
         
         return { ok: res.ok, data };
     } catch (error) {
@@ -455,8 +477,8 @@ export const eliminarLibroBiblioteca = async (idBiblioteca, idLibro) => {
                 'Authorization': token ? `Bearer ${token}` : '',
             }
         });
-        const data = await res.json();
         await verificarStatusToken(res);
+        const data = res.ok ? await res.json() : null;
         
         return { ok: res.ok, data };
     } catch (error) {

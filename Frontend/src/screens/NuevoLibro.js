@@ -109,13 +109,13 @@ export default function NuevoLibro({ navigation, setUsuarioLogueado }) {
 
         const datosParaEnviar = {
             ...form,
-            image_url: image,
+            image_url: image || null,
             lanzamiento: form.lanzamiento === '' ? null : form.lanzamiento
         };
 
         try {
             const respuesta = await nuevoLibro(datosParaEnviar);
-            if (respuesta.ok) {
+            if (respuesta && respuesta.ok) {
                 alerta("¡Éxito!", "Libro agregado correctamente");
                 navigation.navigate('Home');
             } else {
@@ -142,8 +142,8 @@ export default function NuevoLibro({ navigation, setUsuarioLogueado }) {
                     </TouchableOpacity>
 
                     {/*INPUTS NORMALES*/}
-                    <TextInput style={styles.input} value={form.titulo} placeholder="*Titulo..." onChangeText={(txt) => setForm({ ...form, titulo: txt })} />
-                    <TextInput style={styles.input} value={form.autor} placeholder="*Autor..." onChangeText={(txt) => setForm({ ...form, autor: txt })} />
+                    <TextInput autoCorrect={false} style={styles.input} value={form.titulo} placeholder="*Titulo..." onChangeText={(txt) => setForm({ ...form, titulo: txt })} />
+                    <TextInput autoCorrect={false} style={styles.input} value={form.autor} placeholder="*Autor..." onChangeText={(txt) => setForm({ ...form, autor: txt })} />
                     <TextInput style={styles.inputLargo} multiline numberOfLines={4} value={form.sinopsis} placeholder="Sinopsis..." onChangeText={(txt) => setForm({ ...form, sinopsis: txt })} />
 
                     {/*INPUT FECHA*/}

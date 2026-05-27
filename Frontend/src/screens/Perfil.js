@@ -40,7 +40,12 @@ export default function Perfil({ navigation, setUsuarioLogueado }) {
         setUsuario(usuarioParseado);
 
         const data = await getBiblioteca(usuarioParseado.id);
-        setBiblioteca(data);
+
+        if (Array.isArray(data)) {
+          setBiblioteca(data);
+        } else {
+          setBiblioteca([]);
+        }
       } catch (error) {
         console.error(error);
         if (error.message === 'TOKEN_EXPIRADO') {
@@ -74,9 +79,10 @@ export default function Perfil({ navigation, setUsuarioLogueado }) {
   };
 
   const renderBiblioteca = (nombre) => {
-    const bibliotecaFiltrada = biblioteca.filter(b => b.nombre === nombre);
+    if (!Array.isArray(biblioteca)) return null;
 
-    if (bibliotecaFiltrada.length === 0) return null;
+    const bibliotecaFiltrada = biblioteca.filter(b => b.nombre === nombre);
+    if (bibliotecaFiltrada.length === 0) return <Text style={{color: 'white'}}>No hay libros guardados aun.</Text>;
 
     const bibliotecaId = bibliotecaFiltrada[0].biblioteca_id;
 
@@ -84,7 +90,7 @@ export default function Perfil({ navigation, setUsuarioLogueado }) {
       <View style={styles.contenedorGenero}>
         <TouchableOpacity onPress={() => navigation.navigate('DetalleBiblioteca', { bibliotecaId: bibliotecaId, nombreBiblioteca: nombre })}>
           <View style={styles.horizontal}>
-            <Text style={styles.nombreBiblioteca}>{nombre}</Text>
+            <Text numberOfLines={1} style={styles.nombreBiblioteca}>{nombre}</Text>
             <Entypo name="chevron-right" size={24} color="white" />
           </View>
         </TouchableOpacity>
@@ -109,7 +115,9 @@ export default function Perfil({ navigation, setUsuarioLogueado }) {
     );
   };
 
-  const nombresBibliotecas = [...new Set(biblioteca.map(b => b.nombre))];
+  const nombresBibliotecas = Array.isArray(biblioteca)
+    ? [...new Set(biblioteca.map(b => b.nombre))]
+    : [];
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 60 }} showsVerticalScrollIndicator={false}>
@@ -221,6 +229,7 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
   nombreBiblioteca: {
+    flex: 1,
     fontSize: 18,
     color: 'white',
     marginLeft: 15,

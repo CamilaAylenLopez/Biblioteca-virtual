@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, ActivityIndicator, TouchableOpacity, TextInput, Platform, Alert } from 'react-native';
 import { resultadoBusqueda } from '../api/api';
 import { FontAwesome, AntDesign } from '@expo/vector-icons';
-import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 
@@ -11,7 +10,6 @@ export default function Buscador({ navigation, setUsuarioLogueado }) {
     const [resultados, setResultados] = useState([]);
     const [filtro, setFiltro] = useState('todo');
     const [cargando, setCargando] = useState(false);
-    const isFocused = useIsFocused();
 
     const alerta = (titulo, mensaje) => {
         if (Platform.OS === 'web') {
@@ -34,20 +32,6 @@ export default function Buscador({ navigation, setUsuarioLogueado }) {
     };
 
     useEffect(() => {
-        if (isFocused) {
-            setQuery('');
-            setResultados([]);
-            setCargando(false);
-        }
-
-        return () => {
-            setQuery('');
-            setResultados([]);
-            setCargando(false);
-        };
-    }, [isFocused]);
-
-    useEffect(() => {
         if (query.trim().length <= 1) {
             setResultados([]);
             setCargando(false);
@@ -55,12 +39,15 @@ export default function Buscador({ navigation, setUsuarioLogueado }) {
         }
 
         setCargando(true);
+        let activa = true;
 
         const delayDebounceFn = setTimeout(() => {
 
-            resultadoBusqueda(encodeURIComponent(query))
+            resultadoBusqueda(encodeURIComponent(query.trim()))
                 .then(data => {
-                    setResultados(data || []);
+                    if (activa) {
+                        setResultados(data || []);
+                    }
                 })
                 .catch(async (err) => {
                     console.error("Error en búsqueda: ", err);
@@ -71,10 +58,15 @@ export default function Buscador({ navigation, setUsuarioLogueado }) {
                     }
                 })
                 .finally(() => {
-                    setCargando(false);
+                    if(activa){
+                        setCargando(false);
+                    }
                 });
         }, 500);
-        return () => clearTimeout(delayDebounceFn);
+        return () => {
+            clearTimeout(delayDebounceFn);
+            activa = false;
+        };
     }, [query]);
 
 
@@ -85,7 +77,7 @@ export default function Buscador({ navigation, setUsuarioLogueado }) {
             if (item.tipo === 'libro') {
                 navigation.navigate('InfoLibro', { libroId: item.id });
             } else {
-                navigation.navigate('InfoPersonaje', { personaje: item.id });
+                navigation.navigate('InfoPersonaje', { personajeId: item.id });
             }
         }}>
 
@@ -105,7 +97,10 @@ export default function Buscador({ navigation, setUsuarioLogueado }) {
         <View style={styles.container}>
             <View style={styles.buscarConteiner}>
                 <FontAwesome name="search" size={18} color="white" style={{ marginHorizontal: 10 }} />
-                <TextInput style={styles.input} placeholder='Buscar libro o personajes...' value={query} onChangeText={setQuery} />
+                <TextInput autoCorrect={false} style={styles.input} placeholder='Buscar libro o personajes...' value={query} onChangeText={setQuery} />
+                <TouchableOpacity onPress={() => { setQuery(''); setResultados([]); setCargando(false); }}>
+                    <Text style={{ color: 'white' }}>Cancelar</Text>
+                </TouchableOpacity>
             </View>
 
             <View style={styles.tabBar}>
@@ -120,7 +115,7 @@ export default function Buscador({ navigation, setUsuarioLogueado }) {
                 <ActivityIndicator size="large" color="#6868AC" style={{ marginTop: 20 }} />
             ) : (
                 <FlatList data={resultadosFiltrados}
-                    keyExtractor={(item, index) => index.toString()}
+                    keyExtractor={(item) => `${item.tipo}-${item.id}`}
                     renderItem={renderItem}
                     ListEmptyComponent={query.trim().length > 1 && <Text style={styles.vacio}>No se encontraron resultados</Text>}
                 />
@@ -195,7 +190,6 @@ const styles = StyleSheet.create({
     info: {
         flex: 1,
         marginLeft: 15,
-        fontFamily: 'Roboto-Regular'
     },
     nombre: {
         color: 'white',

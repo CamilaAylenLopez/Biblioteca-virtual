@@ -12,7 +12,6 @@ export default function NuevoPersonaje({ navigation, route, setUsuarioLogueado }
     const [form, setForm] = useState({
         nombre: '', imagen_url: '', descripcion: ''
     });
-    const [image, setImage] = useState();
 
     const alerta = (titulo, mensaje) => {
         if (Platform.OS === 'web') {
@@ -35,9 +34,8 @@ export default function NuevoPersonaje({ navigation, route, setUsuarioLogueado }
     };
 
     useEffect(() => {
-        if (isFocused) {
+        if (isFocused && (form.nombre !== '' || form.descripcion !== '' || form.imagen_url !== '')) {
             setForm({ nombre: '', imagen_url: '', descripcion: '' });
-            setImage();
         }
     }, [isFocused]);
 
@@ -60,7 +58,6 @@ export default function NuevoPersonaje({ navigation, route, setUsuarioLogueado }
 
             if (!result.canceled) {
                 const base64Image = `data:image/jpeg;base64,${result.assets[0].base64}`;
-                setImage(base64Image);
                 setForm({ ...form, imagen_url: base64Image });
             }
         } catch (error) {
@@ -79,7 +76,7 @@ export default function NuevoPersonaje({ navigation, route, setUsuarioLogueado }
                 idLibro: libroId,
                 nombre: form.nombre,
                 descripcion: form.descripcion || null,
-                imagen_url: image || null
+                imagen_url: form.imagen_url || null
             }
             const respuesta = await nuevoPersonaje(data);
             if (respuesta.ok) {
@@ -92,7 +89,6 @@ export default function NuevoPersonaje({ navigation, route, setUsuarioLogueado }
             console.error(error);
             if (error.message === 'TOKEN_EXPIRADO') {
                 await procesarCierreDeSesion();
-                setUsuarioLogueado(false);
             } else {
                 alerta("Error", "Hubo un problema de conexión.");
             }
@@ -103,10 +99,10 @@ export default function NuevoPersonaje({ navigation, route, setUsuarioLogueado }
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             <View style={styles.subContainer}>
                 <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>
-                    <Image source={image ? { uri: image } : require('../img/addimage.jpg')} style={styles.imagen} />
+                    <Image source={form.imagen_url ? { uri: form.imagen_url } : require('../img/addimage.jpg')} style={styles.imagen} />
                 </TouchableOpacity>
 
-                <TextInput style={styles.input} value={form.nombre} placeholder="*Nombre..." onChangeText={(txt) => setForm({ ...form, nombre: txt })} />
+                <TextInput autoCorrect={false} style={styles.input} value={form.nombre} placeholder="*Nombre..." onChangeText={(txt) => setForm({ ...form, nombre: txt })} />
                 <TextInput style={styles.inputLargo} multiline numberOfLines={4} value={form.descripcion} placeholder="Descripcion..." onChangeText={(txt) => setForm({ ...form, descripcion: txt })} />
 
                 <TouchableOpacity style={styles.button} onPress={agregarPersonaje}>
