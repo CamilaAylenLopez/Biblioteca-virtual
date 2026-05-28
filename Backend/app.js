@@ -183,10 +183,10 @@ app.get('/biblioteca/idUsuario/:id', verificarToken, async (req, res) => {
 
     try {
         const [biblioteca] = await pool.query(`
-            SELECT b.id, b.nombre, b.usuario_id, bl.biblioteca_id, bl.libro_id, l.titulo, l.imagen_url
-            FROM biblioteca_libro bl
-            LEFT JOIN biblioteca b ON b.id = bl.biblioteca_id
-            INNER JOIN libro l on l.id = bl.libro_id
+            SELECT b.id AS biblioteca_id, b.nombre, b.usuario_id, bl.libro_id, l.titulo, l.imagen_url
+            FROM biblioteca b
+            LEFT JOIN biblioteca_libro bl ON b.id = bl.biblioteca_id
+            LEFT JOIN libro l ON l.id = bl.libro_id
             WHERE b.usuario_id = ?`, [idUsuario]);
         res.json(biblioteca)
     } catch (error) {

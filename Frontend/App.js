@@ -9,6 +9,7 @@ import Login from './src/screens/Login';
 import CrearUsuario from './src/screens/CrearUsuario';
 import InfoLibro from './src/screens/InfoLibro';
 import { useFonts, Roboto_400Regular, Roboto_700Bold } from '@expo-google-fonts/roboto';
+import * as SecureStore from 'expo-secure-store';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,12 +24,10 @@ export default function App() {
   useEffect(() => {
     const verificarSesion = async () => {
       try {
-        const token = await AsyncStorage.getItem('@token_sesion');
+        const sesion = await AsyncStorage.getItem('@usuario_sesion');
 
-        if(token){
+        if (sesion) {
           setUsuarioLogueado(true);
-        }else{
-          setUsuarioLogueado(false);
         }
       } catch (error) {
         console.error("Error verificando sesión: ", error);
@@ -42,7 +41,7 @@ export default function App() {
   const forzarCierreSesion = async () => {
     try {
       await AsyncStorage.removeItem('@usuario_sesion');
-      await AsyncStorage.removeItem('@token_sesion');
+      await SecureStore.deleteItemAsync('token_sesion');
       setUsuarioLogueado(false);
       Alert.alert("Sesion finalizada", "Has alcanzado el limite de 7 días. Inicia sesión nuevamente.");
     } catch (error) {
@@ -63,16 +62,16 @@ export default function App() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {usuarioLogueado ? (
           <Stack.Screen name="Main">
-            {(props) => <MainStack {...props} setUsuarioLogueado={setUsuarioLogueado} forzarCierreSesion={forzarCierreSesion}/>}
+            {props => <MainStack {...props} setUsuarioLogueado={setUsuarioLogueado} forzarCierreSesion={forzarCierreSesion} />}
           </Stack.Screen>
         ) : (
           <>
             <Stack.Screen name="Login">
-              {(props) => <Login {...props} setUsuarioLogueado={setUsuarioLogueado} />}
+              {props => <Login {...props} setUsuarioLogueado={setUsuarioLogueado} />}
             </Stack.Screen>
 
             <Stack.Screen name="CrearUsuario">
-              {(props) => <CrearUsuario {...props} setUsuarioLogueado={setUsuarioLogueado} />}
+              {props => <CrearUsuario {...props} setUsuarioLogueado={setUsuarioLogueado} />}
             </Stack.Screen>
           </>
         )}

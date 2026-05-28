@@ -32,32 +32,32 @@ export default function Perfil({ navigation, setUsuarioLogueado }) {
   };
 
   useEffect(() => {
+    if (isFocused) {
+      const obtenerDatos = async () => {
+        try {
+          const sesion = await AsyncStorage.getItem('@usuario_sesion');
+          const usuarioParseado = JSON.parse(sesion);
+          setUsuario(usuarioParseado);
 
-    const obtenerDatos = async () => {
-      try {
-        const sesion = await AsyncStorage.getItem('@usuario_sesion');
-        const usuarioParseado = JSON.parse(sesion);
-        setUsuario(usuarioParseado);
+          const data = await getBiblioteca(usuarioParseado.id);
 
-        const data = await getBiblioteca(usuarioParseado.id);
-
-        if (Array.isArray(data)) {
-          setBiblioteca(data);
-        } else {
-          setBiblioteca([]);
+          if (Array.isArray(data)) {
+            setBiblioteca(data);
+          } else {
+            setBiblioteca([]);
+          }
+        } catch (error) {
+          console.error(error);
+          if (error.message === 'TOKEN_EXPIRADO') {
+            await procesarCierreDeSesion();
+            setUsuarioLogueado(false);
+          } else {
+            alerta("Error", "Hubo un problema de conexión.");
+          }
         }
-      } catch (error) {
-        console.error(error);
-        if (error.message === 'TOKEN_EXPIRADO') {
-          await procesarCierreDeSesion();
-          setUsuarioLogueado(false);
-        } else {
-          alerta("Error", "Hubo un problema de conexión.");
-        }
-      }
-    };
-
-    obtenerDatos();
+      };
+      obtenerDatos();
+    }
   }, [isFocused]);
 
   if (!usuario) {
@@ -71,7 +71,7 @@ export default function Perfil({ navigation, setUsuarioLogueado }) {
   const cerrarSesion = async () => {
     try {
       await AsyncStorage.removeItem('@usuario_sesion');
-      await AsyncStorage.removeItem('@token_sesion');
+      await SecureStore.deleteItemAsync('token_sesion');
       setUsuarioLogueado(false);
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
@@ -82,9 +82,11 @@ export default function Perfil({ navigation, setUsuarioLogueado }) {
     if (!Array.isArray(biblioteca)) return null;
 
     const bibliotecaFiltrada = biblioteca.filter(b => b.nombre === nombre);
-    if (bibliotecaFiltrada.length === 0) return <Text style={{color: 'white'}}>No hay libros guardados aun.</Text>;
+    if (bibliotecaFiltrada.length === 0) return null;
 
     const bibliotecaId = bibliotecaFiltrada[0].biblioteca_id;
+
+    const tieneLibros = bibliotecaFiltrada.length > 0 && bibliotecaFiltrada[0].libro_id !== null && bibliotecaFiltrada[0].libro_id !== undefined;
 
     return (
       <View style={styles.contenedorGenero}>
@@ -94,29 +96,33 @@ export default function Perfil({ navigation, setUsuarioLogueado }) {
             <Entypo name="chevron-right" size={24} color="white" />
           </View>
         </TouchableOpacity>
-        <FlatList
-          horizontal
-          data={bibliotecaFiltrada}
-          keyExtractor={(item, index) => item.libro_id.toString() || index.toString()}
-          showsHorizontalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <View style={styles.card}>
-              <TouchableOpacity onPress={() => navigation.navigate('InfoLibro', { libroId: item.libro_id })}>
-                <Image
-                  source={item.imagen_url ? { uri: item.imagen_url } : require('../img/Imagenotfound.png')}
-                  style={styles.portada}
-                />
-                <Text style={styles.tituloLibro} numberOfLines={2}>{item.titulo}</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        />
+        {tieneLibros ? (
+          <FlatList
+            horizontal
+            data={bibliotecaFiltrada}
+            keyExtractor={(item, index) => item.libro_id.toString() || index.toString()}
+            showsHorizontalScrollIndicator={false}
+            renderItem={({ item }) => (
+              <View style={styles.card}>
+                <TouchableOpacity onPress={() => navigation.navigate('InfoLibro', { libroId: item.libro_id })}>
+                  <Image
+                    source={item.imagen_url ? { uri: item.imagen_url } : require('../img/Imagenotfound.png')}
+                    style={styles.portada}
+                  />
+                  <Text style={styles.tituloLibro} numberOfLines={2}>{item.titulo}</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          />
+        ) : (
+          <Text style={styles.vacio}>No hay libros guardados aun.</Text>
+        )}
       </View>
     );
   };
 
   const nombresBibliotecas = Array.isArray(biblioteca)
-    ? [...new Set(biblioteca.map(b => b.nombre))]
+    ? [...new Set(biblioteca.map(b => b.nombre).filter(nombre => nombre))]
     : [];
 
   return (
@@ -137,7 +143,7 @@ export default function Perfil({ navigation, setUsuarioLogueado }) {
         </View>
       </View>
 
-      <Text style={styles.biografia}>{usuario.descripcion || "Sin biografía"}</Text>
+      <Text style={styles.biografia}>{usuario.descripcion || "Sin biografía."}</Text>
 
 
       <Text style={styles.subtitulo}>Bibliotecas</Text>
@@ -149,7 +155,7 @@ export default function Perfil({ navigation, setUsuarioLogueado }) {
           </View>
         ))
       ) : (
-        <Text style={{ color: 'white' }}>No has guardado ningun libro aun.</Text>
+        <Text style={styles.vacio}>No has guardado ningun libro aun.</Text>
       )}
 
       <TouchableOpacity onPress={cerrarSesion} style={styles.button}>
@@ -166,6 +172,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingTop: 70,
     backgroundColor: '#121212',
+  },
+  vacio: {
+    color: '#bebebe',
+    textAlign: 'center',
+    marginTop: 50,
+    fontSize: 16,
+    fontFamily: 'Roboto-Regular'
   },
   nombre: {
     fontSize: 24,
