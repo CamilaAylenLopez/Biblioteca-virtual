@@ -33,7 +33,7 @@ export default function MainStack({ setUsuarioLogueado }) {
         headerTitle: '',
         headerTransparent: true,
         headerLeft: () => (
-          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 15 }}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 5 }}>
             <FontAwesome name="arrow-left" size={28} color="white" />
           </TouchableOpacity>
         ),
@@ -51,7 +51,7 @@ export default function MainStack({ setUsuarioLogueado }) {
         headerTitle: '',
         headerTransparent: true,
         headerLeft: () => (
-          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 15 }}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 5 }}>
             <FontAwesome name="arrow-left" size={28} color="white" />
           </TouchableOpacity>
         ),
@@ -69,12 +69,12 @@ export default function MainStack({ setUsuarioLogueado }) {
         headerTitle: '',
         headerTransparent: true,
         headerLeft: () => (
-          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 15 }}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 5 }}>
             <FontAwesome name="arrow-left" size={28} color="white" />
           </TouchableOpacity>
         ),
         headerRight: () => (
-          <TouchableOpacity onPress={() => navigation.navigate('EditarInfoLibro', { libroId: route.params?.libroId })} style={{ marginRight: 15 }}>
+          <TouchableOpacity onPress={() => navigation.navigate('EditarInfoLibro', { libroId: route.params?.libroId })} style={{ marginRight: 5 }}>
             <FontAwesome name="pencil" size={28} color="white" />
           </TouchableOpacity>
         ),
@@ -91,12 +91,12 @@ export default function MainStack({ setUsuarioLogueado }) {
         headerTitle: '',
         headerTransparent: true,
         headerLeft: () => (
-          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 15 }}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 5 }}>
             <FontAwesome name="arrow-left" size={28} color="white" />
           </TouchableOpacity>
         ),
         headerRight: () => (
-          <TouchableOpacity onPress={() => navigation.navigate('EditarInfoPersonaje', { personajeId: route.params?.personajeId })} style={{ marginRight: 15 }}>
+          <TouchableOpacity onPress={() => navigation.navigate('EditarInfoPersonaje', { personajeId: route.params?.personajeId })} style={{ marginRight: 5 }}>
             <FontAwesome name="pencil" size={28} color="white" />
           </TouchableOpacity>
         ),
@@ -113,7 +113,7 @@ export default function MainStack({ setUsuarioLogueado }) {
         headerTitle: '',
         headerTransparent: true,
         headerLeft: () => (
-          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 15 }}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 5 }}>
             <MaterialIcons name="cancel" size={28} color="white" />
           </TouchableOpacity>
         ),
@@ -131,7 +131,7 @@ export default function MainStack({ setUsuarioLogueado }) {
         headerTitle: '',
         headerTransparent: true,
         headerLeft: () => (
-          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 15 }}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 5 }}>
             <MaterialIcons name="cancel" size={28} color="white" />
           </TouchableOpacity>
         ),
@@ -149,7 +149,7 @@ export default function MainStack({ setUsuarioLogueado }) {
         headerTitle: '',
         headerTransparent: true,
         headerLeft: () => (
-          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 15 }}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 5 }}>
             <MaterialIcons name="cancel" size={28} color="white" />
           </TouchableOpacity>
         ),

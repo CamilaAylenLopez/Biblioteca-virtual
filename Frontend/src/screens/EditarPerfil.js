@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, ScrollView, ActivityIndicator, Alert, TouchableOpacity, TextInput, Platform } from 'react-native';
-import { actualizarPerfil, getUsuarioById, nuevoLibro } from '../api/api';
+import { View, Text, Image, StyleSheet, ScrollView, ActivityIndicator, Alert, TouchableOpacity, TextInput, Platform, TouchableWithoutFeedback, KeyboardAvoidingView } from 'react-native';
+import { actualizarPerfil, getUsuarioById } from '../api/api';
 import { useIsFocused } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
@@ -13,7 +12,6 @@ export default function EditarPerfil({ navigation, route, setUsuarioLogueado }) 
     const [nuevosDatos, setNuevosDatos] = useState({
         nombre: '', apellido: '', nombreUsuario: '', email: '', fecha_nacimiento: '', descripcion: '', foto_perfil: ''
     });
-    const [image, setImage] = useState()
     const [mostrarCalendario, setMostrarCalendario] = useState(false);
     const isFocused = useIsFocused();
     const [cargando, setCargando] = useState(true);
@@ -49,13 +47,12 @@ export default function EditarPerfil({ navigation, route, setUsuarioLogueado }) 
                     if (datosUsuario.fecha_nacimiento) {
                         const [year, month, day] = datosUsuario.fecha_nacimiento.split('-');
                         setFecha(new Date(year, month - 1, day));
-                    };
+                    }
 
                 } catch (error) {
                     console.error(error);
                     if (error.message === 'TOKEN_EXPIRADO') {
                         await procesarCierreDeSesion();
-                        setUsuarioLogueado(false);
                     } else {
                         alerta("Error", "Hubo un problema de conexión.");
                     }
@@ -106,7 +103,7 @@ export default function EditarPerfil({ navigation, route, setUsuarioLogueado }) 
 
         try {
             const respuesta = await actualizarPerfil(id, { ...nuevosDatos });
-            if (respuesta.ok) {
+            if (respuesta && respuesta.ok) {
 
                 const usuarioActualizado = {
                     id: id,
@@ -120,9 +117,7 @@ export default function EditarPerfil({ navigation, route, setUsuarioLogueado }) 
                 };
 
                 await AsyncStorage.setItem('@usuario_sesion', JSON.stringify(usuarioActualizado));
-
                 alerta("Éxito", "Perfil actualizado correctamente.")
-
                 navigation.goBack();
             } else {
                 alerta("Error", "No se ha podido actualizar el perfil.");
@@ -131,7 +126,6 @@ export default function EditarPerfil({ navigation, route, setUsuarioLogueado }) 
             console.error(error);
             if (error.message === 'TOKEN_EXPIRADO') {
                 await procesarCierreDeSesion();
-                setUsuarioLogueado(false);
             } else {
                 alerta("Error", "Hubo un problema de conexión.");
             }
@@ -172,70 +166,76 @@ export default function EditarPerfil({ navigation, route, setUsuarioLogueado }) 
     if (!nuevosDatos) return <Text style={{ color: 'white' }}>Cargando...</Text>;
 
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-            <View style={styles.subContainer}>
-                {/*SELECCIONAR IMAGEN*/}
-                <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>
-                    <Image source={nuevosDatos.foto_perfil ? { uri: nuevosDatos.foto_perfil } : require('../img/addimage.jpg')} style={styles.imagen} />
-                </TouchableOpacity>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
+            <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+                <TouchableWithoutFeedback onPress={() => {
+                    setMostrarCalendario(false);
+                    Keyboard.dismiss();
+                }}>
+                    <View style={styles.subContainer}>
+                        {/*SELECCIONAR IMAGEN*/}
+                        <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>
+                            <Image source={nuevosDatos.foto_perfil ? { uri: nuevosDatos.foto_perfil } : require('../img/addimage.jpg')} style={styles.imagen} />
+                        </TouchableOpacity>
 
-                {/*INPUT NORMALES*/}
-                <TextInput style={styles.input} value={nuevosDatos.nombre} placeholder="Agregar nombre" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, nombre: txt })} />
-                <TextInput style={styles.input} value={nuevosDatos.apellido} placeholder="Agregar apellido" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, apellido: txt })} />
-                <TextInput style={styles.input} value={nuevosDatos.nombreUsuario} placeholder="Agregar nombre de usuario" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, nombreUsuario: txt })} />
-                <TextInput style={styles.input} value={nuevosDatos.email} placeholder="Agregar email" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, email: txt })} />
-                <TextInput style={styles.inputLargo} multiline numberOfLines={4} value={nuevosDatos.descripcion} placeholder="Agregar descripcion" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, descripcion: txt })} />
+                        {/*INPUT NORMALES*/}
+                        <TextInput style={styles.input} value={nuevosDatos.nombre} placeholder="Agregar nombre" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, nombre: txt })} />
+                        <TextInput style={styles.input} value={nuevosDatos.apellido} placeholder="Agregar apellido" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, apellido: txt })} />
+                        <TextInput style={styles.input} value={nuevosDatos.nombreUsuario} placeholder="Agregar nombre de usuario" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, nombreUsuario: txt })} />
+                        <TextInput style={styles.input} value={nuevosDatos.email} placeholder="Agregar email" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, email: txt })} />
+                        <TextInput style={styles.inputLargo} multiline numberOfLines={4} value={nuevosDatos.descripcion} placeholder="Agregar descripcion" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, descripcion: txt })} />
 
-                {/*INPUT FECHA*/}
-                <View style={{ zIndex: 1, width: '100%', marginVertical: 5 }}>
-                    {Platform.OS === 'web' ? (
-                        <View style={styles.inputD}>
-                            <TextInput type="date" value={nuevosDatos.fecha_nacimiento} placeholder='YYYY-MM-DD' onChange={(e) => onChangeFechaWeb(e.target.value)} max={new Date().toISOString().split('t')[0]} style={styles.inputWeb} />
-                        </View>
-                    ) : (
-                        <View>
-                            <TouchableOpacity style={styles.inputD} onPress={() => setMostrarCalendario(!mostrarCalendario)}>
-                                <Text style={styles.textoFecha}>
-                                    {nuevosDatos.fecha_nacimiento ? `${nuevosDatos.fecha_nacimiento}` : "Elegir fecha de lanzmaiento..."}
-                                </Text>
+                        {/*INPUT FECHA*/}
+                        <View style={{ zIndex: 1, width: '100%', marginVertical: 5 }}>
+                            {Platform.OS === 'web' ? (
+                                <View style={styles.inputD}>
+                                    <TextInput type="date" value={nuevosDatos.fecha_nacimiento} placeholder='YYYY-MM-DD' onChange={(e) => onChangeFechaWeb(e.target.value)} max={new Date().toISOString().split('T')[0]} style={styles.inputWeb} />
+                                </View>
+                            ) : (
+                                <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
+                                    <View>
+                                        <TouchableOpacity style={styles.inputD} onPress={() => setMostrarCalendario(!mostrarCalendario)}>
+                                            <Text style={styles.textoFecha}>{nuevosDatos.fecha_nacimiento ? `${nuevosDatos.fecha_nacimiento}` : "Elegir fecha de nacimiento..."}</Text>
 
-                                {mostrarCalendario && (
-                                    <View style={Platform.OS === 'ios' ? styles.contenedorCalendarioIOS : null}>
-                                        <DateTimePicker
-                                            value={fecha}
-                                            mode="date"
-                                            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                                            onChange={onChangeFecha}
-                                            maximumDate={new Date()}
-                                            locale="es-ES"
-                                        />
+                                            {mostrarCalendario && (
+                                                <View style={Platform.OS === 'ios' ? styles.contenedorCalendarioIOS : null}>
+                                                    <DateTimePicker
+                                                        value={fecha}
+                                                        mode="date"
+                                                        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                                                        onChange={onChangeFecha}
+                                                        maximumDate={new Date()}
+                                                        locale="es-ES"
+                                                        style={{ height: 180, width: '100%' }}
+                                                    />
 
-
-                                        {Platform.OS === 'ios' && (
-                                            <TouchableOpacity style={styles.btnListoIOS} onPress={() => setMostrarCalendario(false)}>
-                                                <Text style={styles.confirmarText}>Confirmar fecha</Text>
-                                            </TouchableOpacity>
-                                        )}
+                                                    {Platform.OS === 'ios' && (
+                                                        <TouchableOpacity style={styles.btnListoIOS} onPress={() => setMostrarCalendario(false)}>
+                                                            <Text style={styles.confirmarText}>Confirmar fecha</Text>
+                                                        </TouchableOpacity>
+                                                    )}
+                                                </View>
+                                            )}
+                                        </TouchableOpacity>
                                     </View>
-                                )}
-                            </TouchableOpacity>
+                                </TouchableWithoutFeedback>
+                            )}
                         </View>
-                    )}
-                </View>
 
-                {/*BOTON ACEPTAR*/}
-                <TouchableOpacity style={styles.button} onPress={actualizar}>
-                    <Text style={styles.buttonText}>Hecho</Text>
-                </TouchableOpacity>
-            </View>
-        </ScrollView>
+                        {/*BOTON ACEPTAR*/}
+                        <TouchableOpacity style={styles.button} onPress={actualizar}>
+                            <Text style={styles.buttonText}>Hecho</Text>
+                        </TouchableOpacity>
+                    </View>
+                </TouchableWithoutFeedback>
+            </ScrollView>
+        </KeyboardAvoidingView>
     )
 }
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        paddingTop: 70,
         marginTop: 50,
         backgroundColor: '#121212',
     },
@@ -350,12 +350,12 @@ const styles = StyleSheet.create({
         padding: 10,
         marginVertical: 5,
         width: '100%',
-        backgroundColor: '#63504e',
+        backgroundColor: '#555555',
         paddingBottom: 20,
     },
     btnListoIOS: {
         marginTop: 5,
-        backgroundColor: '#63504e',
+        backgroundColor: '#555555',
         borderRadius: 25,
         fontFamily: 'Roboto-Regular'
     },
@@ -371,7 +371,7 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: '16px',
         width: '100%',
-        ...Platform.select({ 
+        ...Platform.select({
             web: { outlineStyle: 'none' },
             default: { borderWidth: 0 }
         }),

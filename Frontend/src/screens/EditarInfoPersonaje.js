@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, ScrollView, Alert, TouchableOpacity, ActivityIndicator, TextInput, Platform } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { actualizarPersonaje, getPersonajeById } from '../api/api';
-import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from 'expo-image-picker';
 import DropdownSelect from 'react-native-input-select';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -15,7 +14,6 @@ export default function EditarInfoPersonaje({ navigation, route, setUsuarioLogue
     const [personaje, setPersonaje] = useState({
         nombre: '', imagen_url: '', descripcion: ''
     });
-    const [image, setImage] = useState('');
 
     const alerta = (titulo, mensaje) => {
         if (Platform.OS === 'web') {
@@ -43,12 +41,10 @@ export default function EditarInfoPersonaje({ navigation, route, setUsuarioLogue
                 try {
                     const dataPersonaje = await getPersonajeById(personajeId);
                     setPersonaje(dataPersonaje)
-                    setImage(dataPersonaje.imagen_url);
                 } catch (error) {
                     console.error(error);
                     if (error.message === 'TOKEN_EXPIRADO') {
                         await procesarCierreDeSesion();
-                        setUsuarioLogueado(false);
                     } else {
                         alerta("Error", "Hubo un problema de conexión.");
                     }
@@ -79,7 +75,6 @@ export default function EditarInfoPersonaje({ navigation, route, setUsuarioLogue
 
             if (!result.canceled) {
                 const base64Image = `data:image/jpeg;base64,${result.assets[0].base64}`;
-                setImage(base64Image);
                 setPersonaje({ ...personaje, imagen_url: base64Image });
             }
         } catch (error) {
@@ -101,7 +96,6 @@ export default function EditarInfoPersonaje({ navigation, route, setUsuarioLogue
             console.error(error);
             if (error.message === 'TOKEN_EXPIRADO') {
                 await procesarCierreDeSesion();
-                setUsuarioLogueado(false);
             } else {
                 alerta("Error", "Hubo un problema de conexión.");
             }
@@ -112,20 +106,22 @@ export default function EditarInfoPersonaje({ navigation, route, setUsuarioLogue
     if (!personaje) return <Text style={{ color: 'white' }}>Cargando...</Text>;
 
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-            <View style={styles.subContainer}>
-                <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>
-                    <Image source={{ uri: image }} style={styles.imagen} />
-                </TouchableOpacity>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
+            <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+                <View style={styles.subContainer}>
+                    <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>
+                        <Image source={personaje.imagen_url ? { uri: personaje.imagen_url } : require('../img/addimage.jpg')} style={styles.imagen} />
+                    </TouchableOpacity>
 
-                <TextInput style={styles.input} value={personaje.nombre} placeholder="Nombre" onChangeText={(txt) => setPersonaje({ ...personaje, nombre: txt })} />
-                <TextInput style={styles.inputLargo} multiline numberOfLines={4} value={personaje.descripcion} placeholder="Descripción" onChangeText={(txt) => setPersonaje({ ...personaje, descripcion: txt })} />
+                    <TextInput style={styles.input} value={personaje.nombre} placeholder="Nombre" onChangeText={(txt) => setPersonaje({ ...personaje, nombre: txt })} />
+                    <TextInput style={styles.inputLargo} multiline numberOfLines={4} value={personaje.descripcion} placeholder="Descripción" onChangeText={(txt) => setPersonaje({ ...personaje, descripcion: txt })} />
 
-                <TouchableOpacity style={styles.button} onPress={actualizar}>
-                    <Text style={styles.buttonText}>Hecho</Text>
-                </TouchableOpacity>
-            </View>
-        </ScrollView>
+                    <TouchableOpacity style={styles.button} onPress={actualizar}>
+                        <Text style={styles.buttonText}>Hecho</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
     )
 }
 
@@ -143,6 +139,8 @@ const styles = StyleSheet.create({
     },
     imagenConteiner: {
         margin: 20,
+        height: 300,
+        width: 200,
     },
     button: {
         width: '50%',
@@ -152,8 +150,6 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderRadius: 50,
         marginTop: 30,
-        textAlign: 'center',
-        fontWeight: '500'
     },
     drop: {
         backgroundColor: '#282828',
@@ -188,7 +184,6 @@ const styles = StyleSheet.create({
         width: '100%',
         backgroundColor: '#282828',
         borderRadius: 30,
-        paddingHorizontal: 15,
         marginTop: 25,
         color: 'white',
         ...Platform.select({ web: { outlineStyle: 'none' } }),

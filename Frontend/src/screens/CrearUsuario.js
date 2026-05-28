@@ -3,6 +3,7 @@ import { View, TextInput, TouchableOpacity, Text, Alert, StyleSheet, ScrollView,
 import { registrarUsuario } from '../api/api';
 import Entypo from '@expo/vector-icons/Entypo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 export default function CrearUsuario({ navigation, setUsuarioLogueado }) {
     const [form, setForm] = useState({
@@ -130,7 +131,6 @@ const styles = StyleSheet.create({
         paddingVertical: 40,
         paddingTop: 70,
         paddingHorizontal: 30,
-        minHeight: 340,
         width: 350,
         maxWidth: 450,
         borderRadius: 50,

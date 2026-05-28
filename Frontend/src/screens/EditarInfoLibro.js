@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, ScrollView, Alert, TouchableOpacity, ActivityIndicator, TextInput, Platform } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, ScrollView, Alert, TouchableOpacity, ActivityIndicator, TextInput, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { actualizarLibro, getLibrosById } from '../api/api';
-import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from 'expo-image-picker';
 import DropdownSelect from 'react-native-input-select';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -16,7 +15,6 @@ export default function EditarInfoLibro({ navigation, route, setUsuarioLogueado 
     const [libro, setLibro] = useState({
         titulo: '', autor: '', sinopsis: '', imagen_url: '', calificacion: '', lanzamiento: '', genero: ''
     });
-    const [image, setImage] = useState()
     const [fecha, setFecha] = useState(new Date());
     const [mostrarCalendario, setMostrarCalendario] = useState(false);
 
@@ -42,21 +40,23 @@ export default function EditarInfoLibro({ navigation, route, setUsuarioLogueado 
 
     useEffect(() => {
         if (isFocused) {
+            setMostrarCalendario(false);
             const cargarDatos = async () => {
                 try {
                     const dataLibro = await getLibrosById(libroId);
                     setLibro(dataLibro)
-                    setImage(dataLibro.imagen_url);
 
-                    if (dataLibro.lanzamiento) {
-                        const [year, month, day] = dataLibro.lanzamiento.split('-');
-                        setFecha(new Date(year, month - 1, day));
+                    if (dataLibro.lanzamiento && typeof dataLibro.lanzamiento === 'string') {
+                        const partes = dataLibro.lanzamiento.split('-');
+                        if (partes.length === 3) {
+                            const [year, month, day] = partes;
+                            setFecha(new Date(parseInt(year), parseInt(month) - 1, parseInt(day)));
+                        }
                     }
                 } catch (error) {
                     console.error(error);
                     if (error.message === 'TOKEN_EXPIRADO') {
                         await procesarCierreDeSesion();
-                        setUsuarioLogueado(false);
                     } else {
                         alerta("Error", "Hubo un problema de conexión.");
                     }
@@ -88,7 +88,6 @@ export default function EditarInfoLibro({ navigation, route, setUsuarioLogueado 
 
             if (!result.canceled) {
                 const base64Image = `data:image/jpeg;base64,${result.assets[0].base64}`;
-                setImage(base64Image);
                 setLibro({ ...libro, imagen_url: base64Image });
             }
         } catch (error) {
@@ -99,7 +98,7 @@ export default function EditarInfoLibro({ navigation, route, setUsuarioLogueado 
     const actualizar = async () => {
         try {
             const respuesta = await actualizarLibro(libroId, { ...libro });
-            if (respuesta.ok) {
+            if (respuesta && respuesta.ok) {
                 alerta("¡Éxito!", "Libro actualizado correctamente");
                 navigation.goBack();
             } else {
@@ -140,8 +139,11 @@ export default function EditarInfoLibro({ navigation, route, setUsuarioLogueado 
     const onChangeFechaWeb = (txt) => {
         setLibro({ ...libro, lanzamiento: txt });
         if (txt) {
-            const [year, month, day] = txt.split('-');
-            setFecha(new Date(year, month - 1, day));
+            const partes = txt.split('-');
+            if (partes.length === 3) {
+                const [year, month, day] = partes;
+                setFecha(new Date(parseInt(year), parseInt(month) - 1, parseInt(day)));
+            }
         }
     };
 
@@ -150,97 +152,104 @@ export default function EditarInfoLibro({ navigation, route, setUsuarioLogueado 
 
     return (
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-            <View style={styles.subContainer}>
-                {/*SELECCIONAR IMAGEN*/}
-                <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>
-                    <Image source={image ? { uri: image } : require('../img/addimage.jpg')} style={styles.imagen} />
-                </TouchableOpacity>
+            <TouchableWithoutFeedback onPress={() => {
+                setMostrarCalendario(false);
+                Keyboard.dismiss();
+            }}>
+                <View style={styles.subContainer}>
+                    {/*SELECCIONAR IMAGEN*/}
+                    <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>
+                        <Image source={libro.imagen_url ? { uri: libro.imagen_url } : require('../img/addimage.jpg')} style={styles.imagen} />
+                    </TouchableOpacity>
 
-                {/*INPUT NORMALES*/}
-                <TextInput style={styles.input} value={libro.titulo} placeholder={libro.titulo} onChangeText={(txt) => setLibro({ ...libro, titulo: txt })} />
-                <TextInput style={styles.input} value={libro.autor} placeholder={libro.autor} onChangeText={(txt) => setLibro({ ...libro, autor: txt })} />
-                <TextInput style={styles.inputLargo} multiline numberOfLines={4} value={libro.sinopsis} placeholder={libro.sinopsis} onChangeText={(txt) => setLibro({ ...libro, sinopsis: txt })} />
+                    {/*INPUT NORMALES*/}
+                    <TextInput style={styles.input} value={libro.titulo} placeholder="Titulo..." onChangeText={(txt) => setLibro({ ...libro, titulo: txt })} />
+                    <TextInput style={styles.input} value={libro.autor} placeholder="Autor..." onChangeText={(txt) => setLibro({ ...libro, autor: txt })} />
+                    <TextInput style={styles.inputLargo} multiline numberOfLines={4} value={libro.sinopsis} placeholder="Sinopsis..." onChangeText={(txt) => setLibro({ ...libro, sinopsis: txt })} />
 
-                {/*INPUT FECHA*/}
-                <View style={{ zIndex: 1, width: '100%', marginVertical: 5 }}>
-                    {Platform.OS === 'web' ? (
-                        <View style={styles.inputD}>
-                            <TextInput type="date" value={libro.lanzamiento} placeholder='YYYY-MM-DD' onChange={(e) => onChangeFechaWeb(e.target.value)} max={new Date().toISOString().split('t')[0]} style={styles.inputWeb} />
-                        </View>
-                    ) : (
-                        <View>
-                            <TouchableOpacity style={styles.inputD} onPress={() => setMostrarCalendario(!mostrarCalendario)}>
-                                <Text style={styles.textoFecha}>
-                                    {libro.lanzamiento ? `${libro.lanzamiento}` : "Elegir fecha de lanzmaiento..."}
-                                </Text>
+                    {/*INPUT FECHA*/}
+                    <View style={{ zIndex: 1, width: '100%', marginVertical: 5 }}>
+                        {Platform.OS === 'web' ? (
+                            <View style={styles.inputD}>
+                                <TextInput type="date" value={libro.lanzamiento || ''} placeholder='YYYY-MM-DD' onChange={(e) => onChangeFechaWeb(e.target.value)} max={new Date().toISOString().split('T')[0]} style={styles.inputWeb} />
+                            </View>
+                        ) : (
+                            <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
+                                <View>
+                                    <TouchableOpacity style={styles.inputD} onPress={() => setMostrarCalendario(!mostrarCalendario)}>
+                                        <Text style={styles.textoFecha}>
+                                            {libro.lanzamiento ? `${libro.lanzamiento}` : "Elegir fecha de lanzmaiento..."}
+                                        </Text>
 
-                                {mostrarCalendario && (
-                                    <View style={Platform.OS === 'ios' ? styles.contenedorCalendarioIOS : null}>
-                                        <DateTimePicker
-                                            value={fecha}
-                                            mode="date"
-                                            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                                            onChange={onChangeFecha}
-                                            maximumDate={new Date()}
-                                            locale="es-ES"
-                                        />
+                                        {mostrarCalendario && (
+                                            <View style={Platform.OS === 'ios' ? styles.contenedorCalendarioIOS : null}>
+                                                <DateTimePicker
+                                                    value={fecha}
+                                                    mode="date"
+                                                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                                                    onChange={onChangeFecha}
+                                                    maximumDate={new Date()}
+                                                    locale="es-ES"
+                                                    style={{ height: 180, width: '100%' }}
+                                                />
 
-
-                                        {Platform.OS === 'ios' && (
-                                            <TouchableOpacity style={styles.btnListoIOS} onPress={() => setMostrarCalendario(false)}>
-                                                <Text style={styles.confirmarText}>Confirmar fecha</Text>
-                                            </TouchableOpacity>
+                                                {Platform.OS === 'ios' && (
+                                                    <TouchableOpacity style={styles.btnListoIOS} onPress={() => setMostrarCalendario(false)}>
+                                                        <Text style={styles.confirmarText}>Confirmar fecha</Text>
+                                                    </TouchableOpacity>
+                                                )}
+                                            </View>
                                         )}
-                                    </View>
-                                )}
-                            </TouchableOpacity>
-                        </View>
-                    )}
+                                    </TouchableOpacity>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        )}
+                    </View>
+
+                    {/*INPUT GENERO*/}
+                    <DropdownSelect
+                        style={styles.drop}
+                        label=" "
+                        options={[
+                            {
+                                title: 'Generos...',
+                                data: [
+                                    { label: 'Terror', value: 'Terror' },
+                                    { label: 'Romance', value: 'Romance' },
+                                    { label: 'Misterio', value: 'Misterio' },
+                                    { label: 'Parodia', value: 'Parodia' },
+                                    { label: 'Ficción', value: 'Ficción' },
+                                    { label: 'No Ficción', value: 'No Ficción' },
+                                    { label: 'Contranovela', value: 'Contranovela' },
+                                    { label: 'Aventura', value: 'Aventura' },
+                                    { label: 'Historia', value: 'Historia' },
+                                    { label: 'Policial', value: 'Policial' },
+                                    { label: 'Fantasía', value: 'Fantasía' },
+                                ],
+                            },
+                        ]}
+                        value={libro.genero}
+                        selectedValue={libro.genero}
+                        onValueChange={(value) => setLibro({ ...libro, genero: value })}
+                        isSearchable
+                        primaryColor={'#282828'}
+                        dropdownStyle={{
+                            backgroundColor: '#282828',
+                            borderColor: '#282828',
+                            borderRadius: 50,
+                        }}
+                        dropdownIconStyle={{ color: 'white' }}
+                        dropdownPlaceholderStyle={{ color: 'white', }}
+                        placeholderStyle={{ color: 'white', fontSize: 16 }}
+                        selectedItemStyle={{ color: 'white' }}
+                    />
+
+                    {/*BOTON ACEPTAR*/}
+                    <TouchableOpacity style={styles.button} onPress={actualizar}>
+                        <Text style={styles.buttonText}>Hecho</Text>
+                    </TouchableOpacity>
                 </View>
-
-                {/*INPUT GENERO*/}
-                <DropdownSelect
-                    style={styles.drop}
-                    label=" "
-                    options={[
-                        {
-                            title: 'Generos...',
-                            data: [
-                                { label: 'Terror', value: 'Terror' },
-                                { label: 'Romance', value: 'Romance' },
-                                { label: 'Misterio', value: 'Misterio' },
-                                { label: 'Parodia', value: 'Parodia' },
-                                { label: 'Ficción', value: 'Ficción' },
-                                { label: 'No Ficción', value: 'No Ficción' },
-                                { label: 'Contranovela', value: 'Contranovela' },
-                                { label: 'Aventura', value: 'Aventura' },
-                                { label: 'Historia', value: 'Historia' },
-                                { label: 'Policial', value: 'Policial' },
-                                { label: 'Fantasía', value: 'Fantasía' },
-                            ],
-                        },
-                    ]}
-                    value={libro.genero}
-                    selectedValue={libro.genero}
-                    onValueChange={(value) => setLibro({ ...libro, genero: value })}
-                    isSearchable
-                    primaryColor={'#282828'}
-                    dropdownStyle={{
-                        backgroundColor: '#282828',
-                        borderColor: '#282828',
-                        borderRadius: 50,
-                    }}
-                    dropdownIconStyle={{ color: 'white' }}
-                    dropdownPlaceholderStyle={{ color: 'white', }}
-                    placeholderStyle={{ color: 'white', fontSize: 16 }}
-                    selectedItemStyle={{ color: 'white' }}
-                />
-
-                {/*BOTON ACEPTAR*/}
-                <TouchableOpacity style={styles.button} onPress={actualizar}>
-                    <Text style={styles.buttonText}>Hecho</Text>
-                </TouchableOpacity>
-            </View>
+            </TouchableWithoutFeedback>
         </ScrollView>
     )
 }
@@ -368,13 +377,13 @@ const styles = StyleSheet.create({
         padding: 10,
         marginVertical: 5,
         width: '100%',
-        backgroundColor: '#63504e',
+        backgroundColor: '#555555',
         paddingBottom: 20,
         fontFamily: 'Roboto-Regular'
     },
     btnListoIOS: {
         marginTop: 5,
-        backgroundColor: '#63504e',
+        backgroundColor: '#555555',
         borderRadius: 25,
         fontFamily: 'Roboto-Regular'
     },
@@ -387,11 +396,10 @@ const styles = StyleSheet.create({
     inputWeb: {
         backgroundColor: 'transparent',
         color: 'white',
-        fontSize: '16px',
+        fontSize: 16,
         width: '100%',
         ...Platform.select({
-            web: {outlineStyle: 'none'},
-            default: {borderWidth: 0}
+            web: { outlineStyle: 'none' },
         }),
     },
 });

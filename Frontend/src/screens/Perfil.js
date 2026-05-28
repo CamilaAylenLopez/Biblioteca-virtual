@@ -175,8 +175,8 @@ const styles = StyleSheet.create({
   },
   vacio: {
     color: '#bebebe',
-    textAlign: 'center',
-    marginTop: 50,
+    marginLeft: 15,
+    marginTop: 5,
     fontSize: 16,
     fontFamily: 'Roboto-Regular'
   },
