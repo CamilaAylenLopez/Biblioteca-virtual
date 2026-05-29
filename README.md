@@ -23,6 +23,7 @@ Aplicación móvil desarrollada con React Native y Expo diseñada para la gesti�
 
 ## Estructura del proyecto 
 ### Frontend
+```
 ├── api/
 │   └── api.js                 # Configuración de Axios/Fetch y peticiones HTTP (Login, Registro, Perfil)
 ├── img/                       # Assets visuales estáticos (imágenes locales)
@@ -49,13 +50,16 @@ Aplicación móvil desarrollada con React Native y Expo diseñada para la gesti�
 │   └── DetalleBiblioteca.js   # Vista ampliada y organizada de las colecciones de libros personales del usuario
 ├── App.js                     # Punto de entrada de la aplicación y lógica de sesión global
 └── package.json               # Dependencias y scripts del proyecto
+```
 
 ### Backend
+```
 ├── .env                       # Configuración de la base de datos
 ├── app.js                     # Servidor Express, endpoints de la API, middlewares de seguridad y consultas SQL (Pool)
 ├── config.js                  # Variables de entorno y configuraciones centralizadas (puerto, credenciales de base de datos)
 ├── database.js                # Pool de conexiones a MySQL utilizando promesas
 └── bibliotecadb.sql           # Script de creación de la base de datos relacional, tablas y restricciones
+```
 
 ## Requisitos previos
 Antes de levantar el proyecto, asegúrate de tener instalado:
