@@ -121,9 +121,8 @@ Sigue estos pasos para poner en marcha el proyecto de manera local tanto en el B
 - **Buscador Inteligente:** Filtro en tiempo real para localizar libros y personajes al instante.
 
 ## Algunas capturas de pantallas
-<img src="https://res.cloudinary.com/drigjw61u/image/upload/v1780059232/loginTFG.jpg" width="250" />
-<img src="https://res.cloudinary.com/drigjw61u/image/upload/v1780059398/WhatsApp_Image_2026-05-29_at_2.40.48_PM_1_cy7bqk.jpg" width="250" /> 
-<img src="https://res.cloudinary.com/drigjw61u/image/upload/v1780059397/WhatsApp_Image_2026-05-29_at_2.40.48_PM_2_jtjrji.jpg" width="250" /> 
+| :---: | :---: | :---: |
+| <img src="https://res.cloudinary.com/drigjw61u/image/upload/v1780059232/loginTFG.jpg" width="250" /> | <img src="https://res.cloudinary.com/drigjw61u/image/upload/v1780059398/WhatsApp_Image_2026-05-29_at_2.40.48_PM_1_cy7bqk.jpg" width="250" /> | <img src="https://res.cloudinary.com/drigjw61u/image/upload/v1780059397/WhatsApp_Image_2026-05-29_at_2.40.48_PM_2_jtjrji.jpg" width="250" /> 
 </br>
 <img src="https://res.cloudinary.com/drigjw61u/image/upload/v1780059397/WhatsApp_Image_2026-05-29_at_2.40.48_PM_3_kbdyz2.jpg" width="250" /> 
 <img src="https://res.cloudinary.com/drigjw61u/image/upload/v1780059398/WhatsApp_Image_2026-05-29_at_2.40.48_PM_5_pttspf.jpg" width="250" /> 
