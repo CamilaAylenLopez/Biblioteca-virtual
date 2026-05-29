@@ -2,6 +2,7 @@
 
 ---
 
+## Acerca del proyecto
 Aplicación móvil desarrollada con React Native y Expo diseñada para la gestión de bibliotecas virtuales personales, permitiendo a los usuarios registrar libros y personajes, buscar información, hacer reseñas y guardar libros.
 
 ## Tecnologías utilizadas
@@ -80,6 +81,15 @@ Sigue estos pasos para poner en marcha el proyecto de manera local tanto en el B
    2. Instala todas las dependencias requeridas:
    ```npm install```
    3. Configura las credenciales de tu base de datos y la clave secreta de JWT en el archivo **.env**
+   ```
+   env
+   PORT=3000
+   DB_HOST=localhost
+   DB_USER=tu_usuario_mysql
+   DB_PASS=tu_contraseña_mysql
+   DB_NAME=bibliotecadb
+   JWT_SECRET=tu_clave_secreta_super_segura
+   ```
    4. Inicializa el servidor Express (el backend debería indicar en la consola que está escuchando en el puerto asignado y conectado exitosamente a MySQL):
    ```node app.js```
 
@@ -92,3 +102,34 @@ Sigue estos pasos para poner en marcha el proyecto de manera local tanto en el B
    4. Inicia el servidor de desarrollo de Expo (si es ios agregar **--tunnel** al final para que funcione correctamente):
    ```npx expo start```
    5. Escanea el código QR que aparece en la terminal usando la cámara de tu celular (en iOS) o desde la aplicación Expo Go (en Android) para sincronizar y renderizar la aplicación móvil en tiempo real.
+
+## Endpoints de la API
+### Libros:
+- **GET** '/libros' - Devuleve todos los libros
+- **GET** 'libros/:id' - Devuelve el libro con determinado id
+- **GET** '/libros/genero/:genero' - Devuelve todos los libros de determinado genero
+
+### Autenticación y Usuarios
+- 
+
+
+## Caracteristicas principales
+- **Autenticación Segura:** Registro e inicio de sesión protegidos mediante hashing de contraseñas con `bcrypt` y sesiones manejadas por `JWT`.
+- **Persistencia Local Dual:** Uso de `SecureStore` para datos sensibles (tokens) y `AsyncStorage` para optimizar la carga del perfil del usuario en modo offline.
+- **Seguridad en la API:** Implementación de `rateLimit` para prevenir ataques de fuerza bruta o saturación de peticiones en el servidor.
+- **Carga de Imágenes Optimizada:** Selección, recorte y compresión de portadas y fotos de perfil directamente desde el dispositivo usando `Expo ImagePicker`, almacenadas en formato Base64 (`LONGTEXT`).
+- **Buscador Inteligente:** Filtro en tiempo real para localizar libros y personajes al instante.
+
+## Algunas capturas de pantallas
+<img src="https://res.cloudinary.com/drigjw61u/image/upload/v1780059232/loginTFG.jpg" width="250" />
+<img src="https://res.cloudinary.com/drigjw61u/image/upload/v1780059398/WhatsApp_Image_2026-05-29_at_2.40.48_PM_1_cy7bqk.jpg" width="250" /> 
+<img src="https://res.cloudinary.com/drigjw61u/image/upload/v1780059397/WhatsApp_Image_2026-05-29_at_2.40.48_PM_2_jtjrji.jpg" width="250" /> 
+</br>
+<img src="https://res.cloudinary.com/drigjw61u/image/upload/v1780059397/WhatsApp_Image_2026-05-29_at_2.40.48_PM_3_kbdyz2.jpg" width="250" /> 
+<img src="https://res.cloudinary.com/drigjw61u/image/upload/v1780059398/WhatsApp_Image_2026-05-29_at_2.40.48_PM_5_pttspf.jpg" width="250" /> 
+<img src="https://res.cloudinary.com/drigjw61u/image/upload/v1780059398/WhatsApp_Image_2026-05-29_at_2.40.48_PM_6_vjxzwf.jpg" width="250" /> 
+</br>
+<img src="https://res.cloudinary.com/drigjw61u/image/upload/v1780059397/WhatsApp_Image_2026-05-29_at_2.40.48_PM_4_tl478n.jpg" width="250" /> 
+
+## Autor
+Desarrollado por Camila Lopez - 2026.
