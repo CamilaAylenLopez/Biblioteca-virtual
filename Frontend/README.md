@@ -1,50 +1,65 @@
-# Welcome to your Expo app 👋
+# Biblioteca Virtual
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+---
 
-## Get started
+Aplicación móvil desarrollada con React Native y Expo diseñada para la gestión de bibliotecas virtuales personales, permitiendo a los usuarios registrar libros y personajes, buscar información, hacer reseñas y guardar libros.
 
-1. Install dependencies
+## Tecnologías utilizadas
 
-   ```bash
-   npm install
-   ```
+### Frontend
+- React Native y Expo Framework
+- React Navigation
+- Expo SecureStore
+- AsyncStorage
+- Expo ImagePicker
+- React Native Community DateTimePicker
 
-2. Start the app
+### Backend
+- Node.js con Express
+- JSON Web Token (JWT)
+- MySQL
+- Bcrypt
+- rateLimit
 
-   ```bash
-   npx expo start
-   ```
+## Estructura del proyecto 
+### Frontend
+├── api/
+│   └── api.js                 # Configuración de Axios/Fetch y peticiones HTTP (Login, Registro, Perfil)
+├── img/                       # Assets visuales estáticos (imágenes locales)
+│   └── addimage.jpg
+│   └── addusericon.jpg
+│   └── Imagenotfound.png
+│   └── userIcon.webp
+├── navigation/
+│   └── MainStack.js           # Enrutador principal mediante Stack Navigation
+│   └── TabNavigation.js       # Barra de navegación inferior (Tabs) para acceso rápido a las secciones principales
+├── screens/                   # Pantallas principales del flujo de la aplicación
+│   ├── Login.js               # Pantalla de autenticación con ocultación de contraseña
+│   ├── CrearUsuario.js        # Formulario de registro con validaciones Regex
+│   └── Home.js                # Feed principal con los libros y publicaciones de los usuarios
+│   └── NuevoLibro.js          # Formulario para registrar libros
+│   └── NuevoPersonaje.js      # Formulario para registrar personajes
+│   └── Buscador.js            # Buscador de personajes y libros filtrados
+│   └── Perfil.js              # Vista del perfil del usuario y acceso a sus bibliotecas
+│   └── InfoLibro.js           # Detalles e información del libro, sección para hacer reseñas y guardar el libro en alguna biblioteca
+│   └── InfoPersonaje.js       # Detalles e información del personaje
+│   └── EditarInfoLibro.js     # Formulario de edición para actualizar el libro registrado
+│   └── EditarInfoPersonaje.js # Formulario de edición para actualizar el personaje registrado
+│   └── EditarPerfil.js        # Gestión de perfil, foto en Base64 y selector de fecha
+│   └── DetalleBiblioteca.js   # Vista ampliada y organizada de las colecciones de libros personales del usuario
+├── App.js                     # Punto de entrada de la aplicación y lógica de sesión global
+└── package.json               # Dependencias y scripts del proyecto
 
-In the output, you'll find options to open the app in a
+### Backend
+├── app.js                     # Servidor Express, endpoints de la API, middlewares de seguridad y consultas SQL (Pool)
+├── config.js                  # Variables de entorno y configuraciones centralizadas (puerto, credenciales de base de datos)
+├── database.js                # Conexión con la base de datos
+└── bibliotecadb.sql           # Base de datos relacional
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Requisitos previos
+Antes de levantar el proyecto, asegúrate de tener instalado:
+1. Node.js
+2. Expo CLI (Instalado globalmente o mediante npx)
+3. Expo Go (Aplicación móvil para pruebas en tiempo real)
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Instalación y despliegue
