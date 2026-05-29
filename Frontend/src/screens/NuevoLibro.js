@@ -135,14 +135,14 @@ export default function NuevoLibro({ navigation, setUsuarioLogueado }) {
 
     return (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView tyle={{flexGrow: 1,}} showsVerticalScrollIndicator={false}>
                 <TouchableWithoutFeedback onPress={() => {
                     setMostrarCalendario(false);
                     Keyboard.dismiss();
                 }}>
                     <View style={styles.subContainer}>
                         {/*SELECCIOANR IMAGEN*/}
-                        <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>
+                        <TouchableOpacity style={styles.imagenContainer} onPress={selectImagen}>
                             <Image source={form.imagen_url ? { uri: form.imagen_url } : require('../img/addimage.jpg')} style={styles.imagen} />
                         </TouchableOpacity>
 
@@ -162,6 +162,7 @@ export default function NuevoLibro({ navigation, setUsuarioLogueado }) {
                                     <View>
                                         <TouchableOpacity style={styles.inputD} onPress={() => setMostrarCalendario(!mostrarCalendario)}>
                                             <Text style={styles.textoFecha}> {form.lanzamiento ? `${form.lanzamiento}` : "Elegir fecha de lanzamiento"}</Text>
+                                        </TouchableOpacity>
 
                                             {mostrarCalendario && (
                                                 <View style={Platform.OS === 'ios' ? styles.contenedorCalendarioIOS : null}>
@@ -182,7 +183,6 @@ export default function NuevoLibro({ navigation, setUsuarioLogueado }) {
                                                     )}
                                                 </View>
                                             )}
-                                        </TouchableOpacity>
                                     </View>
                                 </TouchableWithoutFeedback>
                             )}
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    imagenConteiner: {
+    imagenContainer: {
         margin: 20,
         borderRadius: 50,
     },
@@ -324,12 +324,12 @@ const styles = StyleSheet.create({
         padding: 10,
         marginVertical: 5,
         width: '100%',
-        backgroundColor: '#555555',
+        backgroundColor: '#282828',
         paddingBottom: 20,
     },
     btnListoIOS: {
         marginTop: 5,
-        backgroundColor: '#555555',
+        backgroundColor: '#282828',
         borderRadius: 25,
         fontFamily: 'Roboto-Regular'
     },

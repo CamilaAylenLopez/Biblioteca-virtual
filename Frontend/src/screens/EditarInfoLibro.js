@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, ScrollView, Alert, TouchableOpacity, ActivityIndicator, TextInput, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, ScrollView, Alert, TouchableOpacity, ActivityIndicator, TextInput, Platform, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { actualizarLibro, getLibrosById } from '../api/api';
 import * as ImagePicker from 'expo-image-picker';
@@ -159,106 +159,108 @@ export default function EditarInfoLibro({ navigation, route, setUsuarioLogueado 
     if (!libro) return <Text style={{ color: 'white' }}>Cargando...</Text>;
 
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-            <TouchableWithoutFeedback onPress={() => {
-                setMostrarCalendario(false);
-                Keyboard.dismiss();
-            }}>
-                <View style={styles.subContainer}>
-                    {/*SELECCIONAR IMAGEN*/}
-                    <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>
-                        <Image source={libro.imagen_url ? { uri: libro.imagen_url } : require('../img/addimage.jpg')} style={styles.imagen} />
-                    </TouchableOpacity>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
+            <ScrollView style={{flexGrow: 1,}} showsVerticalScrollIndicator={false}>
+                <TouchableWithoutFeedback onPress={() => {
+                    setMostrarCalendario(false);
+                    Keyboard.dismiss();
+                }}>
+                    <View style={styles.subContainer}>
+                        {/*SELECCIONAR IMAGEN*/}
+                        <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>
+                            <Image source={libro.imagen_url ? { uri: libro.imagen_url } : require('../img/addimage.jpg')} style={styles.imagen} />
+                        </TouchableOpacity>
 
-                    {/*INPUT NORMALES*/}
-                    <TextInput style={styles.input} value={libro.titulo} placeholder="Titulo..." onChangeText={(txt) => setLibro({ ...libro, titulo: txt })} />
-                    <TextInput style={styles.input} value={libro.autor} placeholder="Autor..." onChangeText={(txt) => setLibro({ ...libro, autor: txt })} />
-                    <TextInput style={styles.inputLargo} multiline numberOfLines={4} value={libro.sinopsis} placeholder="Sinopsis..." onChangeText={(txt) => setLibro({ ...libro, sinopsis: txt })} />
+                        {/*INPUT NORMALES*/}
+                        <TextInput style={styles.input} value={libro.titulo} placeholder="Titulo..." onChangeText={(txt) => setLibro({ ...libro, titulo: txt })} />
+                        <TextInput style={styles.input} value={libro.autor} placeholder="Autor..." onChangeText={(txt) => setLibro({ ...libro, autor: txt })} />
+                        <TextInput style={styles.inputLargo} multiline numberOfLines={4} value={libro.sinopsis} placeholder="Sinopsis..." onChangeText={(txt) => setLibro({ ...libro, sinopsis: txt })} />
 
-                    {/*INPUT FECHA*/}
-                    <View style={{ zIndex: 1, width: '100%', marginVertical: 5 }}>
-                        {Platform.OS === 'web' ? (
-                            <View style={styles.inputD}>
-                                <TextInput type="date" value={libro.lanzamiento || ''} placeholder='YYYY-MM-DD' onChange={(e) => onChangeFechaWeb(e.target.value)} max={new Date().toISOString().split('T')[0]} style={styles.inputWeb} />
-                            </View>
-                        ) : (
-                            <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
-                                <View>
-                                    <TouchableOpacity style={styles.inputD} onPress={() => setMostrarCalendario(!mostrarCalendario)}>
-                                        <Text style={styles.textoFecha}>
-                                            {libro.lanzamiento ? `${libro.lanzamiento}` : "Elegir fecha de lanzmaiento..."}
-                                        </Text>
-
-                                        {mostrarCalendario && (
-                                            <View style={Platform.OS === 'ios' ? styles.contenedorCalendarioIOS : null}>
-                                                <DateTimePicker
-                                                    value={fecha}
-                                                    mode="date"
-                                                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                                                    onChange={onChangeFecha}
-                                                    maximumDate={new Date()}
-                                                    locale="es-ES"
-                                                    style={{ height: 180, width: '100%' }}
-                                                />
-
-                                                {Platform.OS === 'ios' && (
-                                                    <TouchableOpacity style={styles.btnListoIOS} onPress={() => setMostrarCalendario(false)}>
-                                                        <Text style={styles.confirmarText}>Confirmar fecha</Text>
-                                                    </TouchableOpacity>
-                                                )}
-                                            </View>
-                                        )}
-                                    </TouchableOpacity>
+                        {/*INPUT FECHA*/}
+                        <View style={{ zIndex: 1, width: '100%', marginVertical: 5 }}>
+                            {Platform.OS === 'web' ? (
+                                <View style={styles.inputD}>
+                                    <TextInput type="date" value={libro.lanzamiento || ''} placeholder='YYYY-MM-DD' onChange={(e) => onChangeFechaWeb(e.target.value)} max={new Date().toISOString().split('T')[0]} style={styles.inputWeb} />
                                 </View>
-                            </TouchableWithoutFeedback>
-                        )}
+                            ) : (
+                                <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
+                                    <View>
+                                        <TouchableOpacity style={styles.inputD} onPress={() => setMostrarCalendario(!mostrarCalendario)}>
+                                            <Text style={styles.textoFecha}>
+                                                {libro.lanzamiento ? `${libro.lanzamiento}` : "Elegir fecha de lanzmaiento..."}
+                                            </Text>
+                                        </TouchableOpacity>
+
+                                            {mostrarCalendario && (
+                                                <View style={Platform.OS === 'ios' ? styles.contenedorCalendarioIOS : null}>
+                                                    <DateTimePicker
+                                                        value={fecha}
+                                                        mode="date"
+                                                        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                                                        onChange={onChangeFecha}
+                                                        maximumDate={new Date()}
+                                                        locale="es-ES"
+                                                        style={{ height: 180, width: '100%' }}
+                                                    />
+
+                                                    {Platform.OS === 'ios' && (
+                                                        <TouchableOpacity style={styles.btnListoIOS} onPress={() => setMostrarCalendario(false)}>
+                                                            <Text style={styles.confirmarText}>Confirmar fecha</Text>
+                                                        </TouchableOpacity>
+                                                    )}
+                                                </View>
+                                            )}
+                                    </View>
+                                </TouchableWithoutFeedback>
+                            )}
+                        </View>
+
+                        {/*INPUT GENERO*/}
+                        <DropdownSelect
+                            style={styles.drop}
+                            label=" "
+                            options={[
+                                {
+                                    title: 'Generos...',
+                                    data: [
+                                        { label: 'Terror', value: 'Terror' },
+                                        { label: 'Romance', value: 'Romance' },
+                                        { label: 'Misterio', value: 'Misterio' },
+                                        { label: 'Parodia', value: 'Parodia' },
+                                        { label: 'Ficción', value: 'Ficción' },
+                                        { label: 'No Ficción', value: 'No Ficción' },
+                                        { label: 'Contranovela', value: 'Contranovela' },
+                                        { label: 'Aventura', value: 'Aventura' },
+                                        { label: 'Historia', value: 'Historia' },
+                                        { label: 'Policial', value: 'Policial' },
+                                        { label: 'Fantasía', value: 'Fantasía' },
+                                    ],
+                                },
+                            ]}
+                            value={libro.genero}
+                            selectedValue={libro.genero}
+                            onValueChange={(value) => setLibro({ ...libro, genero: value })}
+                            isSearchable
+                            primaryColor={'#282828'}
+                            dropdownStyle={{
+                                backgroundColor: '#282828',
+                                borderColor: '#282828',
+                                borderRadius: 50,
+                            }}
+                            dropdownIconStyle={{ color: 'white' }}
+                            dropdownPlaceholderStyle={{ color: 'white', }}
+                            placeholderStyle={{ color: 'white', fontSize: 16 }}
+                            selectedItemStyle={{ color: 'white' }}
+                        />
+
+                        {/*BOTON ACEPTAR*/}
+                        <TouchableOpacity style={styles.button} onPress={actualizar}>
+                            <Text style={styles.buttonText}>Hecho</Text>
+                        </TouchableOpacity>
                     </View>
-
-                    {/*INPUT GENERO*/}
-                    <DropdownSelect
-                        style={styles.drop}
-                        label=" "
-                        options={[
-                            {
-                                title: 'Generos...',
-                                data: [
-                                    { label: 'Terror', value: 'Terror' },
-                                    { label: 'Romance', value: 'Romance' },
-                                    { label: 'Misterio', value: 'Misterio' },
-                                    { label: 'Parodia', value: 'Parodia' },
-                                    { label: 'Ficción', value: 'Ficción' },
-                                    { label: 'No Ficción', value: 'No Ficción' },
-                                    { label: 'Contranovela', value: 'Contranovela' },
-                                    { label: 'Aventura', value: 'Aventura' },
-                                    { label: 'Historia', value: 'Historia' },
-                                    { label: 'Policial', value: 'Policial' },
-                                    { label: 'Fantasía', value: 'Fantasía' },
-                                ],
-                            },
-                        ]}
-                        value={libro.genero}
-                        selectedValue={libro.genero}
-                        onValueChange={(value) => setLibro({ ...libro, genero: value })}
-                        isSearchable
-                        primaryColor={'#282828'}
-                        dropdownStyle={{
-                            backgroundColor: '#282828',
-                            borderColor: '#282828',
-                            borderRadius: 50,
-                        }}
-                        dropdownIconStyle={{ color: 'white' }}
-                        dropdownPlaceholderStyle={{ color: 'white', }}
-                        placeholderStyle={{ color: 'white', fontSize: 16 }}
-                        selectedItemStyle={{ color: 'white' }}
-                    />
-
-                    {/*BOTON ACEPTAR*/}
-                    <TouchableOpacity style={styles.button} onPress={actualizar}>
-                        <Text style={styles.buttonText}>Hecho</Text>
-                    </TouchableOpacity>
-                </View>
-            </TouchableWithoutFeedback>
-        </ScrollView>
+                </TouchableWithoutFeedback>
+            </ScrollView>
+        </KeyboardAvoidingView>
     )
 }
 

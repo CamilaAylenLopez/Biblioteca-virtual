@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, ActivityIndicator, Alert, TouchableOpacity, TextInput, Platform, TouchableWithoutFeedback, KeyboardAvoidingView } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, ActivityIndicator, Alert, TouchableOpacity, TextInput, Platform, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView } from 'react-native';
 import { actualizarPerfil, getUsuarioById } from '../api/api';
 import { useIsFocused } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -117,7 +117,7 @@ export default function EditarPerfil({ navigation, route, setUsuarioLogueado }) 
                     email: nuevosDatos.email,
                     fecha_nacimiento: nuevosDatos.fecha_nacimiento,
                     descripcion: nuevosDatos.descripcion,
-                    foto_perfil: nuevosDatos.foto_perfil
+                    foto_perfil: nuevosDatos.foto_perfil ? nuevosDatos.foto_perfil : ""
                 };
 
                 await AsyncStorage.setItem('@usuario_sesion', JSON.stringify(usuarioActualizado));
@@ -175,23 +175,23 @@ export default function EditarPerfil({ navigation, route, setUsuarioLogueado }) 
 
     return (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
-            <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-                <TouchableWithoutFeedback onPress={() => {
-                    setMostrarCalendario(false);
-                    Keyboard.dismiss();
-                }}>
+            <TouchableWithoutFeedback onPress={() => {
+                setMostrarCalendario(false);
+                Keyboard.dismiss();
+            }}>
+                <ScrollView showsVerticalScrollIndicator={false}>
                     <View style={styles.subContainer}>
                         {/*SELECCIONAR IMAGEN*/}
-                        <TouchableOpacity style={styles.imagenConteiner} onPress={selectImagen}>
+                        <TouchableOpacity style={styles.imagenContainer} onPress={selectImagen}>
                             <Image source={nuevosDatos.foto_perfil ? { uri: nuevosDatos.foto_perfil } : require('../img/addimage.jpg')} style={styles.imagen} />
                         </TouchableOpacity>
 
                         {/*INPUT NORMALES*/}
-                        <TextInput style={styles.input} value={nuevosDatos.nombre} placeholder="Agregar nombre" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, nombre: txt })} />
-                        <TextInput style={styles.input} value={nuevosDatos.apellido} placeholder="Agregar apellido" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, apellido: txt })} />
-                        <TextInput style={styles.input} value={nuevosDatos.nombreUsuario} placeholder="Agregar nombre de usuario" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, nombreUsuario: txt })} />
-                        <TextInput style={styles.input} value={nuevosDatos.email} placeholder="Agregar email" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, email: txt })} />
-                        <TextInput style={styles.inputLargo} multiline numberOfLines={4} value={nuevosDatos.descripcion} placeholder="Agregar descripcion" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, descripcion: txt })} />
+                        <TextInput autoCorrect={false} style={styles.input} value={nuevosDatos.nombre} placeholder="Agregar nombre" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, nombre: txt })} />
+                        <TextInput autoCorrect={false} style={styles.input} value={nuevosDatos.apellido} placeholder="Agregar apellido" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, apellido: txt })} />
+                        <TextInput autoCapitalize="none" autoCorrect={false} style={styles.input} value={nuevosDatos.nombreUsuario} placeholder="Agregar nombre de usuario" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, nombreUsuario: txt })} />
+                        <TextInput autoCapitalize="none" autoCorrect={false} style={styles.input} value={nuevosDatos.email} placeholder="Agregar email" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, email: txt })} />
+                        <TextInput autoCorrect={false} style={styles.inputLargo} multiline numberOfLines={4} value={nuevosDatos.descripcion} placeholder="Agregar descripcion" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, descripcion: txt })} />
 
                         {/*INPUT FECHA*/}
                         <View style={{ zIndex: 1, width: '100%', marginVertical: 5 }}>
@@ -204,6 +204,7 @@ export default function EditarPerfil({ navigation, route, setUsuarioLogueado }) 
                                     <View>
                                         <TouchableOpacity style={styles.inputD} onPress={() => setMostrarCalendario(!mostrarCalendario)}>
                                             <Text style={styles.textoFecha}>{nuevosDatos.fecha_nacimiento ? `${nuevosDatos.fecha_nacimiento}` : "Elegir fecha de nacimiento..."}</Text>
+                                        </TouchableOpacity>
 
                                             {mostrarCalendario && (
                                                 <View style={Platform.OS === 'ios' ? styles.contenedorCalendarioIOS : null}>
@@ -224,7 +225,6 @@ export default function EditarPerfil({ navigation, route, setUsuarioLogueado }) 
                                                     )}
                                                 </View>
                                             )}
-                                        </TouchableOpacity>
                                     </View>
                                 </TouchableWithoutFeedback>
                             )}
@@ -235,8 +235,8 @@ export default function EditarPerfil({ navigation, route, setUsuarioLogueado }) 
                             <Text style={styles.buttonText}>Hecho</Text>
                         </TouchableOpacity>
                     </View>
-                </TouchableWithoutFeedback>
-            </ScrollView>
+                </ScrollView>
+            </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
     )
 }
@@ -244,15 +244,22 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        marginTop: 50,
+        marginTop: 100,
         backgroundColor: '#121212',
     },
     subContainer: {
         justifyContent: 'center',
         alignItems: 'center',
     },
-    imagenConteiner: {
+    imagenContainer: {
         margin: 10,
+        width: 200,
+        height: 200,
+        borderRadius: 100,
+        overflow: 'hidden',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#282828',
     },
     button: {
         width: '50%',
@@ -330,6 +337,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingHorizontal: 15,
         marginTop: 25,
+        fontFamily: 'Roboto-Regular'
     },
     textoFecha: {
         color: 'white',
@@ -348,9 +356,9 @@ const styles = StyleSheet.create({
         paddingTop: 12,
     },
     imagen: {
-        alignSelf: 'center',
-        width: 200,
-        height: 200,
+        width: '100%',
+        height: '100%',
+        resizeMode: 'cover',
         borderRadius: 100,
     },
     contenedorCalendarioIOS: {
@@ -358,12 +366,12 @@ const styles = StyleSheet.create({
         padding: 10,
         marginVertical: 5,
         width: '100%',
-        backgroundColor: '#555555',
+        backgroundColor: '#282828',
         paddingBottom: 20,
     },
     btnListoIOS: {
         marginTop: 5,
-        backgroundColor: '#555555',
+        backgroundColor: '#282828',
         borderRadius: 25,
         fontFamily: 'Roboto-Regular'
     },
@@ -377,12 +385,11 @@ const styles = StyleSheet.create({
     inputWeb: {
         backgroundColor: 'transparent',
         color: 'white',
+        border: 'none',
         fontSize: '16px',
         width: '100%',
-        ...Platform.select({
-            web: { outlineStyle: 'none' },
-            default: { borderWidth: 0 }
-        }),
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
+        cursor: 'pointer',
         fontFamily: 'Roboto-Regular'
     },
 });

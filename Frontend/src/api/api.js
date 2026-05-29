@@ -2,13 +2,17 @@ import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const API_URL = 'http://192.168.0.233:3000';
 import { Platform, Alert } from 'react-native';
+
 const alertaGlobal = (titulo, mensaje) => {
-    if (Platform.OS === 'web') alert(mensaje);
-    else Alert.alert(titulo, mensaje);
+    if (Platform.OS === 'web') {
+        alert(mensaje)
+    } else {
+        Alert.alert(titulo, mensaje)
+    }
 };
 
 const verificarStatusToken = async (res) => {
-        console.log("STATUS HTTP RECIBIDO EN API.JS:", res.status);
+    console.log("STATUS HTTP RECIBIDO EN API.JS:", res.status);
 
     if (res.status === 429) {
         alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
@@ -43,10 +47,10 @@ export const getLibros = async () => {
 
         console.error("Error al obtener libros: ", error);
 
-        
+
         if (error.message?.includes("Network request failed")) {
             alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
-            throw new Error("RATE_LIMIT_BLOQUEO"); 
+            throw new Error("RATE_LIMIT_BLOQUEO");
         }
         throw error;
     }
@@ -73,10 +77,10 @@ export const getLibrosByGenero = async (genero) => {
 
         console.error("Error al obtener libros: ", error);
 
-        
+
         if (error.message?.includes("Network request failed")) {
             alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
-            throw new Error("RATE_LIMIT_BLOQUEO"); 
+            throw new Error("RATE_LIMIT_BLOQUEO");
         }
         throw error;
     }
@@ -103,10 +107,10 @@ export const getComentariosByIdLibro = async (idLibro) => {
 
         console.error("Error al obtener libros: ", error);
 
-        
+
         if (error.message?.includes("Network request failed")) {
             alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
-            throw new Error("RATE_LIMIT_BLOQUEO"); 
+            throw new Error("RATE_LIMIT_BLOQUEO");
         }
         throw error;
     }
@@ -133,10 +137,10 @@ export const getPersonajeById = async (idPersonaje) => {
 
         console.error("Error al obtener libros: ", error);
 
-        
+
         if (error.message?.includes("Network request failed")) {
             alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
-            throw new Error("RATE_LIMIT_BLOQUEO"); 
+            throw new Error("RATE_LIMIT_BLOQUEO");
         }
         throw error;
     }
@@ -163,10 +167,10 @@ export const getLibrosById = async (id) => {
 
         console.error("Error al obtener libros: ", error);
 
-        
+
         if (error.message?.includes("Network request failed")) {
             alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
-            throw new Error("RATE_LIMIT_BLOQUEO"); 
+            throw new Error("RATE_LIMIT_BLOQUEO");
         }
         throw error;
     }
@@ -193,10 +197,10 @@ export const getPersonajesByIdLibro = async (id) => {
 
         console.error("Error al obtener libros: ", error);
 
-        
+
         if (error.message?.includes("Network request failed")) {
             alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
-            throw new Error("RATE_LIMIT_BLOQUEO"); 
+            throw new Error("RATE_LIMIT_BLOQUEO");
         }
         throw error;
     }
@@ -223,10 +227,10 @@ export const getUsuarioById = async (id) => {
 
         console.error("Error al obtener libros: ", error);
 
-        
+
         if (error.message?.includes("Network request failed")) {
             alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
-            throw new Error("RATE_LIMIT_BLOQUEO"); 
+            throw new Error("RATE_LIMIT_BLOQUEO");
         }
         throw error;
     }
@@ -253,10 +257,10 @@ export const getBiblioteca = async (id) => {
 
         console.error("Error al obtener libros: ", error);
 
-        
+
         if (error.message?.includes("Network request failed")) {
             alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
-            throw new Error("RATE_LIMIT_BLOQUEO"); 
+            throw new Error("RATE_LIMIT_BLOQUEO");
         }
         throw error;
     }
@@ -283,10 +287,10 @@ export const getBibliotecaById = async (id) => {
 
         console.error("Error al obtener libros: ", error);
 
-        
+
         if (error.message?.includes("Network request failed")) {
             alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
-            throw new Error("RATE_LIMIT_BLOQUEO"); 
+            throw new Error("RATE_LIMIT_BLOQUEO");
         }
         throw error;
     }
@@ -313,10 +317,10 @@ export const getBibliotecas = async (id) => {
 
         console.error("Error al obtener libros: ", error);
 
-        
+
         if (error.message?.includes("Network request failed")) {
             alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
-            throw new Error("RATE_LIMIT_BLOQUEO"); 
+            throw new Error("RATE_LIMIT_BLOQUEO");
         }
         throw error;
     }
@@ -344,10 +348,10 @@ export const crearBiblioteca = async (datos) => {
 
         console.error("Error al obtener libros: ", error);
 
-        
+
         if (error.message?.includes("Network request failed")) {
             alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
-            throw new Error("RATE_LIMIT_BLOQUEO"); 
+            throw new Error("RATE_LIMIT_BLOQUEO");
         }
         throw error;
     }
@@ -375,10 +379,10 @@ export const guardarLibroEnBiblioteca = async (datos) => {
 
         console.error("Error al obtener libros: ", error);
 
-        
+
         if (error.message?.includes("Network request failed")) {
             alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
-            throw new Error("RATE_LIMIT_BLOQUEO"); 
+            throw new Error("RATE_LIMIT_BLOQUEO");
         }
         throw error;
     }
@@ -405,10 +409,10 @@ export const resultadoBusqueda = async (texto) => {
 
         console.error("Error al obtener libros: ", error);
 
-        
+
         if (error.message?.includes("Network request failed")) {
             alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
-            throw new Error("RATE_LIMIT_BLOQUEO"); 
+            throw new Error("RATE_LIMIT_BLOQUEO");
         }
         throw error;
     }
@@ -436,10 +440,10 @@ export const actualizarLibro = async (id, datos) => {
 
         console.error("Error al obtener libros: ", error);
 
-        
+
         if (error.message?.includes("Network request failed")) {
             alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
-            throw new Error("RATE_LIMIT_BLOQUEO"); 
+            throw new Error("RATE_LIMIT_BLOQUEO");
         }
         throw error;
     }
@@ -467,10 +471,10 @@ export const actualizarPersonaje = async (id, datos) => {
 
         console.error("Error al obtener libros: ", error);
 
-        
+
         if (error.message?.includes("Network request failed")) {
             alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
-            throw new Error("RATE_LIMIT_BLOQUEO"); 
+            throw new Error("RATE_LIMIT_BLOQUEO");
         }
         throw error;
     }
@@ -498,10 +502,10 @@ export const actualizarPerfil = async (id, datos) => {
 
         console.error("Error al obtener libros: ", error);
 
-        
+
         if (error.message?.includes("Network request failed")) {
             alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
-            throw new Error("RATE_LIMIT_BLOQUEO"); 
+            throw new Error("RATE_LIMIT_BLOQUEO");
         }
         throw error;
     }
@@ -524,10 +528,10 @@ export const loginUsuario = async (nombreUsuario, password) => {
 
         console.error("Error al obtener libros: ", error);
 
-        
+
         if (error.message?.includes("Network request failed")) {
             alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
-            throw new Error("RATE_LIMIT_BLOQUEO"); 
+            throw new Error("RATE_LIMIT_BLOQUEO");
         }
         throw error;
     }
@@ -551,10 +555,10 @@ export const registrarUsuario = async (datos) => {
 
         console.error("Error al obtener libros: ", error);
 
-        
+
         if (error.message?.includes("Network request failed")) {
             alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
-            throw new Error("RATE_LIMIT_BLOQUEO"); 
+            throw new Error("RATE_LIMIT_BLOQUEO");
         }
         throw error;
     }
@@ -582,10 +586,10 @@ export const nuevoLibro = async (datos) => {
 
         console.error("Error al obtener libros: ", error);
 
-        
+
         if (error.message?.includes("Network request failed")) {
             alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
-            throw new Error("RATE_LIMIT_BLOQUEO"); 
+            throw new Error("RATE_LIMIT_BLOQUEO");
         }
         throw error;
     }
@@ -613,10 +617,10 @@ export const nuevoPersonaje = async (datos) => {
 
         console.error("Error al obtener libros: ", error);
 
-        
+
         if (error.message?.includes("Network request failed")) {
             alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
-            throw new Error("RATE_LIMIT_BLOQUEO"); 
+            throw new Error("RATE_LIMIT_BLOQUEO");
         }
         throw error;
     }
@@ -643,10 +647,10 @@ export const nuevoComentario = async (datos) => {
         }
 
         console.error("Error al obtener libros: ", error);
-        
+
         if (error.message?.includes("Network request failed")) {
             alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
-            throw new Error("RATE_LIMIT_BLOQUEO"); 
+            throw new Error("RATE_LIMIT_BLOQUEO");
         }
         throw error;
     }
@@ -674,7 +678,7 @@ export const eliminarPersonaje = async (id) => {
         console.error("Error al obtener libros: ", error);
         if (error.message?.includes("Network request failed")) {
             alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
-            throw new Error("RATE_LIMIT_BLOQUEO"); 
+            throw new Error("RATE_LIMIT_BLOQUEO");
         }
         throw error;
     }
@@ -702,7 +706,7 @@ export const eliminarLibro = async (id) => {
         console.error("Error al obtener libros: ", error);
         if (error.message?.includes("Network request failed")) {
             alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
-            throw new Error("RATE_LIMIT_BLOQUEO"); 
+            throw new Error("RATE_LIMIT_BLOQUEO");
         }
         throw error;
     }
@@ -720,7 +724,7 @@ export const eliminarBiblioteca = async (id) => {
         });
         await verificarStatusToken(res);
         const data = res.ok ? await res.json() : null;
-        
+
         return { ok: res.ok, data };
     } catch (error) {
         console.error("Error:", error);
@@ -730,7 +734,7 @@ export const eliminarBiblioteca = async (id) => {
         console.error("Error al obtener libros: ", error);
         if (error.message?.includes("Network request failed")) {
             alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
-            throw new Error("RATE_LIMIT_BLOQUEO"); 
+            throw new Error("RATE_LIMIT_BLOQUEO");
         }
         throw error;
     }
@@ -757,7 +761,7 @@ export const eliminarLibroBiblioteca = async (idBiblioteca, idLibro) => {
         console.error("Error al obtener libros: ", error);
         if (error.message?.includes("Network request failed")) {
             alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
-            throw new Error("RATE_LIMIT_BLOQUEO"); 
+            throw new Error("RATE_LIMIT_BLOQUEO");
         }
         throw error;
     }

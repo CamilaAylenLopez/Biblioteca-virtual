@@ -20,7 +20,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 const limitadorGeneral = rateLimit({
     //hasta 100 peticiones en 15 minutos
     windowMs: 15 * 60 * 1000,
-    max: 100,
+    max: 500,
     handler: (req, res) => {
         console.log(`IP BLOQUEADA (General): ${req.ip}`);
         
