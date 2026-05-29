@@ -55,6 +55,10 @@ export default function EditarInfoLibro({ navigation, route, setUsuarioLogueado 
                     }
                 } catch (error) {
                     console.error(error);
+                    if (error.message === "RATE_LIMIT_BLOQUEO") {
+                        alerta("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+                        return;
+                    }
                     if (error.message === 'TOKEN_EXPIRADO') {
                         await procesarCierreDeSesion();
                     } else {
@@ -81,7 +85,7 @@ export default function EditarInfoLibro({ navigation, route, setUsuarioLogueado 
             let result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
-                aspect: [2, 3],
+                aspect: [1, 3],
                 quality: 0.2,
                 base64: true,
             });
@@ -106,6 +110,10 @@ export default function EditarInfoLibro({ navigation, route, setUsuarioLogueado 
             }
         } catch (error) {
             console.error(error);
+            if (error.message === "RATE_LIMIT_BLOQUEO") {
+                alerta("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+                return;
+            }
             if (error.message === 'TOKEN_EXPIRADO') {
                 await procesarCierreDeSesion();
             } else {
@@ -267,10 +275,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     imagenConteiner: {
-        margin: 20,
-        marginBottom: 5,
+        marginTop: 20,
         height: 300,
-        width: 200,
+        width: 460,
     },
     button: {
         width: '50%',
@@ -369,8 +376,8 @@ const styles = StyleSheet.create({
     imagen: {
         alignSelf: 'center',
         resizeMode: 'cover',
-        width: '100%',
-        height: '100%',
+        width: '60%',
+        height: 300,
     },
     contenedorCalendarioIOS: {
         borderRadius: 25,

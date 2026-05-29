@@ -77,6 +77,10 @@ export default function CrearUsuario({ navigation, setUsuarioLogueado }) {
             }
         } catch (error) {
             console.error(error);
+            if (error.message === "RATE_LIMIT_BLOQUEO") {
+                alerta("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+                return;
+            }
             alerta("¡Error!", "Hubo un problema de conexión con el servidor.");
         }
     };

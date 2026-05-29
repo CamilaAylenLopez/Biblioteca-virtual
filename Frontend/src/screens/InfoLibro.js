@@ -71,9 +71,12 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
 
                 } catch (error) {
                     console.error(error);
+                    if (error.message === "RATE_LIMIT_BLOQUEO") {
+                        alerta("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+                        return;
+                    }
                     if (error.message === 'TOKEN_EXPIRADO') {
                         await procesarCierreDeSesion();
-                        setUsuarioLogueado(false);
                     } else {
                         alerta("Error", "Hubo un problema de conexión.");
                     }
@@ -86,21 +89,35 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
     }, [libroId, isFocused]);
 
     const deleteLibro = async () => {
-        try {
-            const respuesta = await eliminarLibro(libroId);
-            if (respuesta.ok) {
-                alerta("Exito", "Libro eliminado con exito");
-                navigation.goBack();
-            } else {
-                alerta("Error", "No se ha podido eliminar el Libro");
+        const ejecutarBaja = async () => {
+            try {
+                const respuesta = await eliminarLibro(libroId);
+                if (respuesta.ok) {
+                    alerta("Exito", "Libro eliminado con exito");
+                    navigation.goBack();
+                } else {
+                    alerta("Error", "No se ha podido eliminar el Libro");
+                }
+            } catch (error) {
+                console.error(error);
+                if (error.message === "RATE_LIMIT_BLOQUEO") {
+                    alerta("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+                    return;
+                }
+                if (error.message === 'TOKEN_EXPIRADO') {
+                    await procesarCierreDeSesion();
+                } else {
+                    alerta("Error", "Hubo un problema de conexión.");
+                }
             }
-        } catch (error) {
-            console.error(error);
-            if (error.message === 'TOKEN_EXPIRADO') {
-                await procesarCierreDeSesion();
-            } else {
-                alerta("Error", "Hubo un problema de conexión.");
-            }
+        }
+        if (Platform.OS === 'web') {
+            if (confirm("¿Estas seguro de borrar este libro?")) ejecutarBaja();
+        } else {
+            Alert.alert("Eliminar", "¿Seguro que quieres borrar este libro?", [
+                { text: "Cancelar", style: "cancel" },
+                { text: "Eliminar", style: "destructive", onPress: ejecutarBaja }
+            ]);
         }
     };
 
@@ -157,9 +174,12 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
             }
         } catch (error) {
             console.error(error);
+            if (error.message === "RATE_LIMIT_BLOQUEO") {
+                alerta("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+                return;
+            }
             if (error.message === 'TOKEN_EXPIRADO') {
                 await procesarCierreDeSesion();
-                setUsuarioLogueado(false);
             } else {
                 alerta("Error", "Hubo un problema de conexión.");
             }
@@ -179,6 +199,10 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
             }
         } catch (error) {
             console.error(error);
+            if (error.message === "RATE_LIMIT_BLOQUEO") {
+                alerta("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+                return;
+            }
             if (error.message === 'TOKEN_EXPIRADO') {
                 await procesarCierreDeSesion();
             } else {
@@ -216,9 +240,12 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
             }
         } catch (error) {
             console.error(error);
+            if (error.message === "RATE_LIMIT_BLOQUEO") {
+                alerta("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+                return;
+            }
             if (error.message === 'TOKEN_EXPIRADO') {
                 await procesarCierreDeSesion();
-                setUsuarioLogueado(false);
             } else {
                 alerta("Error", "Hubo un problema de conexión.");
             }
@@ -229,7 +256,7 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
     if (!libro) return <Text style={{ color: 'white' }}>Cargando...</Text>;
 
     return (
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}  style={styles.container}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
                 <TouchableOpacity style={styles.icon} onPress={deleteLibro}>
                     <FontAwesome name="trash" size={35} color="#bebebe" />

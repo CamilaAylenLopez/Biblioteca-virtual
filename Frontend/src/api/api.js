@@ -1,8 +1,20 @@
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const API_URL = 'http://192.168.0.233:3000';
+import { Platform, Alert } from 'react-native';
+const alertaGlobal = (titulo, mensaje) => {
+    if (Platform.OS === 'web') alert(mensaje);
+    else Alert.alert(titulo, mensaje);
+};
 
 const verificarStatusToken = async (res) => {
+        console.log("STATUS HTTP RECIBIDO EN API.JS:", res.status);
+
+    if (res.status === 429) {
+        alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+        throw new Error("RATE_LIMIT_BLOQUEO");
+    }
+
     if (res.status === 401 || res.status === 403) {
         await AsyncStorage.removeItem('@usuario_sesion');
         await SecureStore.deleteItemAsync('token_sesion');
@@ -25,6 +37,17 @@ export const getLibros = async () => {
         return await res.json();
     } catch (error) {
         console.error("Error al obtener libros: ", error);
+        if (error.message === "RATE_LIMIT_BLOQUEO") {
+            throw error;
+        }
+
+        console.error("Error al obtener libros: ", error);
+
+        
+        if (error.message?.includes("Network request failed")) {
+            alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            throw new Error("RATE_LIMIT_BLOQUEO"); 
+        }
         throw error;
     }
 };
@@ -44,6 +67,17 @@ export const getLibrosByGenero = async (genero) => {
         return await res.json();
     } catch (error) {
         console.error("Error al filtrar por género: ", error);
+        if (error.message === "RATE_LIMIT_BLOQUEO") {
+            throw error;
+        }
+
+        console.error("Error al obtener libros: ", error);
+
+        
+        if (error.message?.includes("Network request failed")) {
+            alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            throw new Error("RATE_LIMIT_BLOQUEO"); 
+        }
         throw error;
     }
 };
@@ -63,6 +97,17 @@ export const getComentariosByIdLibro = async (idLibro) => {
         return await res.json();
     } catch (error) {
         console.error("Error al encontrar comentarios: ", error);
+        if (error.message === "RATE_LIMIT_BLOQUEO") {
+            throw error;
+        }
+
+        console.error("Error al obtener libros: ", error);
+
+        
+        if (error.message?.includes("Network request failed")) {
+            alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            throw new Error("RATE_LIMIT_BLOQUEO"); 
+        }
         throw error;
     }
 };
@@ -82,6 +127,17 @@ export const getPersonajeById = async (idPersonaje) => {
         return await res.json();
     } catch (error) {
         console.error("Error al encontrar personaje: ", error);
+        if (error.message === "RATE_LIMIT_BLOQUEO") {
+            throw error;
+        }
+
+        console.error("Error al obtener libros: ", error);
+
+        
+        if (error.message?.includes("Network request failed")) {
+            alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            throw new Error("RATE_LIMIT_BLOQUEO"); 
+        }
         throw error;
     }
 };
@@ -101,6 +157,17 @@ export const getLibrosById = async (id) => {
         return await res.json();
     } catch (error) {
         console.error("Error al obtener libro por id: ", error);
+        if (error.message === "RATE_LIMIT_BLOQUEO") {
+            throw error;
+        }
+
+        console.error("Error al obtener libros: ", error);
+
+        
+        if (error.message?.includes("Network request failed")) {
+            alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            throw new Error("RATE_LIMIT_BLOQUEO"); 
+        }
         throw error;
     }
 };
@@ -120,6 +187,17 @@ export const getPersonajesByIdLibro = async (id) => {
         return await res.json();
     } catch (error) {
         console.error("Error al obtener ids de los personajes asociados a determinado libro");
+        if (error.message === "RATE_LIMIT_BLOQUEO") {
+            throw error;
+        }
+
+        console.error("Error al obtener libros: ", error);
+
+        
+        if (error.message?.includes("Network request failed")) {
+            alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            throw new Error("RATE_LIMIT_BLOQUEO"); 
+        }
         throw error;
     }
 };
@@ -139,6 +217,17 @@ export const getUsuarioById = async (id) => {
         return await res.json();
     } catch (error) {
         console.error("Error en encontra el usuario");
+        if (error.message === "RATE_LIMIT_BLOQUEO") {
+            throw error;
+        }
+
+        console.error("Error al obtener libros: ", error);
+
+        
+        if (error.message?.includes("Network request failed")) {
+            alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            throw new Error("RATE_LIMIT_BLOQUEO"); 
+        }
         throw error;
     }
 };
@@ -158,6 +247,17 @@ export const getBiblioteca = async (id) => {
         return await res.json();
     } catch (error) {
         console.error("Error en encontrar las bibliotecas");
+        if (error.message === "RATE_LIMIT_BLOQUEO") {
+            throw error;
+        }
+
+        console.error("Error al obtener libros: ", error);
+
+        
+        if (error.message?.includes("Network request failed")) {
+            alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            throw new Error("RATE_LIMIT_BLOQUEO"); 
+        }
         throw error;
     }
 };
@@ -177,6 +277,17 @@ export const getBibliotecaById = async (id) => {
         return await res.json();
     } catch (error) {
         console.error("Error en encontrar la biblioteca");
+        if (error.message === "RATE_LIMIT_BLOQUEO") {
+            throw error;
+        }
+
+        console.error("Error al obtener libros: ", error);
+
+        
+        if (error.message?.includes("Network request failed")) {
+            alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            throw new Error("RATE_LIMIT_BLOQUEO"); 
+        }
         throw error;
     }
 };
@@ -196,6 +307,17 @@ export const getBibliotecas = async (id) => {
         return await res.json();
     } catch (error) {
         console.error("Error en encontrar las bibliotecas");
+        if (error.message === "RATE_LIMIT_BLOQUEO") {
+            throw error;
+        }
+
+        console.error("Error al obtener libros: ", error);
+
+        
+        if (error.message?.includes("Network request failed")) {
+            alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            throw new Error("RATE_LIMIT_BLOQUEO"); 
+        }
         throw error;
     }
 };
@@ -216,6 +338,17 @@ export const crearBiblioteca = async (datos) => {
         return { ok: res.ok, data };
     } catch (error) {
         console.error("Error en registro:", error);
+        if (error.message === "RATE_LIMIT_BLOQUEO") {
+            throw error;
+        }
+
+        console.error("Error al obtener libros: ", error);
+
+        
+        if (error.message?.includes("Network request failed")) {
+            alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            throw new Error("RATE_LIMIT_BLOQUEO"); 
+        }
         throw error;
     }
 };
@@ -236,6 +369,17 @@ export const guardarLibroEnBiblioteca = async (datos) => {
         return { ok: res.ok, data };
     } catch (error) {
         console.error("Error en registro:", error);
+        if (error.message === "RATE_LIMIT_BLOQUEO") {
+            throw error;
+        }
+
+        console.error("Error al obtener libros: ", error);
+
+        
+        if (error.message?.includes("Network request failed")) {
+            alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            throw new Error("RATE_LIMIT_BLOQUEO"); 
+        }
         throw error;
     }
 };
@@ -255,11 +399,23 @@ export const resultadoBusqueda = async (texto) => {
         return await res.json();
     } catch (error) {
         console.error("Error al obtener resultado: ", error);
+        if (error.message === "RATE_LIMIT_BLOQUEO") {
+            throw error;
+        }
+
+        console.error("Error al obtener libros: ", error);
+
+        
+        if (error.message?.includes("Network request failed")) {
+            alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            throw new Error("RATE_LIMIT_BLOQUEO"); 
+        }
         throw error;
     }
 };
 
 export const actualizarLibro = async (id, datos) => {
+    const token = await SecureStore.getItemAsync('token_sesion');
     try {
         const res = await fetch(`${API_URL}/updateLibro/${id}`, {
             method: 'PUT',
@@ -274,6 +430,17 @@ export const actualizarLibro = async (id, datos) => {
         return await res.json();
     } catch (error) {
         console.error("Error en actualizarLibro:", error);
+        if (error.message === "RATE_LIMIT_BLOQUEO") {
+            throw error;
+        }
+
+        console.error("Error al obtener libros: ", error);
+
+        
+        if (error.message?.includes("Network request failed")) {
+            alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            throw new Error("RATE_LIMIT_BLOQUEO"); 
+        }
         throw error;
     }
 };
@@ -294,6 +461,17 @@ export const actualizarPersonaje = async (id, datos) => {
         return await res.json();
     } catch (error) {
         console.error("Error en actualizarPersonaje:", error);
+        if (error.message === "RATE_LIMIT_BLOQUEO") {
+            throw error;
+        }
+
+        console.error("Error al obtener libros: ", error);
+
+        
+        if (error.message?.includes("Network request failed")) {
+            alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            throw new Error("RATE_LIMIT_BLOQUEO"); 
+        }
         throw error;
     }
 };
@@ -314,6 +492,17 @@ export const actualizarPerfil = async (id, datos) => {
         return { ok: res.ok, data };
     } catch (error) {
         console.error("Error en actualizarPerfil:", error);
+        if (error.message === "RATE_LIMIT_BLOQUEO") {
+            throw error;
+        }
+
+        console.error("Error al obtener libros: ", error);
+
+        
+        if (error.message?.includes("Network request failed")) {
+            alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            throw new Error("RATE_LIMIT_BLOQUEO"); 
+        }
         throw error;
     }
 };
@@ -329,6 +518,17 @@ export const loginUsuario = async (nombreUsuario, password) => {
         return { ok: res.ok, data };
     } catch (error) {
         console.error("Error en login:", error);
+        if (error.message === "RATE_LIMIT_BLOQUEO") {
+            throw error;
+        }
+
+        console.error("Error al obtener libros: ", error);
+
+        
+        if (error.message?.includes("Network request failed")) {
+            alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            throw new Error("RATE_LIMIT_BLOQUEO"); 
+        }
         throw error;
     }
 };
@@ -345,6 +545,17 @@ export const registrarUsuario = async (datos) => {
         return { ok: res.ok, data };
     } catch (error) {
         console.error("Error en registro:", error);
+        if (error.message === "RATE_LIMIT_BLOQUEO") {
+            throw error;
+        }
+
+        console.error("Error al obtener libros: ", error);
+
+        
+        if (error.message?.includes("Network request failed")) {
+            alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            throw new Error("RATE_LIMIT_BLOQUEO"); 
+        }
         throw error;
     }
 };
@@ -365,6 +576,17 @@ export const nuevoLibro = async (datos) => {
         return { ok: res.ok, data };
     } catch (error) {
         console.error("Error en registro:", error);
+        if (error.message === "RATE_LIMIT_BLOQUEO") {
+            throw error;
+        }
+
+        console.error("Error al obtener libros: ", error);
+
+        
+        if (error.message?.includes("Network request failed")) {
+            alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            throw new Error("RATE_LIMIT_BLOQUEO"); 
+        }
         throw error;
     }
 };
@@ -385,6 +607,17 @@ export const nuevoPersonaje = async (datos) => {
         return { ok: res.ok, data };
     } catch (error) {
         console.error("Error en registro:", error);
+        if (error.message === "RATE_LIMIT_BLOQUEO") {
+            throw error;
+        }
+
+        console.error("Error al obtener libros: ", error);
+
+        
+        if (error.message?.includes("Network request failed")) {
+            alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            throw new Error("RATE_LIMIT_BLOQUEO"); 
+        }
         throw error;
     }
 };
@@ -405,6 +638,16 @@ export const nuevoComentario = async (datos) => {
         return { ok: res.ok, data };
     } catch (error) {
         console.error("Error en registro:", error);
+        if (error.message === "RATE_LIMIT_BLOQUEO") {
+            throw error;
+        }
+
+        console.error("Error al obtener libros: ", error);
+        
+        if (error.message?.includes("Network request failed")) {
+            alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            throw new Error("RATE_LIMIT_BLOQUEO"); 
+        }
         throw error;
     }
 };
@@ -424,6 +667,15 @@ export const eliminarPersonaje = async (id) => {
         return { ok: res.ok, data };
     } catch (error) {
         console.error("Error:", error);
+        if (error.message === "RATE_LIMIT_BLOQUEO") {
+            throw error;
+        }
+
+        console.error("Error al obtener libros: ", error);
+        if (error.message?.includes("Network request failed")) {
+            alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            throw new Error("RATE_LIMIT_BLOQUEO"); 
+        }
         throw error;
     }
 };
@@ -443,6 +695,15 @@ export const eliminarLibro = async (id) => {
         return { ok: res.ok, data };
     } catch (error) {
         console.error("Error:", error);
+        if (error.message === "RATE_LIMIT_BLOQUEO") {
+            throw error;
+        }
+
+        console.error("Error al obtener libros: ", error);
+        if (error.message?.includes("Network request failed")) {
+            alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            throw new Error("RATE_LIMIT_BLOQUEO"); 
+        }
         throw error;
     }
 };
@@ -463,6 +724,14 @@ export const eliminarBiblioteca = async (id) => {
         return { ok: res.ok, data };
     } catch (error) {
         console.error("Error:", error);
+        if (error.message === "RATE_LIMIT_BLOQUEO") {
+            throw error;
+        }
+        console.error("Error al obtener libros: ", error);
+        if (error.message?.includes("Network request failed")) {
+            alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            throw new Error("RATE_LIMIT_BLOQUEO"); 
+        }
         throw error;
     }
 };
@@ -479,10 +748,17 @@ export const eliminarLibroBiblioteca = async (idBiblioteca, idLibro) => {
         });
         await verificarStatusToken(res);
         const data = res.ok ? await res.json() : null;
-        
         return { ok: res.ok, data };
     } catch (error) {
         console.error("Error:", error);
+        if (error.message === "RATE_LIMIT_BLOQUEO") {
+            throw error;
+        }
+        console.error("Error al obtener libros: ", error);
+        if (error.message?.includes("Network request failed")) {
+            alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            throw new Error("RATE_LIMIT_BLOQUEO"); 
+        }
         throw error;
     }
 };

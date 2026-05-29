@@ -87,6 +87,11 @@ export default function NuevoPersonaje({ navigation, route, setUsuarioLogueado }
             }
         } catch (error) {
             console.error(error);
+            if (error.message === "RATE_LIMIT_BLOQUEO") {
+                alerta("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+                return;
+            }
+
             if (error.message === 'TOKEN_EXPIRADO') {
                 await procesarCierreDeSesion();
             } else {

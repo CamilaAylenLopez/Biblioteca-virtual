@@ -48,9 +48,14 @@ export default function Perfil({ navigation, setUsuarioLogueado }) {
           }
         } catch (error) {
           console.error(error);
+          if (error.message === "RATE_LIMIT_BLOQUEO") {
+            alerta("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            setBiblioteca([]);
+            return;
+          }
+
           if (error.message === 'TOKEN_EXPIRADO') {
             await procesarCierreDeSesion();
-            setUsuarioLogueado(false);
           } else {
             alerta("Error", "Hubo un problema de conexión.");
           }

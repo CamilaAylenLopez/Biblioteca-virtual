@@ -32,7 +32,6 @@ export default function Login({ navigation, setUsuarioLogueado }) {
         await AsyncStorage.setItem('@usuario_sesion', JSON.stringify(data.usuario));
 
         if (data && data.token) {
-          //await AsyncStorage.setItem('@token_sesion', data.token);
           await SecureStore.setItemAsync('token_sesion', data.token);
         }
 
@@ -42,6 +41,10 @@ export default function Login({ navigation, setUsuarioLogueado }) {
       }
     } catch (error) {
       console.log(error);
+      if (error.message === "RATE_LIMIT_BLOQUEO") {
+        alerta("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+        return;
+      }
       alerta("Error", "No se pudo conectar con el servidor.");
     }
 

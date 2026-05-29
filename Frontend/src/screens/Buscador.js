@@ -51,6 +51,10 @@ export default function Buscador({ navigation, setUsuarioLogueado }) {
                 })
                 .catch(async (err) => {
                     console.error("Error en búsqueda: ", err);
+                    if (error.message === "RATE_LIMIT_BLOQUEO") {
+                        alerta("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+                        return;
+                    }
                     if (err.message === 'TOKEN_EXPIRADO') {
                         await procesarCierreDeSesion();
                     } else {
@@ -58,7 +62,7 @@ export default function Buscador({ navigation, setUsuarioLogueado }) {
                     }
                 })
                 .finally(() => {
-                    if(activa){
+                    if (activa) {
                         setCargando(false);
                     }
                 });

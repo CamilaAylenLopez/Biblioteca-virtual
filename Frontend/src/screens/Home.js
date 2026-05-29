@@ -49,9 +49,13 @@ export default function Home({ navigation, setUsuarioLogueado }) {
             }
           }
         } catch (error) {
+          if (error.message === "RATE_LIMIT_BLOQUEO") {
+            alerta("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+            return;
+          }
+
           if (error.message === 'TOKEN_EXPIRADO') {
             await procesarCierreDeSesion();
-            setUsuarioLogueado(false);
           } else {
             alerta("Error", "Hubo un problema de conexión.");
           }

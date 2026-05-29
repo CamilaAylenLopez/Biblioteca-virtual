@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, ScrollView, Alert, TouchableOpacity, ActivityIndicator, TextInput, Platform } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, ScrollView, Alert, TouchableOpacity, ActivityIndicator, TextInput, Platform, KeyboardAvoidingView } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { actualizarPersonaje, getPersonajeById } from '../api/api';
 import * as ImagePicker from 'expo-image-picker';
@@ -43,6 +43,10 @@ export default function EditarInfoPersonaje({ navigation, route, setUsuarioLogue
                     setPersonaje(dataPersonaje)
                 } catch (error) {
                     console.error(error);
+                    if (error.message === "RATE_LIMIT_BLOQUEO") {
+                        alerta("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+                        return;
+                    }
                     if (error.message === 'TOKEN_EXPIRADO') {
                         await procesarCierreDeSesion();
                     } else {
@@ -94,6 +98,10 @@ export default function EditarInfoPersonaje({ navigation, route, setUsuarioLogue
             }
         } catch (error) {
             console.error(error);
+            if (error.message === "RATE_LIMIT_BLOQUEO") {
+                alerta("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+                return;
+            }
             if (error.message === 'TOKEN_EXPIRADO') {
                 await procesarCierreDeSesion();
             } else {
@@ -138,9 +146,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     imagenConteiner: {
-        margin: 20,
+        marginTop: 20,
         height: 300,
-        width: 200,
+        width: 460,
     },
     button: {
         width: '50%',
@@ -184,7 +192,8 @@ const styles = StyleSheet.create({
         width: '100%',
         backgroundColor: '#282828',
         borderRadius: 30,
-        marginTop: 25,
+        paddingHorizontal: 15,
+        marginTop: 20,
         color: 'white',
         ...Platform.select({ web: { outlineStyle: 'none' } }),
         fontSize: 16,
@@ -231,7 +240,8 @@ const styles = StyleSheet.create({
     },
     imagen: {
         alignSelf: 'center',
-        width: 200,
+        resizeMode: 'cover',
+        width: '60%',
         height: 300,
     },
 });

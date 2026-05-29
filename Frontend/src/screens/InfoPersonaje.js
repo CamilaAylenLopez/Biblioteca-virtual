@@ -41,9 +41,12 @@ export default function InfoPersonaje({ navigation, route, setUsuarioLogueado })
                     setPersonaje(dataPersonaje);
                 } catch (error) {
                     console.error(error);
+                    if (error.message === "RATE_LIMIT_BLOQUEO") {
+                        alerta("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+                        return;
+                    }
                     if (error.message === 'TOKEN_EXPIRADO') {
                         await procesarCierreDeSesion();
-                        setUsuarioLogueado(false);
                     } else {
                         alerta("Error", "Hubo un problema de conexión.");
                     }
@@ -56,21 +59,35 @@ export default function InfoPersonaje({ navigation, route, setUsuarioLogueado })
     }, [personajeId, isFocused]);
 
     const deletePersonaje = async () => {
-        try {
-            const respuesta = await eliminarPersonaje(personajeId);
-            if (respuesta.ok) {
-                alerta("Exito", "Personaje elimiando con exito");
-                navigation.goBack();
-            } else {
-                alerta("Error", "No se ha podido eliminar el personaje");
+        const ejecutarBaja = async () => {
+            try {
+                const respuesta = await eliminarPersonaje(personajeId);
+                if (respuesta.ok) {
+                    alerta("Exito", "Personaje elimiando con exito");
+                    navigation.goBack();
+                } else {
+                    alerta("Error", "No se ha podido eliminar el personaje");
+                }
+            } catch (error) {
+                console.error(error);
+                if (error.message === "RATE_LIMIT_BLOQUEO") {
+                    alerta("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
+                    return;
+                }
+                if (error.message === 'TOKEN_EXPIRADO') {
+                    await procesarCierreDeSesion();
+                } else {
+                    alerta("Error", "Hubo un problema de conexión.");
+                }
             }
-        } catch (error) {
-            console.error(error);
-            if (error.message === 'TOKEN_EXPIRADO') {
-                await procesarCierreDeSesion();
-            } else {
-                alerta("Error", "Hubo un problema de conexión.");
-            }
+        }
+        if (Platform.OS === 'web') {
+            if (confirm("¿Estas seguro de borrar este personaje?")) ejecutarBaja();
+        } else {
+            Alert.alert("Eliminar", "¿Seguro que quieres borrar este personaje?", [
+                { text: "Cancelar", style: "cancel" },
+                { text: "Eliminar", style: "destructive", onPress: ejecutarBaja }
+            ]);
         }
     };
 
@@ -83,10 +100,7 @@ export default function InfoPersonaje({ navigation, route, setUsuarioLogueado })
                 <FontAwesome name="trash" size={35} color="#bebebe" />
             </TouchableOpacity>
             <View style={{ justifyContent: 'center', alignContent: 'center' }}>
-                <Image
-                    source={personaje.imagen_url ? { uri: personaje.imagen_url } : require('../img/Imagenotfound.png')}
-                    style={styles.imagen}
-                />
+                <Image source={personaje.imagen_url ? { uri: personaje.imagen_url } : require('../img/Imagenotfound.png')} style={styles.imagen} />
 
                 <Text style={styles.titulo} >{personaje.nombre} </Text>
 

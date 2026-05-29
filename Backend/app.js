@@ -21,7 +21,14 @@ const limitadorGeneral = rateLimit({
     //hasta 100 peticiones en 15 minutos
     windowMs: 15 * 60 * 1000,
     max: 100,
-    message: { ok: false, error: 'Demasiadas peticiones desde esta IP, intenta más tarde.' }
+    handler: (req, res) => {
+        console.log(`IP BLOQUEADA (General): ${req.ip}`);
+        
+        return res.status(429).json({ 
+            ok: false, 
+            error: 'Demasiadas peticiones desde esta IP, intenta más tarde.' 
+        });
+    }
 });
 app.use(limitadorGeneral)
 
@@ -29,7 +36,10 @@ const limitadorLogin = rateLimit({
     //10 intentos en 15 minutos
     windowMs: 15 * 60 * 1000,
     max: 10,
-    message: { ok: false, error: 'Demasiados intentos de inicio de sesión. Bloqueado por 15 minutos.' }
+    handler: (req, res, next, options) => {
+        console.log(`INTENTOS DE LOGIN EXCEDIDOS para la IP: ${req.ip}`);
+        return res.status(429).json({ ok: false, error: 'Demasiados intentos de inicio de sesión. Bloqueado por 15 minutos.' });
+    }
 });
 
 const verificarToken = (req, res, next) => {
@@ -559,7 +569,7 @@ app.delete('/eliminarBiblioteca/:id', verificarToken, async (req, res) => {
 app.delete('/eliminarLibroBiblioteca/:biblioteca_id/:libro_id', verificarToken, async (req, res) => {
     const { biblioteca_id, libro_id } = req.params;
     const usuario_id = req.usuario.usuarioId;
-console.log("Biblioteca ID enviado:", biblioteca_id);
+    console.log("Biblioteca ID enviado:", biblioteca_id);
     console.log("Libro ID enviado:", libro_id);
     console.log("Usuario ID del Token:", usuario_id);
     try {
