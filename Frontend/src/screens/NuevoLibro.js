@@ -137,105 +137,113 @@ export default function NuevoLibro({ navigation, setUsuarioLogueado }) {
         }
     };
 
+    const Formulario = (
+        <View style={styles.subContainer}>
+            {/*SELECCIOANR IMAGEN*/}
+            <TouchableOpacity style={styles.imagenContainer} onPress={selectImagen}>
+                <Image source={form.imagen_url ? { uri: form.imagen_url } : require('../img/addimage.jpg')} style={styles.imagen} />
+            </TouchableOpacity>
+
+            {/*INPUTS NORMALES*/}
+            <TextInput autoCorrect={false} style={styles.input} value={form.titulo} placeholder="*Titulo..." onChangeText={(txt) => setForm({ ...form, titulo: txt })} />
+            <TextInput autoCorrect={false} style={styles.input} value={form.autor} placeholder="*Autor..." onChangeText={(txt) => setForm({ ...form, autor: txt })} />
+            <TextInput style={styles.inputLargo} multiline numberOfLines={4} value={form.sinopsis} placeholder="Sinopsis..." onChangeText={(txt) => setForm({ ...form, sinopsis: txt })} />
+
+            {/*INPUT FECHA*/}
+            <View style={{ zIndex: 1, width: '100%' }}>
+                {Platform.OS === 'web' ? (
+                    <View style={styles.inputD}>
+                        <TextInput type="date" value={form.lanzamiento} placeholder='YYYY-MM-DD' onChange={(e) => onChangeFechaWeb(e.target.value)} max={new Date().toISOString().split('T')[0]} style={styles.inputWeb} />
+                    </View>
+                ) : (
+                    <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
+                        <View>
+                            <TouchableOpacity style={styles.inputD} onPress={() => setMostrarCalendario(!mostrarCalendario)}>
+                                <Text style={styles.textoFecha}> {form.lanzamiento ? `${form.lanzamiento}` : "Elegir fecha de lanzamiento"}</Text>
+                            </TouchableOpacity>
+
+                            {mostrarCalendario && (
+                                <View style={Platform.OS === 'ios' ? styles.contenedorCalendarioIOS : null}>
+                                    <DateTimePicker
+                                        value={fecha}
+                                        mode="date"
+                                        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                                        onChange={onChangeFecha}
+                                        maximumDate={new Date()}
+                                        locale="es-ES"
+                                        style={{ height: 180, width: '100%' }}
+                                    />
+
+                                    {Platform.OS === 'ios' && (
+                                        <TouchableOpacity style={styles.btnListoIOS} onPress={() => setMostrarCalendario(false)}>
+                                            <Text style={styles.confirmarText}>Confirmar fecha</Text>
+                                        </TouchableOpacity>
+                                    )}
+                                </View>
+                            )}
+                        </View>
+                    </TouchableWithoutFeedback>
+                )}
+            </View>
+
+            {/*INPUT GENERO*/}
+            <DropdownSelect
+                label=" "
+                placeholder="*Elegir genero..."
+                options={[
+                    {
+                        title: 'Generos...',
+                        data: [
+                            { label: 'Terror', value: 'Terror' },
+                            { label: 'Romance', value: 'Romance' },
+                            { label: 'Misterio', value: 'Misterio' },
+                            { label: 'Parodia', value: 'Parodia' },
+                            { label: 'Ficción', value: 'Ficción' },
+                            { label: 'No Ficción', value: 'No Ficción' },
+                            { label: 'Contranovela', value: 'Contranovela' },
+                            { label: 'Aventura', value: 'Aventura' },
+                            { label: 'Historia', value: 'Historia' },
+                            { label: 'Policial', value: 'Policial' },
+                            { label: 'Fantasía', value: 'Fantasía' },
+                        ],
+                    },
+                ]}
+                value={form.genero}
+                selectedValue={form.genero}
+                onValueChange={(value) => setForm({ ...form, genero: value })}
+                isSearchable
+                primaryColor={'#282828'}
+                dropdownStyle={{
+                    backgroundColor: '#282828',
+                    borderColor: '#282828',
+                    borderRadius: 50,
+                }}
+                dropdownIconStyle={{ color: 'white' }}
+                dropdownPlaceholderStyle={{ color: 'white', }}
+                placeholderStyle={{ color: '#afafaf', fontSize: 16 }}
+                selectedItemStyle={{ color: 'white', fontSize: 16 }}
+            />
+
+            {/*BOTON DE ACEPTAR*/}
+            <TouchableOpacity style={styles.button} onPress={agregarLibro}>
+                <Text style={styles.buttonText}>Hecho</Text>
+            </TouchableOpacity>
+        </View>
+    );
+
     return (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
             <ScrollView tyle={{ flexGrow: 1, }} showsVerticalScrollIndicator={false}>
-                <TouchableWithoutFeedback onPress={() => {
-                    setMostrarCalendario(false);
-                    Keyboard.dismiss();
-                }}>
-                    <View style={styles.subContainer}>
-                        {/*SELECCIOANR IMAGEN*/}
-                        <TouchableOpacity style={styles.imagenContainer} onPress={selectImagen}>
-                            <Image source={form.imagen_url ? { uri: form.imagen_url } : require('../img/addimage.jpg')} style={styles.imagen} />
-                        </TouchableOpacity>
-
-                        {/*INPUTS NORMALES*/}
-                        <TextInput autoCorrect={false} style={styles.input} value={form.titulo} placeholder="*Titulo..." onChangeText={(txt) => setForm({ ...form, titulo: txt })} />
-                        <TextInput autoCorrect={false} style={styles.input} value={form.autor} placeholder="*Autor..." onChangeText={(txt) => setForm({ ...form, autor: txt })} />
-                        <TextInput style={styles.inputLargo} multiline numberOfLines={4} value={form.sinopsis} placeholder="Sinopsis..." onChangeText={(txt) => setForm({ ...form, sinopsis: txt })} />
-
-                        {/*INPUT FECHA*/}
-                        <View style={{ zIndex: 1, width: '100%' }}>
-                            {Platform.OS === 'web' ? (
-                                <View style={styles.inputD}>
-                                    <TextInput type="date" value={form.lanzamiento} placeholder='YYYY-MM-DD' onChange={(e) => onChangeFechaWeb(e.target.value)} max={new Date().toISOString().split('T')[0]} style={styles.inputWeb} />
-                                </View>
-                            ) : (
-                                <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
-                                    <View>
-                                        <TouchableOpacity style={styles.inputD} onPress={() => setMostrarCalendario(!mostrarCalendario)}>
-                                            <Text style={styles.textoFecha}> {form.lanzamiento ? `${form.lanzamiento}` : "Elegir fecha de lanzamiento"}</Text>
-                                        </TouchableOpacity>
-
-                                        {mostrarCalendario && (
-                                            <View style={Platform.OS === 'ios' ? styles.contenedorCalendarioIOS : null}>
-                                                <DateTimePicker
-                                                    value={fecha}
-                                                    mode="date"
-                                                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                                                    onChange={onChangeFecha}
-                                                    maximumDate={new Date()}
-                                                    locale="es-ES"
-                                                    style={{ height: 180, width: '100%' }}
-                                                />
-
-                                                {Platform.OS === 'ios' && (
-                                                    <TouchableOpacity style={styles.btnListoIOS} onPress={() => setMostrarCalendario(false)}>
-                                                        <Text style={styles.confirmarText}>Confirmar fecha</Text>
-                                                    </TouchableOpacity>
-                                                )}
-                                            </View>
-                                        )}
-                                    </View>
-                                </TouchableWithoutFeedback>
-                            )}
-                        </View>
-
-                        {/*INPUT GENERO*/}
-                        <DropdownSelect
-                            label=" "
-                            placeholder="*Elegir genero..."
-                            options={[
-                                {
-                                    title: 'Generos...',
-                                    data: [
-                                        { label: 'Terror', value: 'Terror' },
-                                        { label: 'Romance', value: 'Romance' },
-                                        { label: 'Misterio', value: 'Misterio' },
-                                        { label: 'Parodia', value: 'Parodia' },
-                                        { label: 'Ficción', value: 'Ficción' },
-                                        { label: 'No Ficción', value: 'No Ficción' },
-                                        { label: 'Contranovela', value: 'Contranovela' },
-                                        { label: 'Aventura', value: 'Aventura' },
-                                        { label: 'Historia', value: 'Historia' },
-                                        { label: 'Policial', value: 'Policial' },
-                                        { label: 'Fantasía', value: 'Fantasía' },
-                                    ],
-                                },
-                            ]}
-                            value={form.genero}
-                            selectedValue={form.genero}
-                            onValueChange={(value) => setForm({ ...form, genero: value })}
-                            isSearchable
-                            primaryColor={'#282828'}
-                            dropdownStyle={{
-                                backgroundColor: '#282828',
-                                borderColor: '#282828',
-                                borderRadius: 50,
-                            }}
-                            dropdownIconStyle={{ color: 'white' }}
-                            dropdownPlaceholderStyle={{ color: 'white', }}
-                            placeholderStyle={{ color: '#afafaf', fontSize: 16 }}
-                            selectedItemStyle={{ color: 'white', fontSize: 16 }}
-                        />
-
-                        {/*BOTON DE ACEPTAR*/}
-                        <TouchableOpacity style={styles.button} onPress={agregarLibro}>
-                            <Text style={styles.buttonText}>Hecho</Text>
-                        </TouchableOpacity>
-                    </View>
-                </TouchableWithoutFeedback>
+                {Platform.OS === 'web' ? (
+                    Formulario
+                ) : (
+                    <TouchableWithoutFeedback onPress={() => {
+                        setMostrarCalendario(false);
+                        Keyboard.dismiss();
+                    }}>
+                        {Formulario}
+                    </TouchableWithoutFeedback>
+                )}
             </ScrollView>
         </KeyboardAvoidingView>
     )

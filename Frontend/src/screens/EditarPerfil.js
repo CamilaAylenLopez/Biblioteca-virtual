@@ -177,70 +177,79 @@ export default function EditarPerfil({ navigation, route, setUsuarioLogueado }) 
     if (cargando) return <ActivityIndicator size="large" color="white" style={{ marginTop: 50 }} />;
     if (!nuevosDatos) return <Text style={{ color: 'white' }}>Cargando...</Text>;
 
+    const Formulario = (
+        <ScrollView showsVerticalScrollIndicator={false}>
+            <View style={styles.subContainer}>
+                {/*SELECCIONAR IMAGEN*/}
+                <TouchableOpacity style={styles.imagenContainer} onPress={selectImagen}>
+                    <Image source={nuevosDatos.foto_perfil ? { uri: nuevosDatos.foto_perfil } : require('../img/addimage.jpg')} style={styles.imagen} />
+                </TouchableOpacity>
+
+                {/*INPUT NORMALES*/}
+                <TextInput autoCorrect={false} style={styles.input} value={nuevosDatos.nombre} placeholder="Agregar nombre" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, nombre: txt })} />
+                <TextInput autoCorrect={false} style={styles.input} value={nuevosDatos.apellido} placeholder="Agregar apellido" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, apellido: txt })} />
+                <TextInput autoCapitalize="none" autoCorrect={false} style={styles.input} value={nuevosDatos.nombreUsuario} placeholder="Agregar nombre de usuario" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, nombreUsuario: txt })} />
+                <TextInput autoCapitalize="none" autoCorrect={false} style={styles.input} value={nuevosDatos.email} placeholder="Agregar email" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, email: txt })} />
+                <TextInput autoCorrect={false} style={styles.inputLargo} multiline numberOfLines={4} value={nuevosDatos.descripcion} placeholder="Agregar descripcion" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, descripcion: txt })} />
+
+                {/*INPUT FECHA*/}
+                <View style={{ zIndex: 1, width: '100%', marginVertical: 5 }}>
+                    {Platform.OS === 'web' ? (
+                        <View style={styles.inputD}>
+                            <TextInput type="date" value={nuevosDatos.fecha_nacimiento} placeholder='YYYY-MM-DD' onChange={(e) => onChangeFechaWeb(e.target.value)} max={new Date().toISOString().split('T')[0]} style={styles.inputWeb} />
+                        </View>
+                    ) : (
+                        <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
+                            <View>
+                                <TouchableOpacity style={styles.inputD} onPress={() => setMostrarCalendario(!mostrarCalendario)}>
+                                    <Text style={styles.textoFecha}>{nuevosDatos.fecha_nacimiento ? `${nuevosDatos.fecha_nacimiento}` : "Elegir fecha de nacimiento..."}</Text>
+                                </TouchableOpacity>
+
+                                {mostrarCalendario && (
+                                    <View style={Platform.OS === 'ios' ? styles.contenedorCalendarioIOS : null}>
+                                        <DateTimePicker
+                                            value={fecha}
+                                            mode="date"
+                                            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                                            onChange={onChangeFecha}
+                                            maximumDate={new Date()}
+                                            locale="es-ES"
+                                            style={{ height: 180, width: '100%' }}
+                                        />
+
+                                        {Platform.OS === 'ios' && (
+                                            <TouchableOpacity style={styles.btnListoIOS} onPress={() => setMostrarCalendario(false)}>
+                                                <Text style={styles.confirmarText}>Confirmar fecha</Text>
+                                            </TouchableOpacity>
+                                        )}
+                                    </View>
+                                )}
+                            </View>
+                        </TouchableWithoutFeedback>
+                    )}
+                </View>
+
+                {/*BOTON ACEPTAR*/}
+                <TouchableOpacity style={styles.button} onPress={actualizar}>
+                    <Text style={styles.buttonText}>Hecho</Text>
+                </TouchableOpacity>
+            </View>
+        </ScrollView>
+    );
+
     return (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
-            <TouchableWithoutFeedback onPress={() => {
-                setMostrarCalendario(false);
-                Keyboard.dismiss();
-            }}>
-                <ScrollView showsVerticalScrollIndicator={false}>
-                    <View style={styles.subContainer}>
-                        {/*SELECCIONAR IMAGEN*/}
-                        <TouchableOpacity style={styles.imagenContainer} onPress={selectImagen}>
-                            <Image source={nuevosDatos.foto_perfil ? { uri: nuevosDatos.foto_perfil } : require('../img/addimage.jpg')} style={styles.imagen} />
-                        </TouchableOpacity>
 
-                        {/*INPUT NORMALES*/}
-                        <TextInput autoCorrect={false} style={styles.input} value={nuevosDatos.nombre} placeholder="Agregar nombre" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, nombre: txt })} />
-                        <TextInput autoCorrect={false} style={styles.input} value={nuevosDatos.apellido} placeholder="Agregar apellido" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, apellido: txt })} />
-                        <TextInput autoCapitalize="none" autoCorrect={false} style={styles.input} value={nuevosDatos.nombreUsuario} placeholder="Agregar nombre de usuario" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, nombreUsuario: txt })} />
-                        <TextInput autoCapitalize="none" autoCorrect={false} style={styles.input} value={nuevosDatos.email} placeholder="Agregar email" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, email: txt })} />
-                        <TextInput autoCorrect={false} style={styles.inputLargo} multiline numberOfLines={4} value={nuevosDatos.descripcion} placeholder="Agregar descripcion" onChangeText={(txt) => setNuevosDatos({ ...nuevosDatos, descripcion: txt })} />
-
-                        {/*INPUT FECHA*/}
-                        <View style={{ zIndex: 1, width: '100%', marginVertical: 5 }}>
-                            {Platform.OS === 'web' ? (
-                                <View style={styles.inputD}>
-                                    <TextInput type="date" value={nuevosDatos.fecha_nacimiento} placeholder='YYYY-MM-DD' onChange={(e) => onChangeFechaWeb(e.target.value)} max={new Date().toISOString().split('T')[0]} style={styles.inputWeb} />
-                                </View>
-                            ) : (
-                                <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
-                                    <View>
-                                        <TouchableOpacity style={styles.inputD} onPress={() => setMostrarCalendario(!mostrarCalendario)}>
-                                            <Text style={styles.textoFecha}>{nuevosDatos.fecha_nacimiento ? `${nuevosDatos.fecha_nacimiento}` : "Elegir fecha de nacimiento..."}</Text>
-                                        </TouchableOpacity>
-
-                                            {mostrarCalendario && (
-                                                <View style={Platform.OS === 'ios' ? styles.contenedorCalendarioIOS : null}>
-                                                    <DateTimePicker
-                                                        value={fecha}
-                                                        mode="date"
-                                                        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                                                        onChange={onChangeFecha}
-                                                        maximumDate={new Date()}
-                                                        locale="es-ES"
-                                                        style={{ height: 180, width: '100%' }}
-                                                    />
-
-                                                    {Platform.OS === 'ios' && (
-                                                        <TouchableOpacity style={styles.btnListoIOS} onPress={() => setMostrarCalendario(false)}>
-                                                            <Text style={styles.confirmarText}>Confirmar fecha</Text>
-                                                        </TouchableOpacity>
-                                                    )}
-                                                </View>
-                                            )}
-                                    </View>
-                                </TouchableWithoutFeedback>
-                            )}
-                        </View>
-
-                        {/*BOTON ACEPTAR*/}
-                        <TouchableOpacity style={styles.button} onPress={actualizar}>
-                            <Text style={styles.buttonText}>Hecho</Text>
-                        </TouchableOpacity>
-                    </View>
-                </ScrollView>
-            </TouchableWithoutFeedback>
+            {Platform.OS === 'web' ? (
+                Formulario
+            ) : (
+                <TouchableWithoutFeedback onPress={() => {
+                    setMostrarCalendario(false);
+                    Keyboard.dismiss();
+                }}>
+                    {Formulario}
+                </TouchableWithoutFeedback>
+            )}
         </KeyboardAvoidingView>
     )
 }

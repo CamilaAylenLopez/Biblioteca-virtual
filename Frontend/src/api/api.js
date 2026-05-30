@@ -12,7 +12,6 @@ const alertaGlobal = (titulo, mensaje) => {
 };
 
 const verificarStatusToken = async (res) => {
-    console.log("STATUS HTTP RECIBIDO EN API.JS:", res.status);
 
     if (res.status === 429) {
         alertaGlobal("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
