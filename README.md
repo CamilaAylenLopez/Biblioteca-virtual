@@ -26,7 +26,7 @@ Aplicación móvil desarrollada con React Native y Expo diseñada para la gesti�
 ### Frontend
 ```
 ├── api/
-│   └── api.js                 # Configuración de Axios/Fetch y peticiones HTTP (Login, Registro, Perfil)
+│   └── api.js                 # Configuración de Fetch y peticiones HTTP (Login, Registro, Perfil)
 ├── img/                       # Assets visuales estáticos (imágenes locales)
 │   └── addimage.jpg
 │   └── addusericon.jpg
@@ -71,29 +71,28 @@ Antes de levantar el proyecto, asegúrate de tener instalado:
 
 ## Instalación y despliegue
 Sigue estos pasos para poner en marcha el proyecto de manera local tanto en el Backend como en el Frontend.
-1. Configuración de la Base de Datos (MySQL)
+### 1. Configuración de la Base de Datos (MySQL)
    1. Abre tu gestor de MySQL.
    2. Importa y ejecuta el archivo **bibliotecadb.sql** ubicado en la carpeta del backend para crear la estructura de tablas necesaria.
 
-2. Configuración y despliegue del Backend
+### 2. Configuración y despliegue del Backend
    1. Abre una terminal y desplázate a la carpeta del backend:
    ```cd ruta/hacia/tu/proyecto/backend```
    2. Instala todas las dependencias requeridas:
    ```npm install```
    3. Configura las credenciales de tu base de datos y la clave secreta de JWT en el archivo **.env**
    ```
-   env
    PORT=3000
    DB_HOST=localhost
    DB_USER=tu_usuario_mysql
    DB_PASS=tu_contraseña_mysql
    DB_NAME=bibliotecadb
-   JWT_SECRET=tu_clave_secreta_super_segura
+   JWT_SECRET=tu_clave_secreta_segura
    ```
    4. Inicializa el servidor Express (el backend debería indicar en la consola que está escuchando en el puerto asignado y conectado exitosamente a MySQL):
    ```node app.js```
 
-3. Configuración y Despliegue del Frontend
+### 3. Configuración y Despliegue del Frontend
    1. Abre una segunda terminal y desplázate a la carpeta del frontend:
    ```cd ruta/hacia/tu/proyecto/frontend```
    2. Instala los paquetes y dependencias del ecosistema Expo:
@@ -105,12 +104,36 @@ Sigue estos pasos para poner en marcha el proyecto de manera local tanto en el B
 
 ## Endpoints de la API
 ### Libros:
-- **GET** '/libros' - Devuleve todos los libros
-- **GET** 'libros/:id' - Devuelve el libro con determinado id
-- **GET** '/libros/genero/:genero' - Devuelve todos los libros de determinado genero
+- **GET** '/libros' - Devuelve todos los libros
+- **GET** 'libros/:id' - Devuelve el libro correspondiente al ID especificado
+- **GET** '/libros/genero/:genero' - Devuelve todos los libros del género especificado
+- **GET** '/libro/comentarios/idLibro/:id' - Devuelve todos los comentarios asociados a un libro
+- **GET** '/buscar/:texto' - Devuelve los libros y personajes que coincidan con la búsqueda por texto
+- **POST** '/newComentario' - Agrega un nuevo comentario/reseña a un libro
+- **POST** '/newLibro' - Registra un nuevo libro
+- **PUT** '/updateLibro/:id' - Actualiza la información de un libro existente
+- **DELETE** '/eliminarLibro/:id' - Elimina determinado libro
+
+### Personajes:
+- **GET** '/personajes/idLibro/:id' - Devuelve los personajes asociados a un libro específico
+- **GET** '/personaje/idPersonaje/:id' - Devuelve el personaje correspondiente al ID especificado
+- **POST** '/newPersonaje' - Registra nuevo personaje
+- **PUT** '/updatePersonaje/:id' - Actualiza la información de un personaje existente
+- **DELETE** '/eliminarPersonaje/:id' - Elimina determinado personaje
+
+### Bibliotecas:
+- **GET** '/biblioteca/:id' - Devuelve los libros incluidos en una determinada biblioteca
+- **GET** '/bibliotecas/:id' - Devuelve los nombres e IDs de todas las bibliotecas creadas por un usuario específico
+- **POST** '/bibliotecas/crear' - Crea una biblioteca nueva
+- **POST** '/bibliotecas/agregarLibro' - Guarda un libro dentro de una biblioteca seleccionada
+- **DELETE** '/eliminarBiblioteca/:id' - Elimina una biblioteca completa
+- **DELETE** '/eliminarLibroBiblioteca/:biblioteca_id/:libro_id' - Elimina un libro específico de una biblioteca
 
 ### Autenticación y Usuarios
-- 
+- **GET** '/usuario/id/:id' - Devuelve los datos de perfil de un usuario por su ID
+- **PUT** '/updateUsuario/:id' - Actualiza los datos del usuario
+- **POST** '/login' - Autentica las credenciales y devuelve los datos del usuario (excepto la contraseña) junto al token JWT
+- **POST** '/nuevoUsuario' - Registra un nuevo usuario
 
 
 ## Caracteristicas principales
