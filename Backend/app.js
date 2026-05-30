@@ -72,6 +72,19 @@ app.get('/libros', verificarToken, async (req, res) => {
     }
 });
 
+app.get('/libros/genero/:genero', verificarToken, async (req, res) => {
+    const generoReq = req.params.genero;
+
+    try {
+        const [libros] = await pool.query('SELECT * FROM libro WHERE genero = ?', [generoReq]);
+        res.json(libros);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error en la BD' });
+    }
+});
+
 app.get('/libros/:id', verificarToken, async (req, res) => {
     const { id } = req.params;
     try {
@@ -82,19 +95,6 @@ app.get('/libros/:id', verificarToken, async (req, res) => {
             res.status(404).json({ error: 'Libro no encontrado' });
         }
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Error en la BD' });
-    }
-});
-
-app.get('/libros/genero/:genero', verificarToken, async (req, res) => {
-    const generoReq = req.params.genero;
-
-    try {
-        const [libros] = await pool.query('SELECT * FROM libro WHERE genero = ?', [generoReq]);
-        res.json(libros);
-    }
-    catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Error en la BD' });
     }
@@ -497,7 +497,7 @@ app.post('/nuevoUsuario', async (req, res) => {
         const nuevoUsuarioId = result.insertId;
 
         const token = jwt.sign(
-            { usuarioId: nuevoUsuarioId, email: usuario.email },
+            { usuarioId: nuevoUsuarioId, email: email },
             process.env.JWT_SECRET,
             { expiresIn: '7d' } // o sea vence en 7 días
         )

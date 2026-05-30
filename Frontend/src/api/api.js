@@ -21,14 +21,27 @@ const verificarStatusToken = async (res) => {
 
     if (res.status === 401 || res.status === 403) {
         await AsyncStorage.removeItem('@usuario_sesion');
-        await SecureStore.deleteItemAsync('token_sesion');
+        if (Platform.OS === 'web') {
+            await AsyncStorage.removeItem('@token_sesion');
+        } else {
+            await SecureStore.deleteItemAsync('token_sesion');
+        }
         throw new Error("TOKEN_EXPIRADO");
+    }
+};
+
+const getToken = async () => {
+    if (Platform.OS === 'web') {
+        return await AsyncStorage.getItem('@token_sesion');
+    } else {
+        return await SecureStore.getItemAsync('token_sesion');
     }
 };
 
 export const getLibros = async () => {
     try {
-        const token = await SecureStore.getItemAsync('token_sesion');
+        const token = await getToken();
+
         const res = await fetch(`${API_URL}/libros`, {
             method: 'GET',
             headers: {
@@ -58,7 +71,7 @@ export const getLibros = async () => {
 
 export const getLibrosByGenero = async (genero) => {
     try {
-        const token = await SecureStore.getItemAsync('token_sesion');
+        const token = await getToken();
         const res = await fetch(`${API_URL}/libros/${genero}`, {
             method: 'GET',
             headers: {
@@ -88,7 +101,7 @@ export const getLibrosByGenero = async (genero) => {
 
 export const getComentariosByIdLibro = async (idLibro) => {
     try {
-        const token = await SecureStore.getItemAsync('token_sesion');
+        const token = await getToken();
         const res = await fetch(`${API_URL}/libro/comentarios/idLibro/${idLibro}`, {
             method: 'GET',
             headers: {
@@ -118,7 +131,7 @@ export const getComentariosByIdLibro = async (idLibro) => {
 
 export const getPersonajeById = async (idPersonaje) => {
     try {
-        const token = await SecureStore.getItemAsync('token_sesion');
+        const token = await getToken();
         const res = await fetch(`${API_URL}/personaje/idPersonaje/${idPersonaje}`, {
             method: 'GET',
             headers: {
@@ -148,7 +161,7 @@ export const getPersonajeById = async (idPersonaje) => {
 
 export const getLibrosById = async (id) => {
     try {
-        const token = await SecureStore.getItemAsync('token_sesion');
+        const token = await getToken();
         const res = await fetch(`${API_URL}/libros/${id}`, {
             method: 'GET',
             headers: {
@@ -178,7 +191,7 @@ export const getLibrosById = async (id) => {
 
 export const getPersonajesByIdLibro = async (id) => {
     try {
-        const token = await SecureStore.getItemAsync('token_sesion');
+        const token = await getToken();
         const res = await fetch(`${API_URL}/personajes/idLibro/${id}`, {
             method: 'GET',
             headers: {
@@ -208,7 +221,7 @@ export const getPersonajesByIdLibro = async (id) => {
 
 export const getUsuarioById = async (id) => {
     try {
-        const token = await SecureStore.getItemAsync('token_sesion');
+        const token = await getToken();
         const res = await fetch(`${API_URL}/usuario/id/${id}`, {
             method: 'GET',
             headers: {
@@ -238,7 +251,7 @@ export const getUsuarioById = async (id) => {
 
 export const getBiblioteca = async (id) => {
     try {
-        const token = await SecureStore.getItemAsync('token_sesion');
+        const token = await getToken();
         const res = await fetch(`${API_URL}/biblioteca/idUsuario/${id}`, {
             method: 'GET',
             headers: {
@@ -268,7 +281,7 @@ export const getBiblioteca = async (id) => {
 
 export const getBibliotecaById = async (id) => {
     try {
-        const token = await SecureStore.getItemAsync('token_sesion');
+        const token = await getToken();
         const res = await fetch(`${API_URL}/biblioteca/${id}`, {
             method: 'GET',
             headers: {
@@ -298,7 +311,7 @@ export const getBibliotecaById = async (id) => {
 
 export const getBibliotecas = async (id) => {
     try {
-        const token = await SecureStore.getItemAsync('token_sesion');
+        const token = await getToken();
         const res = await fetch(`${API_URL}/bibliotecas/${id}`, {
             method: 'GET',
             headers: {
@@ -328,7 +341,7 @@ export const getBibliotecas = async (id) => {
 
 export const crearBiblioteca = async (datos) => {
     try {
-        const token = await SecureStore.getItemAsync('token_sesion');
+        const token = await getToken();
         const res = await fetch(`${API_URL}/bibliotecas/crear`, {
             method: 'POST',
             headers: {
@@ -359,7 +372,7 @@ export const crearBiblioteca = async (datos) => {
 
 export const guardarLibroEnBiblioteca = async (datos) => {
     try {
-        const token = await SecureStore.getItemAsync('token_sesion');
+        const token = await getToken();
         const res = await fetch(`${API_URL}/bibliotecas/agregarLibro`, {
             method: 'POST',
             headers: {
@@ -390,7 +403,7 @@ export const guardarLibroEnBiblioteca = async (datos) => {
 
 export const resultadoBusqueda = async (texto) => {
     try {
-        const token = await SecureStore.getItemAsync('token_sesion');
+        const token = await getToken();
         const res = await fetch(`${API_URL}/buscar/${texto}`, {
             method: 'GET',
             headers: {
@@ -419,7 +432,7 @@ export const resultadoBusqueda = async (texto) => {
 };
 
 export const actualizarLibro = async (id, datos) => {
-    const token = await SecureStore.getItemAsync('token_sesion');
+    const token = await getToken();
     try {
         const res = await fetch(`${API_URL}/updateLibro/${id}`, {
             method: 'PUT',
@@ -451,7 +464,7 @@ export const actualizarLibro = async (id, datos) => {
 
 export const actualizarPersonaje = async (id, datos) => {
     try {
-        const token = await SecureStore.getItemAsync('token_sesion');
+        const token = await getToken();
         const res = await fetch(`${API_URL}/updatePersonaje/${id}`, {
             method: 'PUT',
             headers: {
@@ -482,7 +495,7 @@ export const actualizarPersonaje = async (id, datos) => {
 
 export const actualizarPerfil = async (id, datos) => {
     try {
-        const token = await SecureStore.getItemAsync('token_sesion');
+        const token = await getToken();
         const res = await fetch(`${API_URL}/updateUsuario/${id}`, {
             method: 'PUT',
             headers: {
@@ -539,7 +552,7 @@ export const loginUsuario = async (nombreUsuario, password) => {
 
 export const registrarUsuario = async (datos) => {
     try {
-        const token = await SecureStore.getItemAsync('token_sesion');
+        const token = await getToken();
         const res = await fetch(`${API_URL}/nuevoUsuario`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -566,7 +579,7 @@ export const registrarUsuario = async (datos) => {
 
 export const nuevoLibro = async (datos) => {
     try {
-        const token = await SecureStore.getItemAsync('token_sesion');
+        const token = await getToken();
         const res = await fetch(`${API_URL}/newLibro`, {
             method: 'POST',
             headers: {
@@ -597,7 +610,7 @@ export const nuevoLibro = async (datos) => {
 
 export const nuevoPersonaje = async (datos) => {
     try {
-        const token = await SecureStore.getItemAsync('token_sesion');
+        const token = await getToken();
         const res = await fetch(`${API_URL}/newPersonaje`, {
             method: 'POST',
             headers: {
@@ -628,7 +641,7 @@ export const nuevoPersonaje = async (datos) => {
 
 export const nuevoComentario = async (datos) => {
     try {
-        const token = await SecureStore.getItemAsync('token_sesion');
+        const token = await getToken();
         const res = await fetch(`${API_URL}/newComentario`, {
             method: 'POST',
             headers: {
@@ -658,7 +671,7 @@ export const nuevoComentario = async (datos) => {
 
 export const eliminarPersonaje = async (id) => {
     try {
-        const token = await SecureStore.getItemAsync('token_sesion');
+        const token = await getToken();
         const res = await fetch(`${API_URL}/eliminarPersonaje/${id}`, {
             method: 'DELETE',
             headers: {
@@ -686,7 +699,7 @@ export const eliminarPersonaje = async (id) => {
 
 export const eliminarLibro = async (id) => {
     try {
-        const token = await SecureStore.getItemAsync('token_sesion');
+        const token = await getToken();
         const res = await fetch(`${API_URL}/eliminarLibro/${id}`, {
             method: 'DELETE',
             headers: {
@@ -714,7 +727,7 @@ export const eliminarLibro = async (id) => {
 
 export const eliminarBiblioteca = async (id) => {
     try {
-        const token = await SecureStore.getItemAsync('token_sesion');
+        const token = await getToken();
         const res = await fetch(`${API_URL}/eliminarBiblioteca/${id}`, {
             method: 'DELETE',
             headers: {
@@ -742,7 +755,7 @@ export const eliminarBiblioteca = async (id) => {
 
 export const eliminarLibroBiblioteca = async (idBiblioteca, idLibro) => {
     try {
-        const token = await SecureStore.getItemAsync('token_sesion');
+        const token = await getToken();
         const res = await fetch(`${API_URL}/eliminarLibroBiblioteca/${idBiblioteca}/${idLibro}`, {
             method: 'DELETE',
             headers: {

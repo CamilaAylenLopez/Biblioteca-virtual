@@ -58,13 +58,14 @@ export default function CrearUsuario({ navigation, setUsuarioLogueado }) {
             const respuesta = await registrarUsuario(form);
             if (respuesta && respuesta.ok) {
                 if (respuesta.data.usuario) {
-                    await AsyncStorage.setItem(
-                        '@usuario_sesion',
-                        JSON.stringify(respuesta.data.usuario)
-                    );
+                    await AsyncStorage.setItem('@usuario_sesion', JSON.stringify(respuesta.data.usuario));
                 }
                 if (respuesta.data && respuesta.data.token) {
-                    await SecureStore.setItemAsync('token_sesion', respuesta.data.token);
+                    if (Platform.OS === 'web') {
+                        await AsyncStorage.setItem('@token_sesion', respuesta.data.token);
+                    } else {
+                        await SecureStore.setItemAsync('token_sesion', respuesta.data.token);
+                    }
                 }
 
                 alerta("¡Éxito!", "Usuario creado con éxito.")

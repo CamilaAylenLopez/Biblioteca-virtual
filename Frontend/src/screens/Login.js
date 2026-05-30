@@ -32,7 +32,11 @@ export default function Login({ navigation, setUsuarioLogueado }) {
         await AsyncStorage.setItem('@usuario_sesion', JSON.stringify(data.usuario));
 
         if (data && data.token) {
-          await SecureStore.setItemAsync('token_sesion', data.token);
+          if (Platform.OS === 'web') {
+            await AsyncStorage.setItem('@token_sesion', data.token);
+          } else {
+            await SecureStore.setItemAsync('token_sesion', data.token);
+          }
         }
 
         setUsuarioLogueado(true);
@@ -91,7 +95,7 @@ const styles = StyleSheet.create({
     paddingTop: 70,
     paddingVertical: 40,
     paddingHorizontal: 30,
-    width: 350,
+    width: '90%',
     maxWidth: 450,
     borderRadius: 50,
     alignSelf: 'center',

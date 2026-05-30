@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ActivityIndicator, Alert } from 'react-native';
+import { View, ActivityIndicator, Alert, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -21,6 +21,14 @@ export default function App() {
     'Roboto-Bold': Roboto_700Bold,
   });
 
+  const getToken = async () => {
+    if (Platform.OS === 'web') {
+      return await AsyncStorage.getItem('@token_sesion');
+    } else {
+      return await SecureStore.getItemAsync('token_sesion');
+    }
+  };
+
   useEffect(() => {
     const verificarSesion = async () => {
       try {
@@ -41,9 +49,17 @@ export default function App() {
   const forzarCierreSesion = async () => {
     try {
       await AsyncStorage.removeItem('@usuario_sesion');
-      await SecureStore.deleteItemAsync('token_sesion');
+      if (Platform.OS === 'web') {
+        await AsyncStorage.removeItem('@token_sesion');
+      } else {
+        await SecureStore.deleteItemAsync('token_sesion');
+      }
       setUsuarioLogueado(false);
-      Alert.alert("Sesion finalizada", "Has alcanzado el limite de 7 días. Inicia sesión nuevamente.");
+      if (Platform.OS === 'web') {
+        alert("Has alcanzado el limite de 7 días. Inicia sesión nuevamente.");
+      } else {
+        Alert.alert("Sesión finalizada", "Has alcanzado el limite de 7 días. Inicia sesión nuevamente.");
+      }
     } catch (error) {
       console.error("Error al cerrar sesión automaticmanete: ", error);
     }

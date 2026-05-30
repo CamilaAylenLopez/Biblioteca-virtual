@@ -24,7 +24,11 @@ export default function InfoPersonaje({ navigation, route, setUsuarioLogueado })
     const procesarCierreDeSesion = async () => {
         try {
             await AsyncStorage.removeItem('@usuario_sesion');
-            await SecureStore.deleteItemAsync('token_sesion');
+            if (Platform.OS === 'web') {
+                await AsyncStorage.removeItem('@token_sesion');
+            } else {
+                await SecureStore.deleteItemAsync('token_sesion');
+            }
             setUsuarioLogueado(false);
             alerta("Sesión expirada", "Tu sesión ha caducado. Por favor, inicia sesión nuevamente.");
         } catch (error) {
