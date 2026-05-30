@@ -151,8 +151,9 @@ const styles = StyleSheet.create({
     },
     imagenConteiner: {
         marginTop: 20,
-        height: 300,
+        height: 400,
         width: 460,
+        borderRadius: 30,
     },
     button: {
         width: '50%',
@@ -246,6 +247,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         resizeMode: 'cover',
         width: '60%',
-        height: 300,
+        height: 400,
+        borderRadius: 30,
     },
 });

@@ -104,7 +104,7 @@ export default function InfoPersonaje({ navigation, route, setUsuarioLogueado })
                 <FontAwesome name="trash" size={35} color="#bebebe" />
             </TouchableOpacity>
             <View style={{ justifyContent: 'center', alignContent: 'center' }}>
-                <Image source={personaje.imagen_url ? { uri: personaje.imagen_url } : require('../img/Imagenotfound.png')} style={styles.imagen} />
+                <Image source={personaje.imagen_url ? { uri: personaje.imagen_url } : require('../img/addimage.jpg')} style={styles.imagen} />
 
                 <Text style={styles.titulo} >{personaje.nombre} </Text>
 
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         margin: 20,
         marginTop: 5,
-        borderRadius: 10,
+        borderRadius: 30,
     },
     titulo: {
         textAlign: 'center',

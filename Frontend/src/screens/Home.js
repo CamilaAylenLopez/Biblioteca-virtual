@@ -87,7 +87,7 @@ export default function Home({ navigation, setUsuarioLogueado }) {
 
   const renderTarjetaLibro = ({ item }) => (
     <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('InfoLibro', { libroId: item.id })}>
-      <Image source={item.imagen_url ? { uri: item.imagen_url } : require('../img/Imagenotfound.png')} style={styles.portada} />
+      <Image source={item.imagen_url ? { uri: item.imagen_url } : require('../img/addimage.jpg')} style={styles.portada} />
       <Text style={styles.tituloLibro} numberOfLines={2}>{item.titulo}</Text>
     </TouchableOpacity>
   );

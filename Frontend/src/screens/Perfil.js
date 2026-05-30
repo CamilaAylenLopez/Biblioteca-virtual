@@ -119,7 +119,7 @@ export default function Perfil({ navigation, setUsuarioLogueado }) {
               <View style={styles.card}>
                 <TouchableOpacity onPress={() => navigation.navigate('InfoLibro', { libroId: item.libro_id })}>
                   <Image
-                    source={item.imagen_url ? { uri: item.imagen_url } : require('../img/Imagenotfound.png')}
+                    source={item.imagen_url ? { uri: item.imagen_url } : require('../img/addimage.jpg')}
                     style={styles.portada}
                   />
                   <Text style={styles.tituloLibro} numberOfLines={2}>{item.titulo}</Text>

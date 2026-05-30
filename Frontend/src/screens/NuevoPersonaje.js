@@ -137,6 +137,8 @@ const styles = StyleSheet.create({
         margin: 20,
         borderRadius: 50,
         overflow: 'hidden',
+        height: 400,
+        width: 460,
     },
     input: {
         width: '100%',
@@ -188,7 +190,7 @@ const styles = StyleSheet.create({
     },
     imagen: {
         alignSelf: 'center',
-        width: 200,
-        height: 200,
+        width: '60%',
+        height: 400,
     },
 });

@@ -141,7 +141,7 @@ export default function DetalleBiblioteca({ navigation, route, setUsuarioLoguead
                 renderItem={({ item }) => (
                     <View style={styles.card} >
                         <TouchableOpacity onPress={() => navigation.navigate('InfoLibro', { libroId: item.libro_id })}>
-                            <Image source={item.imagen_url ? { uri: item.imagen_url } : require('../img/Imagenotfound.png')} style={styles.portada} />
+                            <Image source={item.imagen_url ? { uri: item.imagen_url } : require('../img/addimage.jpg')} style={styles.portada} />
                         </TouchableOpacity>
 
                         <View style={styles.horizontal}>

@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
     },
     imagenConteiner: {
         marginTop: 20,
-        height: 300,
+        height: 400,
         width: 460,
     },
     button: {
@@ -392,7 +392,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         resizeMode: 'cover',
         width: '60%',
-        height: 300,
+        height: 400,
     },
     contenedorCalendarioIOS: {
         borderRadius: 25,

@@ -267,7 +267,7 @@ export default function InfoLibro({ navigation, route, setUsuarioLogueado }) {
                 </TouchableOpacity>
                 <View style={{ justifyContent: 'center', alignContent: 'center' }}>
                     <Image
-                        source={libro.imagen_url ? { uri: libro.imagen_url } : require('../img/Imagenotfound.png')}
+                        source={libro.imagen_url ? { uri: libro.imagen_url } : require('../img/addimage.jpg')}
                         style={styles.imagen}
                     />
 

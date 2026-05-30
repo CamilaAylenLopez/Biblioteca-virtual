@@ -89,7 +89,7 @@ export default function Buscador({ navigation, setUsuarioLogueado }) {
             }
         }}>
 
-            <Image source={item.imagen_url ? { uri: item.imagen_url } : require('../img/Imagenotfound.png')} style={item.tipo === 'libro' ? styles.imgLibro : styles.imgPersonaje} />
+            <Image source={item.imagen_url ? { uri: item.imagen_url } : require('../img/addimage.jpg')} style={item.tipo === 'libro' ? styles.imgLibro : styles.imgPersonaje} />
             <View style={styles.info}>
                 <Text style={styles.nombre}>{item.nombre}</Text>
                 <View style={styles.containerTipoTexto}>
