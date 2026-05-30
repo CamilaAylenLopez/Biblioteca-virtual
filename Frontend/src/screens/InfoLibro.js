@@ -392,7 +392,7 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         paddingTop: 70,
-        marginTop: 50,
+        ...Platform.select({ ios: { paddingTop: 130 } }),
         backgroundColor: '#121212',
     },
     subContainer: {

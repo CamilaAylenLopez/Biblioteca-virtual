@@ -128,7 +128,7 @@ export default function NuevoLibro({ navigation, setUsuarioLogueado }) {
                 alerta("Demasiadas peticiones", "Has realizado muchas consultas seguidas. Por favor, espera unos minutos.");
                 return;
             }
-            
+
             if (error.message === 'TOKEN_EXPIRADO') {
                 await procesarCierreDeSesion();
             } else {
@@ -139,7 +139,7 @@ export default function NuevoLibro({ navigation, setUsuarioLogueado }) {
 
     return (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
-            <ScrollView tyle={{flexGrow: 1,}} showsVerticalScrollIndicator={false}>
+            <ScrollView tyle={{ flexGrow: 1, }} showsVerticalScrollIndicator={false}>
                 <TouchableWithoutFeedback onPress={() => {
                     setMostrarCalendario(false);
                     Keyboard.dismiss();
@@ -168,25 +168,25 @@ export default function NuevoLibro({ navigation, setUsuarioLogueado }) {
                                             <Text style={styles.textoFecha}> {form.lanzamiento ? `${form.lanzamiento}` : "Elegir fecha de lanzamiento"}</Text>
                                         </TouchableOpacity>
 
-                                            {mostrarCalendario && (
-                                                <View style={Platform.OS === 'ios' ? styles.contenedorCalendarioIOS : null}>
-                                                    <DateTimePicker
-                                                        value={fecha}
-                                                        mode="date"
-                                                        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                                                        onChange={onChangeFecha}
-                                                        maximumDate={new Date()}
-                                                        locale="es-ES"
-                                                        style={{ height: 180, width: '100%' }}
-                                                    />
+                                        {mostrarCalendario && (
+                                            <View style={Platform.OS === 'ios' ? styles.contenedorCalendarioIOS : null}>
+                                                <DateTimePicker
+                                                    value={fecha}
+                                                    mode="date"
+                                                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                                                    onChange={onChangeFecha}
+                                                    maximumDate={new Date()}
+                                                    locale="es-ES"
+                                                    style={{ height: 180, width: '100%' }}
+                                                />
 
-                                                    {Platform.OS === 'ios' && (
-                                                        <TouchableOpacity style={styles.btnListoIOS} onPress={() => setMostrarCalendario(false)}>
-                                                            <Text style={styles.confirmarText}>Confirmar fecha</Text>
-                                                        </TouchableOpacity>
-                                                    )}
-                                                </View>
-                                            )}
+                                                {Platform.OS === 'ios' && (
+                                                    <TouchableOpacity style={styles.btnListoIOS} onPress={() => setMostrarCalendario(false)}>
+                                                        <Text style={styles.confirmarText}>Confirmar fecha</Text>
+                                                    </TouchableOpacity>
+                                                )}
+                                            </View>
+                                        )}
                                     </View>
                                 </TouchableWithoutFeedback>
                             )}
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        paddingTop: 60,
+        ...Platform.select({ ios: { paddingTop: 50 } }),
         backgroundColor: '#121212',
     },
     subContainer: {

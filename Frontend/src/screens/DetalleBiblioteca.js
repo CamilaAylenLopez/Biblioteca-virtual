@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         paddingTop: 50,
-        marginTop: 50,
+        ...Platform.select({ ios: { marginTop: 50 } }),
         paddingVertical: 40,
         paddingHorizontal: 15,
         backgroundColor: '#121212',

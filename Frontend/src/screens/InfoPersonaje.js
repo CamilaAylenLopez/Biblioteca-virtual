@@ -120,8 +120,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        paddingTop: 60,
-        marginTop: 50,
+        paddingTop: 40,
+        ...Platform.select({ ios: { paddingTop: 90 } }),
         backgroundColor: '#121212',
     },
     icon: {

@@ -125,7 +125,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        paddingTop: 120,
+        paddingTop: 70,
+        ...Platform.select({ ios: { paddingTop: 120 } }),
         backgroundColor: '#121212',
     },
     subContainer: {
